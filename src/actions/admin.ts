@@ -217,7 +217,12 @@ export async function createSponsor(formData: FormData) {
   const placement = String(formData.get("placement") ?? "") as SponsorPlacement;
   const startsAt = new Date(String(formData.get("startsAt") ?? ""));
   const endsAt = new Date(String(formData.get("endsAt") ?? ""));
-  if (!name || !["HOME_BANNER", "COLLECTION", "SEARCH_BANNER"].includes(placement))
+  if (
+    !name ||
+    !["HOME_BANNER", "COLLECTION", "SEARCH_BANNER", "HERO", "PROFILE_SIDEBAR"].includes(
+      placement
+    )
+  )
     return;
   if (Number.isNaN(startsAt.getTime()) || Number.isNaN(endsAt.getTime())) return;
 
