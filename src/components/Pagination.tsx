@@ -29,12 +29,20 @@ export function Pagination({
     return qs ? `${basePath}?${qs}` : basePath;
   };
 
-  // window of up to 5 page numbers centered on current
-  const start = Math.max(1, Math.min(page - 2, pages - 4));
-  const numbers = Array.from(
-    { length: Math.min(5, pages) },
-    (_, i) => start + i
-  ).filter((n) => n <= pages);
+  // design pattern: window around current + ellipsis + last page
+  const windowStart = Math.max(1, Math.min(page - 1, pages - 3));
+  const numbers: (number | "…")[] = [];
+  for (let n = windowStart; n <= Math.min(windowStart + 3, pages); n++) {
+    numbers.push(n);
+  }
+  if ((numbers[numbers.length - 1] as number) < pages) {
+    if ((numbers[numbers.length - 1] as number) < pages - 1) numbers.push("…");
+    numbers.push(pages);
+  }
+  if (numbers[0] !== 1) {
+    if (numbers[0] !== "…" && (numbers[0] as number) > 2) numbers.unshift("…");
+    numbers.unshift(1);
+  }
 
   const navBtn =
     "w-9 h-9 grid place-items-center rounded-xl border border-hairline bg-white text-ink2 hover:border-primary-500 hover:text-primary-500 transition";
@@ -46,20 +54,26 @@ export function Pagination({
           ›
         </Link>
       )}
-      {numbers.map((n) => (
-        <Link
-          key={n}
-          href={buildHref(n)}
-          aria-current={n === page ? "page" : undefined}
-          className={`w-9 h-9 grid place-items-center rounded-xl text-sm font-bold transition ${
-            n === page
-              ? "bg-primary-500 text-white shadow-accent"
-              : "bg-white border border-hairline text-ink2 hover:border-primary-500"
-          }`}
-        >
-          {formatNum(n)}
-        </Link>
-      ))}
+      {numbers.map((n, i) =>
+        n === "…" ? (
+          <span key={`gap-${i}`} className="w-9 h-9 grid place-items-center text-muted2">
+            …
+          </span>
+        ) : (
+          <Link
+            key={n}
+            href={buildHref(n)}
+            aria-current={n === page ? "page" : undefined}
+            className={`w-9 h-9 grid place-items-center rounded-xl text-sm font-bold transition ${
+              n === page
+                ? "bg-primary-500 text-white shadow-accent"
+                : "bg-white border border-hairline text-ink2 hover:border-primary-500"
+            }`}
+          >
+            {formatNum(n)}
+          </Link>
+        )
+      )}
       {page < pages && (
         <Link href={buildHref(page + 1)} className={navBtn} aria-label="التالي">
           ‹
