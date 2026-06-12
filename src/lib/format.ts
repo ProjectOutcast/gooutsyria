@@ -89,6 +89,19 @@ export function isOpenNow(hours: OpeningHours | null | undefined): boolean | nul
   return false;
 }
 
+/** When closed: today's upcoming opening time ("يفتح ١ ظهراً"), if any. */
+export function nextOpening(
+  hours: OpeningHours | null | undefined
+): string | null {
+  if (!hours) return null;
+  const { day, minutes } = nowInDamascus();
+  const today = hours[String(day)];
+  if (today && minutes < toMinutes(today.open)) {
+    return formatTime(today.open);
+  }
+  return null;
+}
+
 /** Today's closing time as a display string ("١٢ منتصف الليل" style left to caller). */
 export function todayHours(
   hours: OpeningHours | null | undefined

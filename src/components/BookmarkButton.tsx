@@ -40,7 +40,7 @@ export function BookmarkButton({
       onClick={onClick}
       aria-label={saved ? "إزالة من المحفوظات" : "حفظ"}
       title={saved ? "إزالة من المحفوظات" : "حفظ"}
-      className={`${dim} grid place-items-center rounded-full bg-white/95 border border-hairline hover:border-primary-400 transition shadow-sm`}
+      className={`${dim} grid place-items-center rounded-[10px] bg-white/95 border border-hairline hover:border-primary-400 transition shadow-sm`}
     >
       <svg
         width={size === "lg" ? 18 : 15}

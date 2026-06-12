@@ -6,6 +6,7 @@ import { isOpenNow, type OpeningHours } from "./format";
 export const RESTAURANT_CARD_INCLUDE = {
   photos: { orderBy: { sortOrder: "asc" as const }, take: 1 },
   cuisines: { include: { cuisine: true } },
+  features: { include: { feature: true }, take: 3 },
   neighborhood: true,
   city: true,
   offers: {

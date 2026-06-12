@@ -97,7 +97,7 @@ export async function RestaurantListing({
           </p>
         )}
 
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {firstHalf.map(({ r, sp }) => (
             <RestaurantCard
               key={r.id}
@@ -123,7 +123,7 @@ export async function RestaurantListing({
         )}
 
         {secondHalf.length > 0 && (
-          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 mt-4">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 mt-4">
             {secondHalf.map(({ r, sp }) => (
               <RestaurantCard
                 key={r.id}
