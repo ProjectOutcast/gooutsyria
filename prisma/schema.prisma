@@ -61,6 +61,8 @@ enum SponsorPlacement {
   HOME_BANNER
   COLLECTION
   SEARCH_BANNER
+  HERO
+  PROFILE_SIDEBAR
 }
 
 model User {
@@ -75,6 +77,7 @@ model User {
   reviews     Review[]
   claims      OwnerClaim[]
   restaurants Restaurant[] @relation("OwnerRestaurants")
+  saved       SavedPlace[]
 }
 
 model City {
@@ -166,6 +169,7 @@ model Restaurant {
   collectionItems CollectionItem[]
   featured        FeaturedPlacement[]
   metrics         MetricDaily[]
+  savedBy         SavedPlace[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -341,4 +345,15 @@ model MetricDaily {
   directions   Int        @default(0)
 
   @@unique([restaurantId, date])
+}
+
+model SavedPlace {
+  id           String     @id @default(cuid())
+  userId       String
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  restaurantId String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  createdAt    DateTime   @default(now())
+
+  @@unique([userId, restaurantId])
 }

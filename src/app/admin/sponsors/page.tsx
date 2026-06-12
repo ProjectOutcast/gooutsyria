@@ -8,6 +8,8 @@ const PLACEMENT_AR = {
   HOME_BANNER: "بانر الصفحة الرئيسية",
   COLLECTION: "رعاية قائمة مختارة",
   SEARCH_BANNER: "بانر صفحة البحث",
+  HERO: "خلفية الواجهة الرئيسية (Hero)",
+  PROFILE_SIDEBAR: "صفحة المطعم — الشريط الجانبي",
 } as const;
 
 const inputCls =

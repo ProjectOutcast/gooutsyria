@@ -64,6 +64,17 @@ const FEATURES: [string, string, string][] = [
   ["موسيقى حية", "live-music", "🎶"],
   ["بيت دمشقي قديم", "old-house", "🏛️"],
   ["إطلالة", "view", "🏞️"],
+  ["يعمل ٢٤ ساعة", "24h", "🌙"],
+  ["مساحة عمل", "workspace", "💻"],
+];
+
+const MENU_PAGE_TITLES = [
+  "المقبلات",
+  "المشاوي",
+  "الأطباق الرئيسية",
+  "المشروبات",
+  "الحلويات",
+  "العروض",
 ];
 
 const REVIEWERS: [string, string][] = [
@@ -103,6 +114,7 @@ type RestDef = {
   lng: number;
   hours: Hours;
   photos: number[];
+  menuPages?: number[];
   menu: SectionDef[];
   verified?: boolean;
   pro?: boolean;
@@ -124,6 +136,7 @@ const RESTAURANTS: RestDef[] = [
     lat: 33.5165, lng: 36.3015,
     hours: HOURS_STANDARD,
     photos: [1, 2, 3],
+    menuPages: [1, 2, 3, 4, 5, 6],
     verified: true, pro: true, owned: true,
     menu: [
       { name: "المقبلات", items: [["حمص بيروتي", 15000], ["متبل باذنجان", 15000], ["كبة مقلية (٤ قطع)", 35000, "كبة برغل محشوة لحمة وصنوبر", true], ["فتوش", 18000]] },
@@ -145,6 +158,7 @@ const RESTAURANTS: RestDef[] = [
     lat: 33.4925, lng: 36.2972,
     hours: HOURS_STANDARD,
     photos: [4, 5, 2],
+    menuPages: [1, 2, 4],
     verified: true, owned: true,
     menu: [
       { name: "المشاوي", items: [["كباب حلبي (كيلو)", 180000, "لحم غنم بلدي مفروم مع بهارات حلبية", true], ["شقف مشوي (كيلو)", 200000], ["ريش غنم (كيلو)", 220000], ["شيش طاووق (سيخ)", 30000]] },
@@ -197,7 +211,7 @@ const RESTAURANTS: RestDef[] = [
     desc: "كافيه ثقافي في باب توما — قهوة مختصة، مكتبة صغيرة، وأمسيات موسيقية كل خميس. المكان المفضل لطلاب الجامعات والفنانين.",
     nbName: "باب توما",
     cuisineSlugs: ["cafe", "desserts"],
-    featureSlugs: ["wifi", "live-music", "old-house"],
+    featureSlugs: ["wifi", "live-music", "old-house", "workspace"],
     price: "CHEAP",
     phone: "+963 11 542 7700",
     address: "باب توما، حارة الزيتون، دمشق",
@@ -234,7 +248,7 @@ const RESTAURANTS: RestDef[] = [
     desc: "شاورما عالفحم بخبز الصاج — وجهة سهرات دمشق منذ ٢٠٠٥. عرض دائم: سندويشتين + بطاطا + مشروب.",
     nbName: "البرامكة",
     cuisineSlugs: ["fast-food"],
-    featureSlugs: ["delivery"],
+    featureSlugs: ["delivery", "24h"],
     price: "CHEAP",
     phone: "+963 11 213 9988",
     whatsapp: "+963966222444",
@@ -369,7 +383,7 @@ const RESTAURANTS: RestDef[] = [
     desc: "سماش برغر أنغوس مع صوصات سرية وبطاطا مقرمشة — أسرع نمواً بين مطاعم البرغر بدمشق، يفتح حتى ٣ فجراً.",
     nbName: "كفرسوسة",
     cuisineSlugs: ["fast-food", "international"],
-    featureSlugs: ["delivery", "parking", "wifi"],
+    featureSlugs: ["delivery", "parking", "wifi", "24h"],
     price: "MODERATE",
     phone: "+963 11 214 3322",
     whatsapp: "+963933000111",
@@ -392,7 +406,7 @@ const RESTAURANTS: RestDef[] = [
     desc: "مقهى شعبي عريق في عرنوس — طاولة زهر، ورق، أركيلة معسل بلدي، ومباريات كرة القدم على الشاشة الكبيرة.",
     nbName: "عرنوس",
     cuisineSlugs: ["cafe"],
-    featureSlugs: ["shisha", "wifi"],
+    featureSlugs: ["shisha", "wifi", "workspace"],
     price: "CHEAP",
     phone: "+963 11 444 1100",
     address: "ساحة عرنوس، دمشق",
@@ -576,12 +590,23 @@ export async function seedDemoData(db: PrismaClient): Promise<SeedResult> {
         cuisines: { create: def.cuisineSlugs.map((s) => ({ cuisineId: cu(s) })) },
         features: { create: def.featureSlugs.map((s) => ({ featureId: ft(s) })) },
         photos: {
-          create: def.photos.map((p, pi) => ({
-            url: `/placeholders/p${p}.svg`,
-            alt: def.nameAr,
-            kind: pi === 0 ? "EXTERIOR" : pi === 1 ? "INTERIOR" : "FOOD",
-            sortOrder: pi,
-          })),
+          create: [
+            ...def.photos.map((p, pi) => ({
+              url: `/placeholders/p${p}.svg`,
+              alt: def.nameAr,
+              kind: (pi === 0 ? "EXTERIOR" : pi === 1 ? "INTERIOR" : "FOOD") as
+                | "EXTERIOR"
+                | "INTERIOR"
+                | "FOOD",
+              sortOrder: pi,
+            })),
+            ...(def.menuPages ?? []).map((p, pi) => ({
+              url: `/placeholders/menu${p}.svg`,
+              alt: MENU_PAGE_TITLES[p - 1],
+              kind: "MENU" as const,
+              sortOrder: def.photos.length + pi,
+            })),
+          ],
         },
         menuSections: {
           create: def.menu.map((section, si) => ({

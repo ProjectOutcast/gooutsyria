@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import { getCity } from "@/lib/queries";
@@ -35,22 +36,31 @@ export default async function CuisinePage({ params, searchParams }: Props) {
   if (!cityRow || !cuisine) notFound();
 
   const raw = await searchParams;
-  const filters = { ...parseFilters(raw), cuisine: slug };
+  const filters = { ...parseFilters(raw), cuisines: [slug] };
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold">
+    <div className="max-w-[1240px] mx-auto px-7 py-7">
+      <nav className="text-[13px] text-muted mb-3" aria-label="مسار التنقل">
+        <Link href="/" className="hover:text-primary-500">الرئيسية</Link>
+        <span className="mx-1.5">‹</span>
+        <Link href={`/${city}/restaurants`} className="hover:text-primary-500">{cityRow.nameAr}</Link>
+        <span className="mx-1.5">‹</span>
+        <span className="text-ink font-semibold">{cuisine.nameAr}</span>
+      </nav>
+
+      <h1 className="text-[30px] font-bold">
         {cuisine.icon} أفضل مطاعم {cuisine.nameAr} في {cityRow.nameAr}
       </h1>
-      <p className="text-stone-500 text-sm mt-1 mb-5">
-        مرتبة حسب تقييمات الزوار الحقيقية — اكتشف القوائم والأسعار قبل ما تطلع
+      <p className="text-ink2 text-[15px] mt-1 mb-7">
+        مرتّبة حسب تقييمات الزوار الحقيقية — اكتشف القوائم والأسعار قبل ما تطلع.
       </p>
+
       <RestaurantListing
         citySlug={city}
         filters={filters}
         rawParams={raw}
         basePath={`/${city}/cuisine/${slug}`}
-        hideCuisine
+        hideCuisines
       />
     </div>
   );

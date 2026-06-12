@@ -27,3 +27,23 @@ for (let i = 0; i < 16; i++) {
   writeFileSync(`public/placeholders/p${i + 1}.svg`, svg);
 }
 console.log("generated 16 placeholder SVGs");
+
+// portrait "photographed menu page" placeholders
+const menuTitles = ["المقبلات", "المشاوي", "الأطباق الرئيسية", "المشروبات", "الحلويات", "العروض"];
+for (let i = 0; i < 6; i++) {
+  const rows = Array.from({ length: 9 }, (_, r) => {
+    const y = 150 + r * 58;
+    return `<rect x="60" y="${y}" width="${360 - (r % 3) * 40}" height="10" rx="5" fill="#D8C8BC"/>
+<rect x="490" y="${y}" width="60" height="10" rx="5" fill="#C9503A"/>`;
+  }).join("\n");
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="800" viewBox="0 0 600 800">
+<rect width="600" height="800" fill="#FDFBF6"/>
+<rect x="20" y="20" width="560" height="760" fill="none" stroke="#EADBD2" stroke-width="2" rx="14"/>
+<text x="300" y="90" font-size="34" text-anchor="middle" fill="#B5392C" font-family="sans-serif" font-weight="bold">${menuTitles[i]}</text>
+<line x1="200" y1="112" x2="400" y2="112" stroke="#E14434" stroke-width="3"/>
+${rows}
+<text x="300" y="760" font-size="14" text-anchor="middle" fill="#B7A79E" font-family="monospace">صفحة ${i + 1}</text>
+</svg>`;
+  writeFileSync(`public/placeholders/menu${i + 1}.svg`, svg);
+}
+console.log("generated 6 menu-page SVGs");

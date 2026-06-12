@@ -3,38 +3,55 @@
 @theme {
   --font-sans: "IBM Plex Sans Arabic", "Segoe UI", Tahoma, Arial, sans-serif;
 
-  /* Warm appetite palette — primary crimson red */
-  --color-primary-50: #fef2f2;
-  --color-primary-100: #fde3e3;
-  --color-primary-200: #fbc9c9;
-  --color-primary-300: #f7a3a3;
-  --color-primary-400: #f07070;
-  --color-primary-500: #e54545;
-  --color-primary-600: #d22b2b;
-  --color-primary-700: #b02020;
-  --color-primary-800: #921e1e;
-  --color-primary-900: #7a1f1f;
+  /* Accent — tomato red (authoritative design tokens) */
+  --color-primary-50: #fff0e9; /* accent tint */
+  --color-primary-100: #ffe3da;
+  --color-primary-200: #ffb4a6; /* chip tint on dark */
+  --color-primary-300: #ff9180; /* highlight on dark hero */
+  --color-primary-400: #ef6d57;
+  --color-primary-500: #e14434; /* --accent */
+  --color-primary-600: #e14434; /* primary actions */
+  --color-primary-700: #b5392c; /* deep accent / prices */
+  --color-primary-800: #9c2f24;
+  --color-primary-900: #7a2418; /* banner gradient end */
 
-  /* Burnt orange accent */
-  --color-accent-100: #ffedd5;
-  --color-accent-500: #f97316;
-  --color-accent-600: #ea580c;
-  --color-accent-700: #c2410c;
+  /* Warm neutrals */
+  --color-page: #fbf8f6;
+  --color-ink: #1c1614;
+  --color-ink2: #6b5c54;
+  --color-muted: #8c7b72;
+  --color-muted2: #a6948b;
+  --color-hairline: #f0e6e0;
+  --color-hairline2: #eadbd2;
+  --color-chipbg: #f3e9e4;
+
+  /* Status */
+  --color-success: #1fa36b;
+  --color-success-tint: #e6f5ee;
+  --color-star: #f5a623;
+  --color-warn: #c2410c;
+  --color-verified: #1d9bf0;
+  --color-featured: #ffd9a8;
+
+  --shadow-card: 0 16px 30px -18px rgba(28, 22, 20, 0.25);
+  --shadow-search: 0 24px 60px -20px rgba(28, 22, 20, 0.28);
+  --shadow-accent: 0 8px 18px rgba(225, 68, 52, 0.35);
 }
 
 html {
   /* Arabic script needs a slightly larger base size for legibility */
   font-size: 17px;
+  scroll-behavior: smooth;
 }
 
 body {
   font-family: var(--font-sans);
-  background-color: var(--color-stone-50);
-  color: var(--color-stone-900);
+  background-color: var(--color-page);
+  color: var(--color-ink);
   line-height: 1.7;
 }
 
-/* Keep Latin fragments (phone numbers, prices) readable inside RTL text */
+/* Keep Latin fragments (phone numbers, URLs) readable inside RTL text */
 .ltr-nums {
   direction: ltr;
   unicode-bidi: embed;
@@ -46,4 +63,13 @@ body {
 }
 .scrollbar-none::-webkit-scrollbar {
   display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  * {
+    transition-duration: 0.01ms !important;
+  }
 }

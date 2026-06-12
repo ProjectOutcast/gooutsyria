@@ -42,6 +42,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         changeFrequency: "daily" as const,
         priority: 0.8,
       },
+      {
+        url: `${siteUrl}/${c.slug}/map`,
+        changeFrequency: "weekly" as const,
+        priority: 0.6,
+      },
     ]),
     ...cuisines.flatMap((cu) =>
       cities.map((c) => ({

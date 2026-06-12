@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { formatNum } from "@/lib/format";
 
 export function Pagination({
   page,
@@ -28,25 +29,40 @@ export function Pagination({
     return qs ? `${basePath}?${qs}` : basePath;
   };
 
+  // window of up to 5 page numbers centered on current
+  const start = Math.max(1, Math.min(page - 2, pages - 4));
+  const numbers = Array.from(
+    { length: Math.min(5, pages) },
+    (_, i) => start + i
+  ).filter((n) => n <= pages);
+
+  const navBtn =
+    "w-9 h-9 grid place-items-center rounded-xl border border-hairline bg-white text-ink2 hover:border-primary-500 hover:text-primary-500 transition";
+
   return (
-    <nav className="flex items-center justify-center gap-2 mt-8" aria-label="الصفحات">
+    <nav className="flex items-center justify-center gap-2 mt-10" aria-label="الصفحات">
       {page > 1 && (
-        <Link
-          href={buildHref(page - 1)}
-          className="px-3 py-1.5 rounded-lg border border-stone-300 bg-white text-sm hover:border-primary-500"
-        >
-          السابق
+        <Link href={buildHref(page - 1)} className={navBtn} aria-label="السابق">
+          ›
         </Link>
       )}
-      <span className="text-sm text-stone-600 ltr-nums">
-        {page} / {pages}
-      </span>
-      {page < pages && (
+      {numbers.map((n) => (
         <Link
-          href={buildHref(page + 1)}
-          className="px-3 py-1.5 rounded-lg border border-stone-300 bg-white text-sm hover:border-primary-500"
+          key={n}
+          href={buildHref(n)}
+          aria-current={n === page ? "page" : undefined}
+          className={`w-9 h-9 grid place-items-center rounded-xl text-sm font-bold transition ${
+            n === page
+              ? "bg-primary-500 text-white shadow-accent"
+              : "bg-white border border-hairline text-ink2 hover:border-primary-500"
+          }`}
         >
-          التالي
+          {formatNum(n)}
+        </Link>
+      ))}
+      {page < pages && (
+        <Link href={buildHref(page + 1)} className={navBtn} aria-label="التالي">
+          ‹
         </Link>
       )}
     </nav>
