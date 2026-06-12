@@ -65,7 +65,7 @@ export default async function AccountPage() {
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {saved.map((s) => (
-            <RestaurantCard key={s.id} restaurant={s.restaurant} saved />
+            <RestaurantCard key={s.id} restaurant={s.restaurant} variant="compact" saved />
           ))}
         </div>
       )}

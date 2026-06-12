@@ -42,8 +42,18 @@ export function PhotoGallery({
     );
   }
 
-  const small = photos.slice(1, 5);
-  const extra = photos.length - 5;
+  // adapt the grid to the photo count so sparse galleries don't leave holes:
+  // 5+ → design grid (1 large + 4 small); 3-4 → 1 large + 2 small; 2 → 1+1; 1 → full-width
+  const total = photos.length;
+  const smallCount = total >= 5 ? 4 : total === 1 ? 0 : total >= 3 ? 2 : 1;
+  const small = photos.slice(1, 1 + smallCount);
+  const extra = total - 1 - smallCount;
+  const gridCols =
+    smallCount === 4
+      ? "sm:grid-cols-[2fr_1fr_1fr] grid-rows-2"
+      : smallCount >= 1
+        ? "sm:grid-cols-[2fr_1fr] grid-rows-2"
+        : "grid-rows-1";
 
   return (
     <div className="relative">
@@ -65,11 +75,11 @@ export function PhotoGallery({
         </span>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-[2fr_1fr_1fr] grid-rows-2 gap-2 h-[280px] sm:h-[392px] rounded-[20px] overflow-hidden">
+      <div className={`grid grid-cols-2 ${gridCols} gap-2 h-[280px] sm:h-[392px] rounded-[20px] overflow-hidden`}>
         <button
           type="button"
           onClick={() => setLightbox(0)}
-          className="relative col-span-2 sm:col-span-1 row-span-2 bg-chipbg"
+          className={`relative col-span-2 sm:col-span-1 bg-chipbg ${smallCount >= 1 ? "row-span-2" : ""}`}
         >
           <Image
             src={photos[0].url}
@@ -81,13 +91,15 @@ export function PhotoGallery({
           />
         </button>
         {small.map((p, i) => {
+          // a 2-photo gallery gets one tall tile
+          const span = smallCount === 1 ? "row-span-2" : "";
           const isLast = i === small.length - 1 && extra > 0;
           return (
             <button
               key={p.url + i}
               type="button"
               onClick={() => setLightbox(i + 1)}
-              className="relative bg-chipbg hidden sm:block"
+              className={`relative bg-chipbg hidden sm:block ${span}`}
             >
               <Image
                 src={p.url}

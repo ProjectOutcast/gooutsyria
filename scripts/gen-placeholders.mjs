@@ -47,3 +47,24 @@ ${rows}
   writeFileSync(`public/placeholders/menu${i + 1}.svg`, svg);
 }
 console.log("generated 6 menu-page SVGs");
+
+// dark hero background: warm blurred "table spread" mood, design-scrim friendly
+const blobs = [
+  [120, 180, 130, "#E14434", 0.35], [430, 90, 90, "#F59E0B", 0.28],
+  [760, 200, 150, "#C9503A", 0.3], [1080, 110, 100, "#16A34A", 0.18],
+  [1350, 230, 140, "#E14434", 0.3], [260, 420, 110, "#F97316", 0.22],
+  [620, 480, 160, "#B5392C", 0.32], [980, 430, 100, "#F5A623", 0.2],
+  [1290, 500, 130, "#7A2418", 0.45], [80, 560, 90, "#D97706", 0.18],
+].map(([x, y, r, c, o]) => `<circle cx="${x}" cy="${y}" r="${r}" fill="${c}" opacity="${o}"/>`).join("\n");
+const rings = [
+  [240, 300, 70], [700, 170, 55], [1150, 330, 80], [480, 540, 60], [1390, 120, 45],
+].map(([x, y, r]) => `<circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="#FFF" stroke-opacity="0.07" stroke-width="10"/>
+<circle cx="${x}" cy="${y}" r="${r * 0.55}" fill="none" stroke="#FFF" stroke-opacity="0.05" stroke-width="4"/>`).join("\n");
+const hero = `<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="640" viewBox="0 0 1500 640">
+<rect width="1500" height="640" fill="#140D0B"/>
+<g filter="url(#b)">${blobs}</g>
+${rings}
+<defs><filter id="b" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="46"/></filter></defs>
+</svg>`;
+writeFileSync("public/hero-bg.svg", hero);
+console.log("generated hero background");
