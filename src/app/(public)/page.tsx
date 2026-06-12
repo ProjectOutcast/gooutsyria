@@ -11,9 +11,9 @@ import {
 } from "@/lib/queries";
 import { RestaurantCard } from "@/components/RestaurantCard";
 import { SearchBar } from "@/components/SearchBar";
-import { RatingPill } from "@/components/RatingStars";
 import {
   formatNum,
+  formatRating,
   formatDateAr,
   isOpenNow,
   type OpeningHours,
@@ -21,12 +21,12 @@ import {
 
 export const dynamic = "force-dynamic";
 
-const QUICK_CHIPS: [string, string][] = [
-  ["مفتوح الآن", "/damascus/restaurants?open=1"],
-  ["يعمل ٢٤ ساعة", "/damascus/restaurants?features=24h"],
-  ["عروض اليوم", "/damascus/offers"],
-  ["أراكيل", "/damascus/restaurants?features=shisha"],
-  ["مساحات عمل", "/damascus/restaurants?features=workspace"],
+const QUICK_CHIPS: [string, string, string][] = [
+  ["🍽️", "مفتوح الآن", "/damascus/restaurants?open=1"],
+  ["🌙", "يعمل ٢٤ ساعة", "/damascus/restaurants?features=24h"],
+  ["🏷️", "عروض اليوم", "/damascus/offers"],
+  ["💨", "أراكيل", "/damascus/restaurants?features=shisha"],
+  ["💻", "مساحات عمل", "/damascus/restaurants?features=workspace"],
 ];
 
 export default async function HomePage() {
@@ -101,7 +101,10 @@ export default async function HomePage() {
             priority
           />
         ) : (
-          <div className="absolute inset-0 bg-gradient-to-bl from-primary-900 via-ink to-ink" />
+          <div
+            className="absolute inset-0 bg-cover bg-center"
+            style={{ backgroundImage: "url(/hero-bg.svg)" }}
+          />
         )}
         <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(20,13,11,.72),rgba(20,13,11,.5)_45%,rgba(20,13,11,.8))]" />
         <span className="absolute top-4 start-4 z-10 bg-ink/60 text-white/70 text-[11px] rounded-full px-3 py-1">
@@ -126,12 +129,13 @@ export default async function HomePage() {
           </div>
 
           <div className="flex flex-wrap justify-center gap-2.5 mt-6">
-            {QUICK_CHIPS.map(([label, href]) => (
+            {QUICK_CHIPS.map(([icon, label, href]) => (
               <Link
                 key={label}
                 href={href}
-                className="bg-white/12 hover:bg-white/22 backdrop-blur border border-white/20 rounded-full px-4 py-1.5 text-sm font-medium transition"
+                className="inline-flex items-center gap-1.5 bg-white/12 hover:bg-white/22 backdrop-blur border border-white/20 rounded-full px-4 py-1.5 text-sm font-medium transition"
               >
+                <span className="text-primary-200">{icon}</span>
                 {label}
               </Link>
             ))}
@@ -155,7 +159,7 @@ export default async function HomePage() {
                 href={`/damascus/cuisine/${c.slug}`}
                 className="bg-white border border-hairline rounded-2xl p-4 text-center transition duration-150 hover:-translate-y-0.5 hover:shadow-card"
               >
-                <span className="mx-auto w-[54px] h-[54px] grid place-items-center rounded-full bg-primary-50 text-2xl">
+                <span className="mx-auto w-[54px] h-[54px] grid place-items-center rounded-2xl bg-primary-50 text-2xl">
                   {c.icon}
                 </span>
                 <span className="block font-semibold text-sm mt-2.5">{c.nameAr}</span>
@@ -212,7 +216,7 @@ export default async function HomePage() {
             <p className="text-sm text-muted mb-5">أماكن اختارت الظهور المميّز هذا الشهر</p>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {featured.map((r) => (
-                <RestaurantCard key={r.id} restaurant={r} featured saved={savedIds.has(r.id)} />
+                <RestaurantCard key={r.id} restaurant={r} featured variant="compact" saved={savedIds.has(r.id)} />
               ))}
             </div>
           </section>
@@ -259,8 +263,10 @@ export default async function HomePage() {
                       {r.cuisines.map((c) => c.cuisine.nameAr).join(" · ")} ·{" "}
                       {r.neighborhood?.nameAr}
                     </span>
-                    <span className="block mt-1">
-                      <RatingPill value={r.avgRating} count={r.ratingCount} showCount />
+                    <span className="block text-[13px] mt-1">
+                      <span className="text-star">★</span>{" "}
+                      <span className="font-bold text-ink">{formatRating(r.avgRating)}</span>
+                      <span className="text-muted2"> · {formatNum(r.ratingCount)} تقييم</span>
                     </span>
                   </span>
                   <span className="text-muted2 text-xl shrink-0">‹</span>
@@ -328,7 +334,38 @@ export default async function HomePage() {
             </div>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {open24h.map((r) => (
-                <RestaurantCard key={r.id} restaurant={r} dark saved={savedIds.has(r.id)} />
+                <Link
+                  key={r.id}
+                  href={`/damascus/restaurant/${r.slug}`}
+                  className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-2xl p-3.5 transition hover:bg-white/10"
+                >
+                  <span className="relative w-12 h-12 rounded-xl overflow-hidden bg-white/10 shrink-0">
+                    {r.photos[0] && (
+                      <Image
+                        src={r.photos[0].url}
+                        alt={r.nameAr}
+                        fill
+                        sizes="48px"
+                        className="object-cover"
+                      />
+                    )}
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block font-semibold text-[15px] text-white line-clamp-1">
+                      {r.nameAr}
+                    </span>
+                    <span className="block text-[12px] text-white/55 line-clamp-1">
+                      {r.cuisines[0]?.cuisine.nameAr}
+                      {r.ratingCount > 0 && (
+                        <>
+                          {" · "}
+                          <span className="text-star">★</span>{" "}
+                          {formatRating(r.avgRating)}
+                        </>
+                      )}
+                    </span>
+                  </span>
+                </Link>
               ))}
             </div>
           </div>
@@ -339,12 +376,15 @@ export default async function HomePage() {
         {/* ===== Map teaser ===== */}
         <section className="mt-16 grid lg:grid-cols-[1fr_1.4fr] gap-8 items-center">
           <div>
+            <span className="inline-block bg-chipbg text-ink2 text-[12px] font-semibold rounded-full px-3 py-1 mb-3">
+              استكشف الخريطة
+            </span>
             <h2 className="text-[26px] font-bold leading-snug">
-              استكشف دمشق على الخريطة
+              شوف وين الأماكن على خريطة دمشق
             </h2>
             <p className="text-ink2 mt-3 leading-relaxed">
-              كل المطاعم والكافيهات بنقاط على خريطة تفاعلية — اختر منطقتك وشوف
-              شو حواليك.
+              فلتر حسب المنطقة، المطبخ، السعر، والمفتوح الآن — وكل مكان على
+              بعد نقرة.
             </p>
             <Link
               href="/damascus/map"
@@ -373,16 +413,18 @@ export default async function HomePage() {
 
         {/* ===== Add-restaurant CTA ===== */}
         <section className="mt-16 mb-2 rounded-3xl bg-gradient-to-l from-primary-500 to-primary-700 text-white p-8 sm:p-12 text-center">
-          <h2 className="text-2xl sm:text-3xl font-bold">عندك مطعم أو كافيه؟</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold">
+            عندك مطعم أو كافيه في دمشق؟
+          </h2>
           <p className="text-white/85 mt-3 max-w-xl mx-auto">
-            أضف منشأتك مجاناً خلال دقائق — حدّث قائمتك، رد على التقييمات، وتابع
-            زياراتك واتصالاتك من لوحة تحكم خاصة.
+            أضف مكانك مجاناً خلال دقائق — اعرض قائمتك الرقمية، وتواصل مع آلاف
+            الزبائن كل يوم.
           </p>
           <Link
             href="/for-restaurants"
             className="inline-block mt-6 bg-white text-primary-700 hover:bg-primary-50 rounded-xl px-8 py-3 font-bold transition"
           >
-            سجّل مطعمك الآن
+            أضف مطعمك مجاناً
           </Link>
         </section>
       </div>

@@ -118,7 +118,12 @@ export async function RestaurantListing({
             <span className="absolute top-3 start-3 bg-white/15 text-white/80 text-[11px] rounded-full px-2.5 py-0.5">
               إعلان
             </span>
-            <span className="block pt-3 font-bold text-lg">{inlineSponsor.name}</span>
+            <span className="flex flex-wrap items-center justify-between gap-4 pt-3">
+              <span className="font-bold text-lg">{inlineSponsor.name}</span>
+              <span className="bg-primary-500 hover:bg-primary-700 rounded-xl px-5 py-2 text-sm font-bold shadow-accent transition">
+                اكتشف الآن
+              </span>
+            </span>
           </a>
         )}
 

@@ -156,10 +156,15 @@ export default async function RestaurantPage({ params }: Props) {
 
   const galleryPhotos = r.photos.filter((p) => p.kind !== "MENU");
   const menuPages = r.photos.filter((p) => p.kind === "MENU");
-  const popularDishes = r.menuSections
-    .flatMap((s) => s.items)
-    .filter((i) => i.popular)
-    .slice(0, 4);
+  const allItems = r.menuSections.flatMap((s) => s.items);
+  const popularDishes = allItems.filter((i) => i.popular).slice(0, 4);
+  // rough per-person estimate from the menu (a main + a side/drink)
+  const perPerson =
+    allItems.length >= 3
+      ? Math.round(
+          ((allItems.reduce((s, i) => s + i.priceSyp, 0) / allItems.length) * 1.8) / 5000
+        ) * 5000
+      : null;
 
   const [similar, savedSet, sidebarSponsor, userReview] = await Promise.all([
     db.restaurant.findMany({
@@ -227,12 +232,14 @@ export default async function RestaurantPage({ params }: Props) {
       </nav>
 
       {/* Gallery */}
-      <PhotoGallery
-        photos={galleryPhotos.map((p) => ({ url: p.url, alt: p.alt }))}
-        name={r.nameAr}
-        restaurantId={r.id}
-        saved={savedSet.has(r.id)}
-      />
+      <div id="photos" className="scroll-mt-32">
+        <PhotoGallery
+          photos={galleryPhotos.map((p) => ({ url: p.url, alt: p.alt }))}
+          name={r.nameAr}
+          restaurantId={r.id}
+          saved={savedSet.has(r.id)}
+        />
+      </div>
 
       {/* Identity bar */}
       <div className="flex flex-wrap items-start justify-between gap-6 mt-6">
@@ -263,7 +270,10 @@ export default async function RestaurantPage({ params }: Props) {
             ))}
             <span className="mx-2 text-hairline2">|</span>
             <span className="ltr-nums">{PRICE_BAND_SYMBOLS[r.priceBand]}</span>{" "}
-            <span className="text-muted">({PRICE_BAND_LABELS[r.priceBand]})</span>
+            <span className="text-muted">
+              ({PRICE_BAND_LABELS[r.priceBand]})
+              {perPerson ? ` · للشخص ~${formatSyp(perPerson)}` : ""}
+            </span>
             {r.neighborhood && (
               <>
                 <span className="mx-2 text-hairline2">|</span>
@@ -673,10 +683,15 @@ export default async function RestaurantPage({ params }: Props) {
       {/* Similar places */}
       {similar.length > 0 && (
         <section className="mt-14">
-          <h2 className="text-[24px] font-bold mb-5">أماكن مشابهة</h2>
+          <h2 className="text-[24px] font-bold mb-5">أماكن مشابهة قد تعجبك</h2>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {similar.map((s) => (
-              <RestaurantCard key={s.id} restaurant={s} saved={similarSaved.has(s.id)} />
+              <RestaurantCard
+                key={s.id}
+                restaurant={s}
+                variant="compact"
+                saved={similarSaved.has(s.id)}
+              />
             ))}
           </div>
         </section>

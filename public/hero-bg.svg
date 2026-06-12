@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="640" viewBox="0 0 1500 640">
+<rect width="1500" height="640" fill="#140D0B"/>
+<g filter="url(#b)"><circle cx="120" cy="180" r="130" fill="#E14434" opacity="0.35"/>
+<circle cx="430" cy="90" r="90" fill="#F59E0B" opacity="0.28"/>
+<circle cx="760" cy="200" r="150" fill="#C9503A" opacity="0.3"/>
+<circle cx="1080" cy="110" r="100" fill="#16A34A" opacity="0.18"/>
+<circle cx="1350" cy="230" r="140" fill="#E14434" opacity="0.3"/>
+<circle cx="260" cy="420" r="110" fill="#F97316" opacity="0.22"/>
+<circle cx="620" cy="480" r="160" fill="#B5392C" opacity="0.32"/>
+<circle cx="980" cy="430" r="100" fill="#F5A623" opacity="0.2"/>
+<circle cx="1290" cy="500" r="130" fill="#7A2418" opacity="0.45"/>
+<circle cx="80" cy="560" r="90" fill="#D97706" opacity="0.18"/></g>
+<circle cx="240" cy="300" r="70" fill="none" stroke="#FFF" stroke-opacity="0.07" stroke-width="10"/>
+<circle cx="240" cy="300" r="38.5" fill="none" stroke="#FFF" stroke-opacity="0.05" stroke-width="4"/>
+<circle cx="700" cy="170" r="55" fill="none" stroke="#FFF" stroke-opacity="0.07" stroke-width="10"/>
+<circle cx="700" cy="170" r="30.250000000000004" fill="none" stroke="#FFF" stroke-opacity="0.05" stroke-width="4"/>
+<circle cx="1150" cy="330" r="80" fill="none" stroke="#FFF" stroke-opacity="0.07" stroke-width="10"/>
+<circle cx="1150" cy="330" r="44" fill="none" stroke="#FFF" stroke-opacity="0.05" stroke-width="4"/>
+<circle cx="480" cy="540" r="60" fill="none" stroke="#FFF" stroke-opacity="0.07" stroke-width="10"/>
+<circle cx="480" cy="540" r="33" fill="none" stroke="#FFF" stroke-opacity="0.05" stroke-width="4"/>
+<circle cx="1390" cy="120" r="45" fill="none" stroke="#FFF" stroke-opacity="0.07" stroke-width="10"/>
+<circle cx="1390" cy="120" r="24.750000000000004" fill="none" stroke="#FFF" stroke-opacity="0.05" stroke-width="4"/>
+<defs><filter id="b" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="46"/></filter></defs>
+</svg>

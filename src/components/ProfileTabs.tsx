@@ -6,6 +6,7 @@ const TABS = [
   ["overview", "نظرة عامة"],
   ["menu", "القائمة"],
   ["reviews", "التقييمات"],
+  ["photos", "الصور"],
   ["info", "معلومات"],
 ] as const;
 

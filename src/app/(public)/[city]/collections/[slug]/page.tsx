@@ -116,7 +116,7 @@ export default async function CollectionPage({ params }: Props) {
               {i + 1}
             </div>
             <div className="flex-1 grid sm:grid-cols-[280px_1fr] gap-4">
-              <RestaurantCard restaurant={item.restaurant} />
+              <RestaurantCard restaurant={item.restaurant} variant="compact" />
               {item.blurbAr && (
                 <p className="text-stone-600 text-sm leading-relaxed pt-1">
                   {item.blurbAr}
