@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { db } from "@/lib/db";
+import { DemoDataButton } from "@/components/DemoDataButton";
 
 export default async function AdminHome() {
   const [
@@ -48,6 +49,7 @@ export default async function AdminHome() {
           </Link>
         ))}
       </div>
+      <DemoDataButton />
     </div>
   );
 }
