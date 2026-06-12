@@ -1,0 +1,49 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "IBM Plex Sans Arabic", "Segoe UI", Tahoma, Arial, sans-serif;
+
+  /* Warm appetite palette — primary crimson red */
+  --color-primary-50: #fef2f2;
+  --color-primary-100: #fde3e3;
+  --color-primary-200: #fbc9c9;
+  --color-primary-300: #f7a3a3;
+  --color-primary-400: #f07070;
+  --color-primary-500: #e54545;
+  --color-primary-600: #d22b2b;
+  --color-primary-700: #b02020;
+  --color-primary-800: #921e1e;
+  --color-primary-900: #7a1f1f;
+
+  /* Burnt orange accent */
+  --color-accent-100: #ffedd5;
+  --color-accent-500: #f97316;
+  --color-accent-600: #ea580c;
+  --color-accent-700: #c2410c;
+}
+
+html {
+  /* Arabic script needs a slightly larger base size for legibility */
+  font-size: 17px;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-stone-50);
+  color: var(--color-stone-900);
+  line-height: 1.7;
+}
+
+/* Keep Latin fragments (phone numbers, prices) readable inside RTL text */
+.ltr-nums {
+  direction: ltr;
+  unicode-bidi: embed;
+}
+
+/* Hide scrollbars on horizontal chip rows while keeping scrollability */
+.scrollbar-none {
+  scrollbar-width: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
