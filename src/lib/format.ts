@@ -1,6 +1,11 @@
 import type { PriceBand } from "@/generated/prisma/enums";
 
-const nf = new Intl.NumberFormat("ar-SY-u-nu-latn");
+// Arabic-Indic numerals (٠١٢٣…) per the design spec
+const nf = new Intl.NumberFormat("ar-SY");
+
+export function formatNum(n: number): string {
+  return nf.format(n);
+}
 
 export function formatSyp(amount: number): string {
   return `${nf.format(amount)} ل.س`;
@@ -84,12 +89,34 @@ export function isOpenNow(hours: OpeningHours | null | undefined): boolean | nul
   return false;
 }
 
+/** Today's closing time as a display string ("١٢ منتصف الليل" style left to caller). */
+export function todayHours(
+  hours: OpeningHours | null | undefined
+): { open: string; close: string } | null {
+  if (!hours) return null;
+  const { day } = nowInDamascus();
+  return hours[String(day)] ?? null;
+}
+
+export function todayIndex(): number {
+  return nowInDamascus().day;
+}
+
+/** "14:30" → "٢:٣٠ م" (Damascus-style 12h with Arabic digits). */
+export function formatTime(hhmm: string): string {
+  const [h, m] = hhmm.split(":").map(Number);
+  const period = h < 12 ? "ص" : "م";
+  const h12 = h % 12 === 0 ? 12 : h % 12;
+  const mm = m ? `:${nf.format(m).padStart(2, "٠")}` : "";
+  return `${nf.format(h12)}${mm} ${period}`;
+}
+
 export function formatRating(value: number): string {
-  return value.toFixed(1);
+  return nf.format(Math.round(value * 10) / 10);
 }
 
 export function formatDateAr(date: Date): string {
-  return new Intl.DateTimeFormat("ar-SY-u-nu-latn", {
+  return new Intl.DateTimeFormat("ar-SY", {
     day: "numeric",
     month: "long",
     year: "numeric",

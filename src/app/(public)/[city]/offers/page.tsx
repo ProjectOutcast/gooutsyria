@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { getCity, getActiveOffers } from "@/lib/queries";
 import { formatDateAr } from "@/lib/format";
-import { RatingBadge } from "@/components/RatingStars";
+import { RatingPill } from "@/components/RatingStars";
 
 export const dynamic = "force-dynamic";
 
@@ -29,10 +29,15 @@ export default async function OffersPage({ params }: Props) {
   const offers = await getActiveOffers(city, 60);
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold">🔥 عروض {cityRow.nameAr} الحالية</h1>
-      <p className="text-stone-500 text-sm mt-1 mb-6">
-        خصومات وعروض سارية الآن — اتصل أو راسل المطعم مباشرة للاستفادة
+    <div className="max-w-[1240px] mx-auto px-7 py-7">
+      <nav className="text-[13px] text-muted mb-3" aria-label="مسار التنقل">
+        <Link href="/" className="hover:text-primary-500">الرئيسية</Link>
+        <span className="mx-1.5">‹</span>
+        <span className="text-ink font-semibold">العروض</span>
+      </nav>
+      <h1 className="text-[30px] font-bold">🔥 عروض {cityRow.nameAr} الحالية</h1>
+      <p className="text-ink2 text-[15px] mt-1 mb-7">
+        خصومات وعروض سارية الآن — اتصل أو راسل المطعم مباشرة للاستفادة.
       </p>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {offers.map((o) => {
@@ -41,9 +46,9 @@ export default async function OffersPage({ params }: Props) {
             <Link
               key={o.id}
               href={`/${city}/restaurant/${o.restaurant.slug}`}
-              className="group bg-white border border-stone-200 rounded-2xl overflow-hidden hover:shadow-lg transition"
+              className="group bg-white border border-hairline rounded-2xl overflow-hidden transition hover:-translate-y-1 hover:shadow-card"
             >
-              <div className="relative aspect-[16/8] bg-stone-100">
+              <div className="relative aspect-[16/8] bg-chipbg">
                 {photo && (
                   <Image
                     src={photo.url}
@@ -53,25 +58,23 @@ export default async function OffersPage({ params }: Props) {
                     className="object-cover"
                   />
                 )}
-                <span className="absolute top-2 start-2 bg-accent-600 text-white text-xs font-bold rounded-full px-2.5 py-1">
+                <span className="absolute top-2.5 start-2.5 bg-primary-500 text-white text-xs font-bold rounded-full px-3 py-1 shadow-accent">
                   {o.titleAr}
                 </span>
               </div>
               <div className="p-4">
-                <h2 className="font-bold group-hover:text-primary-700 transition-colors">
+                <h2 className="font-bold group-hover:text-primary-500 transition-colors">
                   {o.restaurant.nameAr}
                 </h2>
                 {o.descAr && (
-                  <p className="text-sm text-stone-600 mt-1 line-clamp-2">
-                    {o.descAr}
-                  </p>
+                  <p className="text-sm text-ink2 mt-1 line-clamp-2">{o.descAr}</p>
                 )}
                 <div className="flex items-center justify-between mt-3">
-                  <RatingBadge
+                  <RatingPill
                     value={o.restaurant.avgRating}
                     count={o.restaurant.ratingCount}
                   />
-                  <span className="text-xs text-stone-500">
+                  <span className="text-[12px] text-muted">
                     حتى {formatDateAr(o.endsAt)}
                   </span>
                 </div>
@@ -81,7 +84,9 @@ export default async function OffersPage({ params }: Props) {
         })}
       </div>
       {offers.length === 0 && (
-        <p className="text-stone-500">لا توجد عروض سارية حالياً — عُد قريباً!</p>
+        <p className="text-ink2 bg-white border border-hairline rounded-2xl p-8 text-center">
+          لا توجد عروض سارية حالياً — عُد قريباً!
+        </p>
       )}
     </div>
   );

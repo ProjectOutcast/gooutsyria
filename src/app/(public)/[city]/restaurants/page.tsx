@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
+import { db } from "@/lib/db";
 import { getCity } from "@/lib/queries";
 import { parseFilters, type RawSearchParams } from "@/lib/searchParams";
 import { RestaurantListing } from "@/components/RestaurantListing";
 import { SearchBar } from "@/components/SearchBar";
+import { formatNum } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
 
@@ -30,23 +33,50 @@ export default async function RestaurantsPage({ params, searchParams }: Props) {
 
   const raw = await searchParams;
   const filters = parseFilters(raw);
+  const [neighborhoods, total] = await Promise.all([
+    db.neighborhood.findMany({
+      where: { cityId: cityRow.id },
+      orderBy: { nameAr: "asc" },
+      select: { slug: true, nameAr: true },
+    }),
+    db.restaurant.count({ where: { status: "APPROVED", cityId: cityRow.id } }),
+  ]);
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold">مطاعم {cityRow.nameAr}</h1>
-      <p className="text-stone-500 text-sm mt-1 mb-5">
-        دليلك الكامل لمطاعم وكافيهات {cityRow.nameAr} — ابحث، قارن، واختر طلعتك
-        القادمة
-      </p>
-      <div className="max-w-xl mb-5">
-        <SearchBar defaultValue={filters.q ?? ""} />
+    <div>
+      {/* compact search strip */}
+      <div className="bg-white border-b border-hairline">
+        <div className="max-w-[1240px] mx-auto px-7 py-3">
+          <SearchBar
+            defaultValue={filters.q ?? ""}
+            defaultNeighborhood={filters.neighborhood ?? ""}
+            neighborhoods={neighborhoods}
+          />
+        </div>
       </div>
-      <RestaurantListing
-        citySlug={city}
-        filters={filters}
-        rawParams={raw}
-        basePath={`/${city}/restaurants`}
-      />
+
+      <div className="max-w-[1240px] mx-auto px-7 py-7">
+        <nav className="text-[13px] text-muted mb-3" aria-label="مسار التنقل">
+          <Link href="/" className="hover:text-primary-500">الرئيسية</Link>
+          <span className="mx-1.5">‹</span>
+          <span>{cityRow.nameAr}</span>
+          <span className="mx-1.5">‹</span>
+          <span className="text-ink font-semibold">المطاعم</span>
+        </nav>
+
+        <h1 className="text-[30px] font-bold">مطاعم في {cityRow.nameAr}</h1>
+        <p className="text-ink2 text-[15px] mt-1 mb-7">
+          {formatNum(total)} مكان — مرتّبة حسب الأكثر صلة. مشاوي، مأكولات شامية،
+          كافيهات وأكثر.
+        </p>
+
+        <RestaurantListing
+          citySlug={city}
+          filters={filters}
+          rawParams={raw}
+          basePath={`/${city}/restaurants`}
+        />
+      </div>
     </div>
   );
 }

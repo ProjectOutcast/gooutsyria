@@ -1,3 +1,6 @@
+import { formatNum, formatRating } from "@/lib/format";
+
+/** Amber stars — used ONLY inside reviews lists/breakdowns per the design. */
 export function RatingStars({
   value,
   size = "text-sm",
@@ -7,33 +10,70 @@ export function RatingStars({
 }) {
   const rounded = Math.round(value);
   return (
-    <span className={`${size} text-amber-500 leading-none`} aria-hidden>
+    <span className={`${size} text-star leading-none`} aria-hidden>
       {"★".repeat(rounded)}
-      <span className="text-stone-300">{"★".repeat(5 - rounded)}</span>
+      <span className="text-hairline2">{"★".repeat(5 - rounded)}</span>
     </span>
   );
 }
 
-export function RatingBadge({
+/** Green rating pill — the primary rating display everywhere else. */
+export function RatingPill({
   value,
   count,
+  showCount = false,
+  size = "md",
 }: {
   value: number;
   count: number;
+  showCount?: boolean;
+  size?: "md" | "lg";
 }) {
   if (count === 0) {
-    return <span className="text-xs text-stone-500">لا تقييمات بعد</span>;
+    return <span className="text-xs text-muted whitespace-nowrap">جديد</span>;
   }
-  const color =
-    value >= 4 ? "bg-green-700" : value >= 3 ? "bg-amber-600" : "bg-primary-700";
   return (
     <span className="inline-flex items-center gap-1.5">
       <span
-        className={`${color} text-white text-xs font-bold rounded-md px-1.5 py-0.5 ltr-nums`}
+        className={`inline-flex items-center gap-1 bg-success text-white font-bold rounded-lg ${
+          size === "lg" ? "text-base px-2.5 py-1" : "text-xs px-1.5 py-0.5"
+        }`}
       >
-        {value.toFixed(1)} ★
+        <svg
+          width={size === "lg" ? 13 : 10}
+          height={size === "lg" ? 13 : 10}
+          viewBox="0 0 24 24"
+          fill="#fff"
+          stroke="none"
+        >
+          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+        </svg>
+        {formatRating(value)}
       </span>
-      <span className="text-xs text-stone-500">({count})</span>
+      {showCount && (
+        <span className="text-xs text-muted">{formatNum(count)} تقييم</span>
+      )}
+    </span>
+  );
+}
+
+export function OpenStatus({
+  open,
+  closeTime,
+}: {
+  open: boolean | null;
+  closeTime?: string | null;
+}) {
+  if (open === null) return null;
+  return open ? (
+    <span className="inline-flex items-center gap-1 text-xs font-semibold text-success whitespace-nowrap">
+      <span className="w-1.5 h-1.5 rounded-full bg-success" />
+      مفتوح الآن{closeTime ? ` · يغلق ${closeTime}` : ""}
+    </span>
+  ) : (
+    <span className="inline-flex items-center gap-1 text-xs font-semibold text-warn whitespace-nowrap">
+      <span className="w-1.5 h-1.5 rounded-full bg-warn" />
+      مغلق الآن
     </span>
   );
 }
