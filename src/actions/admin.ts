@@ -308,3 +308,23 @@ export async function setUserRole(formData: FormData) {
   await db.user.update({ where: { id }, data: { role } });
   revalidatePath("/admin/users");
 }
+
+// --- Demo data ---
+
+export type DemoDataState = { ok?: boolean; error?: string; summary?: string };
+
+export async function generateDemoData(): Promise<DemoDataState> {
+  await requireAdmin();
+  try {
+    const { seedDemoData } = await import("@/lib/demo-seed");
+    const result = await seedDemoData(db);
+    revalidatePath("/", "layout");
+    return {
+      ok: true,
+      summary: `تمت إضافة ${result.createdRestaurants} مطعماً و${result.createdCollections} قوائم مختارة (تم تخطي ${result.skippedRestaurants} موجود مسبقاً)`,
+    };
+  } catch (err) {
+    console.error("demo data generation failed:", err);
+    return { error: "فشل توليد البيانات التجريبية — راجع سجلات الخادم" };
+  }
+}
