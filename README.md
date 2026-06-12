@@ -78,8 +78,21 @@ npm run dev
 3. **Photo uploads:** add a Volume mounted at `/data` and set `UPLOAD_DIR=/data/uploads`.
 4. (Optional) Google sign-in: set `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET`
    (authorized redirect: `https://<domain>/api/auth/callback/google`).
-5. Seed production once (Railway shell): `npx tsx prisma/seed.ts` — or skip and add
-   real restaurants through `/admin`.
+5. Seed demo data once (optional) — from your **local machine**, pointing at the
+   Railway database's public URL (Postgres service → Connect → Public Network):
+   ```bash
+   DATABASE_URL="<railway-public-postgres-url>" npm run db:seed
+   ```
+   Or skip seeding and add real restaurants through `/admin`.
+
+### Troubleshooting a failed deploy
+
+- **Healthcheck fails / app never responds**: open the service's **Deploy Logs**
+  (not Build Logs). The start command runs `prisma migrate deploy` first — if
+  `DATABASE_URL` is missing or wrong, it exits before the server starts.
+- `/api/health` returns `503`: server is up but can't reach the database —
+  check the `DATABASE_URL` reference variable.
+- Auth errors (500) on login: `AUTH_SECRET` is not set.
 
 ## Performance notes (Syria-specific)
 
