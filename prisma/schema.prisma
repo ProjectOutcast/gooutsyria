@@ -1,0 +1,344 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  USER
+  OWNER
+  ADMIN
+}
+
+enum ListingStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  ARCHIVED
+}
+
+enum ReviewStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum ClaimStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum PriceBand {
+  CHEAP
+  MODERATE
+  EXPENSIVE
+  LUXURY
+}
+
+enum PlanTier {
+  FREE
+  PRO
+}
+
+enum PhotoKind {
+  EXTERIOR
+  INTERIOR
+  FOOD
+  MENU
+}
+
+enum FeaturedSlot {
+  HOME
+  CUISINE
+  SEARCH
+}
+
+enum SponsorPlacement {
+  HOME_BANNER
+  COLLECTION
+  SEARCH_BANNER
+}
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String?
+  image        String?
+  role         Role     @default(USER)
+  createdAt    DateTime @default(now())
+
+  reviews     Review[]
+  claims      OwnerClaim[]
+  restaurants Restaurant[] @relation("OwnerRestaurants")
+}
+
+model City {
+  id     String  @id @default(cuid())
+  slug   String  @unique
+  nameAr String
+  active Boolean @default(true)
+
+  neighborhoods Neighborhood[]
+  restaurants   Restaurant[]
+  collections   Collection[]
+}
+
+model Neighborhood {
+  id     String @id @default(cuid())
+  slug   String
+  nameAr String
+  cityId String
+  city   City   @relation(fields: [cityId], references: [id])
+
+  restaurants Restaurant[]
+
+  @@unique([cityId, slug])
+}
+
+model Cuisine {
+  id     String  @id @default(cuid())
+  slug   String  @unique
+  nameAr String
+  icon   String?
+
+  restaurants RestaurantCuisine[]
+  featured    FeaturedPlacement[]
+}
+
+model Feature {
+  id     String  @id @default(cuid())
+  slug   String  @unique
+  nameAr String
+  icon   String?
+
+  restaurants RestaurantFeature[]
+}
+
+model Restaurant {
+  id          String  @id @default(cuid())
+  slug        String  @unique
+  nameAr      String
+  nameEn      String?
+  description String?
+  phone       String?
+  whatsapp    String?
+  website     String?
+  instagram   String?
+  facebook    String?
+
+  cityId         String
+  city           City          @relation(fields: [cityId], references: [id])
+  neighborhoodId String?
+  neighborhood   Neighborhood? @relation(fields: [neighborhoodId], references: [id])
+  address        String?
+  lat            Float?
+  lng            Float?
+
+  priceBand    PriceBand @default(MODERATE)
+  avgRating    Float     @default(0)
+  ratingCount  Int       @default(0)
+  openingHours Json?
+
+  status   ListingStatus @default(PENDING)
+  verified Boolean       @default(false)
+  tier     PlanTier      @default(FREE)
+
+  ownerId String?
+  owner   User?   @relation("OwnerRestaurants", fields: [ownerId], references: [id])
+
+  viewCount       Int @default(0)
+  callClicks      Int @default(0)
+  whatsappClicks  Int @default(0)
+  directionClicks Int @default(0)
+
+  cuisines        RestaurantCuisine[]
+  features        RestaurantFeature[]
+  menuSections    MenuSection[]
+  photos          Photo[]
+  reviews         Review[]
+  offers          Offer[]
+  claims          OwnerClaim[]
+  collectionItems CollectionItem[]
+  featured        FeaturedPlacement[]
+  metrics         MetricDaily[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([cityId, status])
+  @@index([neighborhoodId])
+}
+
+model RestaurantCuisine {
+  restaurantId String
+  cuisineId    String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  cuisine      Cuisine    @relation(fields: [cuisineId], references: [id], onDelete: Cascade)
+
+  @@id([restaurantId, cuisineId])
+}
+
+model RestaurantFeature {
+  restaurantId String
+  featureId    String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  feature      Feature    @relation(fields: [featureId], references: [id], onDelete: Cascade)
+
+  @@id([restaurantId, featureId])
+}
+
+model MenuSection {
+  id           String     @id @default(cuid())
+  restaurantId String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  nameAr       String
+  sortOrder    Int        @default(0)
+
+  items MenuItem[]
+}
+
+model MenuItem {
+  id        String      @id @default(cuid())
+  sectionId String
+  section   MenuSection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  nameAr    String
+  descAr    String?
+  priceSyp  Int
+  popular   Boolean     @default(false)
+  sortOrder Int         @default(0)
+}
+
+model Photo {
+  id           String     @id @default(cuid())
+  restaurantId String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  url          String
+  alt          String?
+  kind         PhotoKind  @default(FOOD)
+  sortOrder    Int        @default(0)
+  createdAt    DateTime   @default(now())
+}
+
+model Review {
+  id           String       @id @default(cuid())
+  restaurantId String
+  restaurant   Restaurant   @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  userId       String
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  rating       Int
+  text         String
+  status       ReviewStatus @default(PENDING)
+  ownerReply   String?
+  repliedAt    DateTime?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  @@unique([restaurantId, userId])
+  @@index([restaurantId, status])
+}
+
+model Offer {
+  id           String     @id @default(cuid())
+  restaurantId String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  titleAr      String
+  descAr       String?
+  startsAt     DateTime
+  endsAt       DateTime
+  active       Boolean    @default(true)
+  createdAt    DateTime   @default(now())
+
+  @@index([endsAt, active])
+}
+
+model Collection {
+  id         String  @id @default(cuid())
+  slug       String  @unique
+  titleAr    String
+  descAr     String?
+  coverImage String?
+  cityId     String
+  city       City    @relation(fields: [cityId], references: [id])
+  published  Boolean @default(false)
+  sortOrder  Int     @default(0)
+
+  items    CollectionItem[]
+  sponsors SponsorSlot[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model CollectionItem {
+  id           String     @id @default(cuid())
+  collectionId String
+  collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  restaurantId String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  blurbAr      String?
+  sortOrder    Int        @default(0)
+
+  @@unique([collectionId, restaurantId])
+}
+
+model FeaturedPlacement {
+  id           String       @id @default(cuid())
+  restaurantId String
+  restaurant   Restaurant   @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  slot         FeaturedSlot
+  cuisineId    String?
+  cuisine      Cuisine?     @relation(fields: [cuisineId], references: [id])
+  startsAt     DateTime
+  endsAt       DateTime
+  notes        String?
+  createdAt    DateTime     @default(now())
+
+  @@index([slot, startsAt, endsAt])
+}
+
+model SponsorSlot {
+  id           String           @id @default(cuid())
+  name         String
+  imageUrl     String?
+  linkUrl      String?
+  placement    SponsorPlacement
+  collectionId String?
+  collection   Collection?      @relation(fields: [collectionId], references: [id])
+  startsAt     DateTime
+  endsAt       DateTime
+  active       Boolean          @default(true)
+  createdAt    DateTime         @default(now())
+}
+
+model OwnerClaim {
+  id           String      @id @default(cuid())
+  restaurantId String
+  restaurant   Restaurant  @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  userId       String
+  user         User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  phone        String
+  message      String?
+  status       ClaimStatus @default(PENDING)
+  createdAt    DateTime    @default(now())
+  decidedAt    DateTime?
+
+  @@index([status])
+}
+
+model MetricDaily {
+  id           String     @id @default(cuid())
+  restaurantId String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  date         DateTime   @db.Date
+  views        Int        @default(0)
+  calls        Int        @default(0)
+  whatsapps    Int        @default(0)
+  directions   Int        @default(0)
+
+  @@unique([restaurantId, date])
+}
