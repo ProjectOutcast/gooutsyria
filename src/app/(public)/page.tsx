@@ -11,6 +11,8 @@ import {
   RESTAURANT_CARD_INCLUDE,
 } from "@/lib/queries";
 import { RestaurantCard } from "@/components/RestaurantCard";
+import { Carousel } from "@/components/Carousel";
+import { CategoryCard } from "@/components/CategoryCard";
 import { SearchBar } from "@/components/SearchBar";
 import {
   formatNum,
@@ -82,6 +84,11 @@ export default async function HomePage() {
     .filter((r) => isOpenNow(r.openingHours as OpeningHours | null))
     .slice(0, 5);
 
+  // categories shown on the home carousel: populated cuisines, most first
+  const categoryList = cuisines
+    .filter((c) => c._count.restaurants > 0)
+    .sort((a, b) => b._count.restaurants - a._count.restaurants);
+
   const allIds = [
     ...featured.map((r) => r.id),
     ...open24h.map((r) => r.id),
@@ -149,26 +156,30 @@ export default async function HomePage() {
         <section className="mt-14">
           <div className="flex items-baseline justify-between mb-5">
             <h2 className="text-[24px] font-bold">تصفّح حسب التصنيف</h2>
-            <Link href="/damascus/restaurants" className="text-sm text-primary-500 font-semibold hover:underline">
+            <Link href="/categories" className="text-sm text-primary-500 font-semibold hover:underline">
               كل التصنيفات
             </Link>
           </div>
-          <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-3.5">
-            {cuisines.map((c) => (
-              <Link
+          <Carousel
+            items={categoryList.map((c) => (
+              <CategoryCard
                 key={c.id}
+                slug={c.slug}
+                nameAr={c.nameAr}
+                count={c._count.restaurants}
                 href={`/damascus/cuisine/${c.slug}`}
-                className="bg-white border border-hairline rounded-2xl p-4 text-center transition duration-150 hover:-translate-y-0.5 hover:shadow-card"
-              >
-                <span className="mx-auto w-[54px] h-[54px] grid place-items-center rounded-2xl bg-primary-50 text-2xl">
-                  {c.icon}
-                </span>
-                <span className="block font-semibold text-sm mt-2.5">{c.nameAr}</span>
-                <span className="block text-[12px] text-muted2 mt-0.5">
-                  {formatNum(c._count.restaurants)} مكان
-                </span>
-              </Link>
+              />
             ))}
+            itemClassName="w-[240px] sm:w-[280px]"
+          />
+          <div className="mt-5">
+            <Link
+              href="/categories"
+              className="inline-flex items-center gap-2 bg-ink text-white font-bold rounded-xl px-5 py-2.5 hover:bg-primary-700 transition-colors"
+            >
+              تصفّح كل التصنيفات
+              <Chevron dir="left" size={16} />
+            </Link>
           </div>
         </section>
 
