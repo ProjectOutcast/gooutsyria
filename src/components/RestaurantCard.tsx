@@ -135,7 +135,7 @@ export function RestaurantCard({
 
           {!compact && restaurant.features.length > 0 && (
             <div className="flex flex-wrap gap-1.5 mt-2.5">
-              {restaurant.features.slice(0, 3).map((f) => (
+              {restaurant.features.slice(0, 2).map((f) => (
                 <span
                   key={f.featureId}
                   className={`text-[12px] rounded-full px-2.5 py-0.5 ${
@@ -145,6 +145,16 @@ export function RestaurantCard({
                   {f.feature.nameAr}
                 </span>
               ))}
+              {restaurant.features.length > 2 && (
+                <span
+                  dir="ltr"
+                  className={`text-[12px] font-semibold rounded-full px-2.5 py-0.5 ${
+                    dark ? "bg-white/10 text-white/60" : "bg-chipbg text-ink2"
+                  }`}
+                >
+                  +{formatNum(restaurant.features.length - 2)}
+                </span>
+              )}
             </div>
           )}
 

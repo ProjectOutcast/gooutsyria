@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Chevron } from "@/components/Chevron";
 import Image from "next/image";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
@@ -269,7 +270,7 @@ export default async function HomePage() {
                       <span className="text-muted2"> · {formatNum(r.ratingCount)} تقييم</span>
                     </span>
                   </span>
-                  <span className="text-muted2 text-xl shrink-0">‹</span>
+                  <Chevron dir="left" size={18} className="text-muted2 shrink-0" />
                 </Link>
               ))}
               {openNow.length === 0 && (

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { formatNum } from "@/lib/format";
+import { Chevron } from "./Chevron";
 
 export function Pagination({
   page,
@@ -51,7 +52,7 @@ export function Pagination({
     <nav className="flex items-center justify-center gap-2 mt-10" aria-label="الصفحات">
       {page > 1 && (
         <Link href={buildHref(page - 1)} className={navBtn} aria-label="السابق">
-          ›
+          <Chevron dir="right" />
         </Link>
       )}
       {numbers.map((n, i) =>
@@ -76,7 +77,7 @@ export function Pagination({
       )}
       {page < pages && (
         <Link href={buildHref(page + 1)} className={navBtn} aria-label="التالي">
-          ‹
+          <Chevron dir="left" />
         </Link>
       )}
     </nav>

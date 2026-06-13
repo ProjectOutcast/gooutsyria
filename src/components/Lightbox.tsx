@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect } from "react";
+import { Chevron } from "./Chevron";
 
 export type LightboxImage = { url: string; alt?: string | null; label?: string | null };
 
@@ -69,17 +70,17 @@ export function Lightbox({
             type="button"
             onClick={(e) => { e.stopPropagation(); prev(); }}
             aria-label="السابق"
-            className="absolute start-3 top-1/2 -translate-y-1/2 w-11 h-11 grid place-items-center rounded-full bg-white/10 hover:bg-white/20 text-white text-2xl"
+            className="absolute start-3 top-1/2 -translate-y-1/2 w-11 h-11 grid place-items-center rounded-full bg-white/10 hover:bg-white/20 text-white"
           >
-            ‹
+            <Chevron dir="right" size={26} />
           </button>
           <button
             type="button"
             onClick={(e) => { e.stopPropagation(); next(); }}
             aria-label="التالي"
-            className="absolute end-3 top-1/2 -translate-y-1/2 w-11 h-11 grid place-items-center rounded-full bg-white/10 hover:bg-white/20 text-white text-2xl"
+            className="absolute end-3 top-1/2 -translate-y-1/2 w-11 h-11 grid place-items-center rounded-full bg-white/10 hover:bg-white/20 text-white"
           >
-            ›
+            <Chevron dir="left" size={26} />
           </button>
         </>
       )}

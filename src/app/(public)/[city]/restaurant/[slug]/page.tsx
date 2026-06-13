@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { after } from "next/server";
 import Link from "next/link";
+import { Chevron } from "@/components/Chevron";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { RESTAURANT_CARD_INCLUDE, getSavedIds, getActiveSponsor } from "@/lib/queries";
@@ -216,13 +217,13 @@ export default async function RestaurantPage({ params }: Props) {
       {/* Breadcrumb */}
       <nav className="text-[13px] text-muted mb-4" aria-label="مسار التنقل">
         <Link href="/" className="hover:text-primary-500">الرئيسية</Link>
-        <span className="mx-1.5">‹</span>
+        <Chevron dir="left" size={13} className="mx-1.5 inline-block align-middle" />
         <Link href={`/${r.city.slug}/restaurants`} className="hover:text-primary-500">
           مطاعم {r.city.nameAr}
         </Link>
         {r.cuisines[0] && (
           <>
-            <span className="mx-1.5">‹</span>
+            <Chevron dir="left" size={13} className="mx-1.5 inline-block align-middle" />
             <Link
               href={`/${r.city.slug}/cuisine/${r.cuisines[0].cuisine.slug}`}
               className="hover:text-primary-500"
@@ -231,7 +232,7 @@ export default async function RestaurantPage({ params }: Props) {
             </Link>
           </>
         )}
-        <span className="mx-1.5">‹</span>
+        <Chevron dir="left" size={13} className="mx-1.5 inline-block align-middle" />
         <span className="text-ink font-semibold">{r.nameAr}</span>
       </nav>
 
