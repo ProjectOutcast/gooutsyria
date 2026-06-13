@@ -135,3 +135,20 @@ export function formatDateAr(date: Date): string {
     year: "numeric",
   }).format(date);
 }
+
+/** Relative time in Arabic ("اليوم" / "أمس" / "قبل ٣ أيام" / "قبل أسبوعين"). */
+export function formatRelativeAr(date: Date): string {
+  const days = Math.floor((Date.now() - date.getTime()) / 86400000);
+  if (days <= 0) return "اليوم";
+  if (days === 1) return "أمس";
+  if (days < 7) return `قبل ${nf.format(days)} أيام`;
+  if (days < 30) {
+    const w = Math.floor(days / 7);
+    return `قبل ${w === 1 ? "أسبوع" : w === 2 ? "أسبوعين" : `${nf.format(w)} أسابيع`}`;
+  }
+  if (days < 365) {
+    const m = Math.floor(days / 30);
+    return `قبل ${m === 1 ? "شهر" : m === 2 ? "شهرين" : `${nf.format(m)} أشهر`}`;
+  }
+  return formatDateAr(date);
+}
