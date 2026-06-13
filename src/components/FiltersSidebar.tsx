@@ -96,10 +96,12 @@ function SidebarInner({
   };
 
   const visibleCuisines = showAllCuisines ? cuisines : cuisines.slice(0, 7);
+  const openActive = sp.get("open") === "1";
   const hasFilters =
     current("features").length > 0 ||
     current("cuisine").length > 0 ||
     current("price").length > 0 ||
+    openActive ||
     sp.get("rating");
 
   return (
@@ -123,6 +125,29 @@ function SidebarInner({
       </div>
 
       <div className="space-y-5">
+        <button
+          type="button"
+          onClick={() => setSingle("open", "1")}
+          aria-pressed={openActive}
+          className="flex items-center justify-between w-full pb-4 border-b border-hairline"
+        >
+          <span className="flex items-center gap-2 text-[15px] font-bold text-ink">
+            <span className={`w-2 h-2 rounded-full ${openActive ? "bg-success" : "bg-muted2"}`} />
+            مفتوح الآن
+          </span>
+          <span
+            className={`flex h-5 w-9 items-center rounded-full p-0.5 transition-colors ${
+              openActive ? "bg-success" : "bg-hairline2"
+            }`}
+          >
+            <span
+              className={`h-4 w-4 rounded-full bg-white shadow-sm transition-all ${
+                openActive ? "ms-auto" : ""
+              }`}
+            />
+          </span>
+        </button>
+
         <section>
           <h3 className="text-[13px] font-semibold text-muted mb-1.5">مميزات</h3>
           {features.map((f) => checkboxRow("features", f))}
