@@ -25,12 +25,55 @@ import {
 export const dynamic = "force-dynamic";
 
 const QUICK_CHIPS: [string, string, string][] = [
-  ["🍽️", "مفتوح الآن", "/damascus/restaurants?open=1"],
-  ["🌙", "يعمل ٢٤ ساعة", "/damascus/restaurants?features=24h"],
-  ["🏷️", "عروض اليوم", "/damascus/offers"],
-  ["💨", "أراكيل", "/damascus/restaurants?features=shisha"],
-  ["💻", "مساحات عمل", "/damascus/restaurants?features=workspace"],
+  ["open", "مفتوح الآن", "/damascus/restaurants?open=1"],
+  ["moon", "يعمل ٢٤ ساعة", "/damascus/restaurants?features=24h"],
+  ["tag", "عروض اليوم", "/damascus/offers"],
+  ["shisha", "أراكيل", "/damascus/restaurants?features=shisha"],
+  ["work", "مساحات عمل", "/damascus/restaurants?features=workspace"],
 ];
+
+function ChipIcon({ name }: { name: string }) {
+  return (
+    <svg
+      width="15"
+      height="15"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      {name === "open" && (
+        <>
+          <circle cx="12" cy="12" r="9" />
+          <path d="M12 7.5V12l3 1.5" />
+        </>
+      )}
+      {name === "moon" && <path d="M12 3a6.4 6.4 0 0 0 9 9 9 9 0 1 1-9-9Z" />}
+      {name === "tag" && (
+        <>
+          <path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8Z" />
+          <path d="M7 7h.01" />
+        </>
+      )}
+      {name === "shisha" && (
+        <>
+          <path d="M12.8 19.6A2 2 0 1 0 14 16H2" />
+          <path d="M17.5 8a2.5 2.5 0 1 1 2 4H2" />
+          <path d="M9.8 4.4A2 2 0 1 1 11 8H2" />
+        </>
+      )}
+      {name === "work" && (
+        <>
+          <rect x="3" y="4.5" width="18" height="12" rx="2" />
+          <path d="M2 20h20" />
+        </>
+      )}
+    </svg>
+  );
+}
 
 export default async function HomePage() {
   const session = await auth();
@@ -109,9 +152,13 @@ export default async function HomePage() {
             priority
           />
         ) : (
-          <div
-            className="absolute inset-0 bg-cover bg-center"
-            style={{ backgroundImage: "url(/hero-bg.svg)" }}
+          <Image
+            src="/placeholders/p9.jpg"
+            alt=""
+            fill
+            sizes="100vw"
+            className="object-cover"
+            priority
           />
         )}
         <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(20,13,11,.72),rgba(20,13,11,.5)_45%,rgba(20,13,11,.8))]" />
@@ -141,10 +188,12 @@ export default async function HomePage() {
               <Link
                 key={label}
                 href={href}
-                className="inline-flex items-center gap-1.5 bg-white/12 hover:bg-white/22 backdrop-blur border border-white/20 rounded-full px-4 py-1.5 text-sm font-medium transition"
+                className="inline-flex items-center gap-2 bg-ink/55 hover:bg-ink/75 backdrop-blur border border-white/10 rounded-full px-4 py-2 text-sm font-semibold transition-colors"
               >
-                <span className="text-primary-200">{icon}</span>
                 {label}
+                <span className="text-primary-300">
+                  <ChipIcon name={icon} />
+                </span>
               </Link>
             ))}
           </div>
