@@ -77,6 +77,7 @@ export async function RestaurantListing({
             count: c._count.restaurants,
           }))}
         hideCuisines={hideCuisines}
+        resultCount={result.total}
       />
 
       <div>
