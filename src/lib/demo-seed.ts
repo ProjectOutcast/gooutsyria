@@ -618,7 +618,7 @@ export async function seedDemoData(db: PrismaClient): Promise<SeedResult> {
         photos: {
           create: [
             ...def.photos.map((p, pi) => ({
-              url: `/placeholders/p${p}.svg`,
+              url: `/placeholders/p${p}.jpg`,
               alt: def.nameAr,
               kind: (pi === 0 ? "EXTERIOR" : pi === 1 ? "INTERIOR" : "FOOD") as
                 | "EXTERIOR"
@@ -713,7 +713,7 @@ export async function seedDemoData(db: PrismaClient): Promise<SeedResult> {
         cityId: damascus.id,
         published: true,
         sortOrder: sortOrder++,
-        coverImage: `/placeholders/p${items[0] + 1}.svg`,
+        coverImage: `/placeholders/p${items[0] + 1}.jpg`,
         items: {
           create: itemIds.map((x, j) => ({
             restaurantId: x.rid,
