@@ -125,7 +125,8 @@ export function formatTime(hhmm: string): string {
 }
 
 export function formatRating(value: number): string {
-  return nf.format(Math.round(value * 10) / 10);
+  // dot decimal separator even in the Arabic locale (٤٫٥ → ٤.٥)
+  return nf.format(Math.round(value * 10) / 10).replace(/٫/g, ".");
 }
 
 export function formatDateAr(date: Date): string {
