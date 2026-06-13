@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 
-const LINKS = [
+export const NAV_LINKS = [
   { href: "/damascus/restaurants", label: "المطاعم", match: "restaurants" },
   { href: "/damascus/cuisine/cafe", label: "الكافيهات", match: "cuisine/cafe" },
   { href: "/damascus/restaurants?features=shisha", label: "الأراكيل", match: "features=shisha" },
@@ -19,7 +19,7 @@ function NavInner() {
 
   return (
     <nav className="hidden lg:flex items-center gap-6 text-[15px] font-medium text-ink2">
-      {LINKS.map((l) => {
+      {NAV_LINKS.map((l) => {
         const active = l.match.includes("=")
           ? current.includes(l.match)
           : pathname.includes(l.match) && !current.includes("features=");
