@@ -48,7 +48,14 @@ export function Carousel({
     el.scrollBy({ left: forward ? -amount : amount, behavior: "smooth" });
   }
 
-  const arrowBase = `hidden sm:grid place-items-center absolute ${arrowTopClass} z-10 w-10 h-10 rounded-full bg-white border border-hairline shadow-card text-xl text-ink hover:text-primary-500 disabled:opacity-0 disabled:pointer-events-none transition`;
+  const arrowBase = `hidden sm:grid place-items-center absolute ${arrowTopClass} z-10 w-10 h-10 rounded-full bg-white border border-hairline shadow-card text-ink hover:text-primary-500 disabled:opacity-0 disabled:pointer-events-none transition`;
+
+  // SVG chevrons — not subject to RTL bidi mirroring like the ‹ › glyphs are
+  const chevron = (dir: "left" | "right") => (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d={dir === "left" ? "m15 18-6-6 6-6" : "m9 18 6-6-6-6"} />
+    </svg>
+  );
 
   return (
     <div className="relative">
@@ -63,25 +70,25 @@ export function Carousel({
         ))}
       </div>
 
-      {/* back — end side (left in RTL): the ‹ glyph points left */}
-      <button
-        type="button"
-        onClick={() => scroll(false)}
-        disabled={!canBack}
-        aria-label="السابق"
-        className={`${arrowBase} end-0 -translate-x-2`}
-      >
-        ‹
-      </button>
-      {/* forward (more) — start side (right in RTL): the › glyph points right */}
+      {/* forward (more): later items are to the LEFT in RTL — left edge, points left */}
       <button
         type="button"
         onClick={() => scroll(true)}
         disabled={!canFwd}
         aria-label="عرض المزيد"
+        className={`${arrowBase} end-0 -translate-x-2`}
+      >
+        {chevron("left")}
+      </button>
+      {/* back: earlier items are to the RIGHT in RTL — right edge, points right */}
+      <button
+        type="button"
+        onClick={() => scroll(false)}
+        disabled={!canBack}
+        aria-label="السابق"
         className={`${arrowBase} start-0 translate-x-2`}
       >
-        ›
+        {chevron("right")}
       </button>
     </div>
   );
