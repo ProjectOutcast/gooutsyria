@@ -1,11 +1,8 @@
-"use client";
-
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import { MainNav } from "./MainNav";
 import { HeaderActions } from "./HeaderActions";
 
-function Logo({ onDark }: { onDark: boolean }) {
+function Logo() {
   return (
     <Link href="/" className="flex items-center gap-2.5 shrink-0">
       <span className="w-[38px] h-[38px] rounded-xl bg-primary-500 grid place-items-center shadow-accent">
@@ -16,12 +13,10 @@ function Logo({ onDark }: { onDark: boolean }) {
         </svg>
       </span>
       <span className="leading-none">
-        <span className={`block font-bold text-[20px] ${onDark ? "text-white" : "text-ink"}`}>
-          Go Out <span className={onDark ? "text-primary-300" : "text-primary-500"}>Syria</span>
+        <span className="block font-bold text-[20px] text-white">
+          Go Out <span className="text-primary-300">Syria</span>
         </span>
-        <span className={`hidden sm:block text-[10px] mt-1 ${onDark ? "text-white/60" : "text-muted"}`}>
-          دليل مطاعم سوريا
-        </span>
+        <span className="hidden sm:block text-[10px] mt-1 text-white/60">دليل مطاعم سوريا</span>
       </span>
     </Link>
   );
@@ -32,31 +27,14 @@ export function HeaderShell({
 }: {
   user: { name: string | null; role: string } | null;
 }) {
-  const [scrolled, setScrolled] = useState(false);
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  const onDark = !scrolled;
-
   return (
-    <header
-      className={`sticky top-0 z-40 h-[67px] transition-colors duration-300 ${
-        scrolled
-          ? "bg-page/80 backdrop-blur-xl border-b border-hairline shadow-[0_2px_10px_rgba(20,13,11,0.05)]"
-          : "bg-ink border-b border-white/10"
-      }`}
-    >
+    <header className="sticky top-0 z-40 h-[67px] bg-ink border-b border-white/10">
       <div className="px-5 sm:px-8 h-full flex items-center justify-between gap-4">
         <div className="flex items-center gap-8 min-w-0">
-          <Logo onDark={onDark} />
-          <MainNav onDark={onDark} />
+          <Logo />
+          <MainNav onDark />
         </div>
-        <HeaderActions user={user} onDark={onDark} />
+        <HeaderActions user={user} onDark />
       </div>
     </header>
   );
