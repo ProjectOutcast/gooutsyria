@@ -9,6 +9,7 @@ import {
   formatSyp,
   formatNum,
   formatDateAr,
+  formatRelativeAr,
   formatTime,
   formatRating,
   isOpenNow,
@@ -27,6 +28,9 @@ import { ReviewForm } from "@/components/ReviewForm";
 import { PhotoGallery } from "@/components/PhotoGallery";
 import { MenuPages } from "@/components/MenuPages";
 import { ProfileTabs } from "@/components/ProfileTabs";
+import { Carousel } from "@/components/Carousel";
+
+const DISH_TINTS = ["#FFE3D6", "#E3F0D5", "#F3E4D8", "#FCEEDA"];
 
 export const dynamic = "force-dynamic";
 
@@ -157,7 +161,7 @@ export default async function RestaurantPage({ params }: Props) {
   const galleryPhotos = r.photos.filter((p) => p.kind !== "MENU");
   const menuPages = r.photos.filter((p) => p.kind === "MENU");
   const allItems = r.menuSections.flatMap((s) => s.items);
-  const popularDishes = allItems.filter((i) => i.popular).slice(0, 4);
+  const popularDishes = allItems.filter((i) => i.popular).slice(0, 12);
   // rough per-person estimate from the menu (a main + a side/drink)
   const perPerson =
     allItems.length >= 3
@@ -383,46 +387,50 @@ export default async function RestaurantPage({ params }: Props) {
             )}
           </section>
 
-          {/* Popular dishes */}
+          {/* Popular dishes — 4 per view, scroll/swipe for more */}
           {popularDishes.length > 0 && (
             <section className="bg-white border border-hairline rounded-2xl p-6">
               <h2 className="text-xl font-bold mb-4">🔥 الأطباق الأكثر طلباً</h2>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
-                {popularDishes.map((dish, i) => (
-                  <div key={dish.id} className="rounded-xl border border-hairline overflow-hidden">
+              <Carousel
+                arrowTopClass="top-[38%] -translate-y-1/2"
+                itemClassName="w-[46%] sm:w-[calc((100%-3*0.875rem)/4)]"
+                items={popularDishes.map((dish, i) => (
+                  <div key={dish.id}>
                     <div
-                      className="h-[120px] grid place-items-center text-3xl"
+                      className="aspect-[4/3] rounded-2xl grid place-items-center text-3xl"
                       style={{
-                        background: `linear-gradient(135deg, ${["#FFF0E9", "#F3E9E4", "#E6F5EE", "#FDF3DC"][i % 4]}, #fff)`,
+                        background: `linear-gradient(135deg, ${DISH_TINTS[i % DISH_TINTS.length]}, #fff)`,
                       }}
                     >
                       🍽
                     </div>
-                    <div className="p-3">
-                      <div className="font-semibold text-sm line-clamp-1">{dish.nameAr}</div>
+                    <div className="mt-2.5 px-0.5">
+                      <div className="font-semibold text-[15px] leading-snug">
+                        {dish.nameAr}
+                      </div>
                       <div className="text-primary-700 font-bold text-sm mt-1 ltr-nums">
                         {formatSyp(dish.priceSyp)}
                       </div>
                     </div>
                   </div>
                 ))}
-              </div>
+              />
             </section>
           )}
 
-          {/* Menu (hybrid: photographed pages + structured list) */}
+          {/* Digital menu — photographed pages (3 per view, scroll for more) */}
           <section id="menu" className="bg-white border border-hairline rounded-2xl p-6 scroll-mt-32">
             <div className="flex items-baseline justify-between mb-1">
-              <h2 className="text-xl font-bold">📖 القائمة</h2>
+              <h2 className="text-xl font-bold">📖 القائمة الرقمية</h2>
               <span className="text-[12px] text-muted2">
-                آخر تحديث {formatDateAr(r.updatedAt)}
+                آخر تحديث: {formatRelativeAr(r.updatedAt)}
               </span>
             </div>
 
-            {menuPages.length > 0 && (
+            {menuPages.length > 0 ? (
               <>
                 <p className="text-[13px] text-muted mb-4">
-                  صور القائمة كما يقدّمها المطعم — اضغط على أي صفحة للتكبير
+                  صور القائمة الكاملة كما يقدّمها المطعم — اضغط على أي صفحة للتكبير
                 </p>
                 <MenuPages
                   pages={menuPages.map((p) => ({
@@ -432,10 +440,8 @@ export default async function RestaurantPage({ params }: Props) {
                   }))}
                 />
               </>
-            )}
-
-            {r.menuSections.length > 0 && (
-              <div className={`space-y-6 ${menuPages.length > 0 ? "mt-7 pt-6 border-t border-hairline" : "mt-3"}`}>
+            ) : r.menuSections.length > 0 ? (
+              <div className="space-y-6 mt-3">
                 {r.menuSections.map((section) => (
                   <div key={section.id}>
                     <h3 className="font-bold text-primary-700 border-b border-hairline pb-1.5 mb-3">
@@ -467,9 +473,7 @@ export default async function RestaurantPage({ params }: Props) {
                   </div>
                 ))}
               </div>
-            )}
-
-            {menuPages.length === 0 && r.menuSections.length === 0 && (
+            ) : (
               <p className="text-sm text-muted mt-2">لم تُضف القائمة بعد.</p>
             )}
           </section>
@@ -506,7 +510,7 @@ export default async function RestaurantPage({ params }: Props) {
                       </span>
                       <span className="flex-1 h-2 bg-chipbg rounded-full overflow-hidden">
                         <span
-                          className="block h-full bg-primary-500 rounded-full"
+                          className="block h-full bg-star rounded-full"
                           style={{ width: `${(count / maxDist) * 100}%` }}
                         />
                       </span>
