@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Chevron } from "@/components/Chevron";
 import { db } from "@/lib/db";
 import { getCity } from "@/lib/queries";
 import { parseFilters, type RawSearchParams } from "@/lib/searchParams";
@@ -46,9 +47,9 @@ export default async function NeighborhoodPage({ params, searchParams }: Props) 
     <div className="max-w-[1240px] mx-auto px-7 py-7">
       <nav className="text-[13px] text-muted mb-3" aria-label="مسار التنقل">
         <Link href="/" className="hover:text-primary-500">الرئيسية</Link>
-        <span className="mx-1.5">‹</span>
+        <Chevron dir="left" size={13} className="mx-1.5 inline-block align-middle" />
         <Link href={`/${city}/restaurants`} className="hover:text-primary-500">{data.cityRow.nameAr}</Link>
-        <span className="mx-1.5">‹</span>
+        <Chevron dir="left" size={13} className="mx-1.5 inline-block align-middle" />
         <span className="text-ink font-semibold">{data.neighborhood.nameAr}</span>
       </nav>
 

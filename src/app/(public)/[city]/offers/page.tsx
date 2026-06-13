@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { Chevron } from "@/components/Chevron";
 import Image from "next/image";
 import { getCity, getActiveOffers } from "@/lib/queries";
 import { formatDateAr } from "@/lib/format";
@@ -32,7 +33,7 @@ export default async function OffersPage({ params }: Props) {
     <div className="max-w-[1240px] mx-auto px-7 py-7">
       <nav className="text-[13px] text-muted mb-3" aria-label="مسار التنقل">
         <Link href="/" className="hover:text-primary-500">الرئيسية</Link>
-        <span className="mx-1.5">‹</span>
+        <Chevron dir="left" size={13} className="mx-1.5 inline-block align-middle" />
         <span className="text-ink font-semibold">العروض</span>
       </nav>
       <h1 className="text-[30px] font-bold">🔥 عروض {cityRow.nameAr} الحالية</h1>
