@@ -763,33 +763,32 @@ export async function seedDemoData(db: PrismaClient): Promise<SeedResult> {
     createdCollections++;
   }
 
-  // --- featured placements + sponsor (only when none are active) ---
-  const activeFeatured = await db.featuredPlacement.count({
-    where: { endsAt: { gte: new Date() } },
-  });
-  if (activeFeatured === 0) {
-    const placements = [
-      { idx: 0, slot: "HOME" as const },
-      { idx: 12, slot: "HOME" as const },
-      { idx: 2, slot: "HOME" as const },
-      { idx: 5, slot: "HOME" as const },
-      { idx: 8, slot: "SEARCH" as const },
-      { idx: 3, slot: "CUISINE" as const, cuisineId: cu("italian") },
-    ];
-    for (const p of placements) {
-      const rid = restaurantId(p.idx);
-      if (!rid) continue;
-      await db.featuredPlacement.create({
-        data: {
-          restaurantId: rid,
-          slot: p.slot,
-          cuisineId: "cuisineId" in p ? p.cuisineId : null,
-          startsAt: inDays(-5),
-          endsAt: inDays(25),
-          notes: "بيانات تجريبية",
-        },
-      });
-    }
+  // --- featured placements: top up the demo set (idempotent per restaurant+slot) ---
+  const placements = [
+    { idx: 0, slot: "HOME" as const },
+    { idx: 12, slot: "HOME" as const },
+    { idx: 2, slot: "HOME" as const },
+    { idx: 5, slot: "HOME" as const },
+    { idx: 8, slot: "SEARCH" as const },
+    { idx: 3, slot: "CUISINE" as const, cuisineId: cu("italian") },
+  ];
+  for (const p of placements) {
+    const rid = restaurantId(p.idx);
+    if (!rid) continue;
+    const exists = await db.featuredPlacement.count({
+      where: { restaurantId: rid, slot: p.slot, endsAt: { gte: new Date() } },
+    });
+    if (exists > 0) continue;
+    await db.featuredPlacement.create({
+      data: {
+        restaurantId: rid,
+        slot: p.slot,
+        cuisineId: "cuisineId" in p ? p.cuisineId : null,
+        startsAt: inDays(-5),
+        endsAt: inDays(25),
+        notes: "بيانات تجريبية",
+      },
+    });
   }
 
   const activeSponsor = await db.sponsorSlot.count({
