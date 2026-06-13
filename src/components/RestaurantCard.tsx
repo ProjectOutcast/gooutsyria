@@ -7,7 +7,7 @@ import {
   isOpenNow,
   type OpeningHours,
 } from "@/lib/format";
-import { RatingPill } from "./RatingStars";
+import { RatingInline } from "./RatingStars";
 import { BookmarkButton } from "./BookmarkButton";
 
 export function RestaurantCard({
@@ -95,19 +95,28 @@ export function RestaurantCard({
         <div className="p-3.5 flex-1 flex flex-col">
           <div className="flex items-start justify-between gap-2">
             <h3
-              className={`font-semibold text-[17px] leading-snug line-clamp-1 group-hover:text-primary-500 transition-colors ${
+              className={`font-semibold text-[17px] leading-snug group-hover:text-primary-500 transition-colors flex items-center gap-1 min-w-0 ${
                 dark ? "text-white" : "text-ink"
               }`}
             >
-              {restaurant.nameAr}
-            </h3>
-            <span className="inline-flex items-center gap-1 shrink-0">
-              <RatingPill value={restaurant.avgRating} count={restaurant.ratingCount} />
-              {!compact && restaurant.ratingCount > 0 && (
-                <span className={`text-[12px] ${dark ? "text-white/50" : "text-muted2"}`}>
-                  ({formatNum(restaurant.ratingCount)})
-                </span>
+              <span className="truncate">{restaurant.nameAr}</span>
+              {restaurant.verified && (
+                <svg width="16" height="16" viewBox="0 0 24 24" className="shrink-0" aria-label="موثَّق">
+                  <path
+                    d="M12 1l2.5 2.1 3.2-.7 1.1 3.1 3.1 1.1-.7 3.2L23.3 12l-2.1 2.5.7 3.2-3.1 1.1-1.1 3.1-3.2-.7L12 23.3l-2.5-2.1-3.2.7-1.1-3.1-3.1-1.1.7-3.2L.7 12l2.1-2.5-.7-3.2 3.1-1.1 1.1-3.1 3.2.7L12 1z"
+                    fill="#1D9BF0"
+                  />
+                  <path d="m8.5 12.2 2.3 2.3 4.7-4.8" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
               )}
+            </h3>
+            <span className="shrink-0">
+              <RatingInline
+                value={restaurant.avgRating}
+                count={restaurant.ratingCount}
+                showCount={!compact}
+                dark={dark}
+              />
             </span>
           </div>
 

@@ -57,6 +57,38 @@ export function RatingPill({
   );
 }
 
+/** Clean inline rating: amber star + value (dot decimal) + bracketed count. */
+export function RatingInline({
+  value,
+  count,
+  showCount = true,
+  dark = false,
+}: {
+  value: number;
+  count: number;
+  showCount?: boolean;
+  dark?: boolean;
+}) {
+  if (count === 0) {
+    return <span className={`text-xs ${dark ? "text-white/50" : "text-muted"}`}>جديد</span>;
+  }
+  return (
+    <span className="inline-flex items-center gap-1 whitespace-nowrap">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" className="text-star shrink-0" aria-hidden>
+        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+      </svg>
+      <span className={`text-[15px] font-bold leading-none ${dark ? "text-white" : "text-ink"}`}>
+        {formatRating(value)}
+      </span>
+      {showCount && (
+        <span className={`text-[13px] leading-none ${dark ? "text-white/50" : "text-muted2"}`}>
+          ({formatNum(count)})
+        </span>
+      )}
+    </span>
+  );
+}
+
 export function OpenStatus({
   open,
   closeTime,
