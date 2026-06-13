@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useState, Suspense, type ReactNode } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { formatNum } from "@/lib/format";
 
@@ -19,6 +19,47 @@ const RATINGS = [
   ["3.5", "٣.٥ فأكثر"],
 ] as const;
 
+function CollapsibleSection({
+  title,
+  defaultOpen = true,
+  bordered = true,
+  children,
+}: {
+  title: string;
+  defaultOpen?: boolean;
+  bordered?: boolean;
+  children: ReactNode;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <section className={bordered ? "border-t border-hairline pt-4" : ""}>
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        aria-expanded={open}
+        className="flex items-center justify-between w-full text-[13px] font-semibold text-muted mb-1.5"
+      >
+        {title}
+        <svg
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className={`transition-transform ${open ? "rotate-180" : ""}`}
+          aria-hidden
+        >
+          <path d="m6 9 6 6 6-6" />
+        </svg>
+      </button>
+      {open && <div>{children}</div>}
+    </section>
+  );
+}
+
 function SidebarInner({
   features,
   cuisines,
@@ -32,6 +73,7 @@ function SidebarInner({
   const pathname = usePathname();
   const sp = useSearchParams();
   const [showAllCuisines, setShowAllCuisines] = useState(false);
+  const [cuisineQuery, setCuisineQuery] = useState("");
 
   const current = (key: string) => sp.getAll(key);
 
@@ -95,8 +137,17 @@ function SidebarInner({
     );
   };
 
-  const visibleCuisines = showAllCuisines ? cuisines : cuisines.slice(0, 7);
   const openActive = sp.get("open") === "1";
+  const cq = cuisineQuery.trim();
+  const matchedCuisines = cq
+    ? cuisines.filter((c) => c.nameAr.includes(cq))
+    : cuisines;
+  const visibleCuisines = cq
+    ? matchedCuisines
+    : showAllCuisines
+      ? cuisines
+      : cuisines.slice(0, 7);
+
   const hasFilters =
     current("features").length > 0 ||
     current("cuisine").length > 0 ||
@@ -149,10 +200,38 @@ function SidebarInner({
         </button>
 
         {!hideCuisines && (
-          <section>
-            <h3 className="text-[13px] font-semibold text-muted mb-1.5">نوع المطبخ</h3>
+          <CollapsibleSection title="نوع المطبخ" defaultOpen bordered={false}>
+            {cuisines.length > 10 && (
+              <div className="relative mb-2">
+                <svg
+                  width="15"
+                  height="15"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="absolute top-1/2 -translate-y-1/2 end-2.5 text-muted2 pointer-events-none"
+                  aria-hidden
+                >
+                  <circle cx="11" cy="11" r="8" />
+                  <path d="m21 21-4.3-4.3" />
+                </svg>
+                <input
+                  type="search"
+                  value={cuisineQuery}
+                  onChange={(e) => setCuisineQuery(e.target.value)}
+                  placeholder="ابحث عن مطبخ…"
+                  className="w-full rounded-lg border border-hairline2 bg-white ps-3 pe-8 py-1.5 text-[13px] text-ink placeholder:text-muted2 focus:border-primary-500 focus:outline-none"
+                />
+              </div>
+            )}
             {visibleCuisines.map((c) => checkboxRow("cuisine", c))}
-            {cuisines.length > 7 && (
+            {cq && matchedCuisines.length === 0 && (
+              <p className="text-[13px] text-muted2 py-1.5">لا يوجد مطبخ بهذا الاسم</p>
+            )}
+            {!cq && cuisines.length > 7 && (
               <button
                 type="button"
                 onClick={() => setShowAllCuisines((v) => !v)}
@@ -161,16 +240,18 @@ function SidebarInner({
                 {showAllCuisines ? "عرض أقل −" : "عرض المزيد +"}
               </button>
             )}
-          </section>
+          </CollapsibleSection>
         )}
 
-        <section className={hideCuisines ? "" : "border-t border-hairline pt-4"}>
-          <h3 className="text-[13px] font-semibold text-muted mb-1.5">مميزات</h3>
+        <CollapsibleSection
+          title="مميزات"
+          defaultOpen={current("features").length > 0}
+          bordered={!hideCuisines}
+        >
           {features.map((f) => checkboxRow("features", f))}
-        </section>
+        </CollapsibleSection>
 
-        <section className="border-t border-hairline pt-4">
-          <h3 className="text-[13px] font-semibold text-muted mb-2.5">السعر</h3>
+        <CollapsibleSection title="السعر" defaultOpen={current("price").length > 0}>
           <div className="grid grid-cols-4 gap-1.5" dir="ltr">
             {PRICES.map(([value, label]) => {
               const active = current("price").includes(value);
@@ -190,10 +271,9 @@ function SidebarInner({
               );
             })}
           </div>
-        </section>
+        </CollapsibleSection>
 
-        <section className="border-t border-hairline pt-4">
-          <h3 className="text-[13px] font-semibold text-muted mb-1.5">التقييم</h3>
+        <CollapsibleSection title="التقييم" defaultOpen={!!sp.get("rating")}>
           {RATINGS.map(([value, label]) => {
             const active = sp.get("rating") === value;
             return (
@@ -220,7 +300,7 @@ function SidebarInner({
               </label>
             );
           })}
-        </section>
+        </CollapsibleSection>
       </div>
     </aside>
   );
