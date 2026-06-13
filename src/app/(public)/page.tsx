@@ -202,6 +202,22 @@ export default async function HomePage() {
       </section>
 
       <div className="max-w-[1240px] mx-auto px-7">
+        {/* ===== Featured ===== */}
+        {featured.length > 0 && (
+          <section className="mt-14">
+            <div className="flex items-baseline justify-between mb-1">
+              <h2 className="text-[24px] font-bold">✦ مختارات مميّزة</h2>
+              <span className="text-[12px] text-muted2">إعلانات مدفوعة</span>
+            </div>
+            <p className="text-sm text-muted mb-5">أماكن اختارت الظهور المميّز هذا الشهر</p>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {featured.map((r) => (
+                <RestaurantCard key={r.id} restaurant={r} featured saved={savedIds.has(r.id)} />
+              ))}
+            </div>
+          </section>
+        )}
+
         {/* ===== Categories ===== */}
         <section className="mt-14">
           <div className="flex items-baseline justify-between mb-5">
@@ -256,22 +272,6 @@ export default async function HomePage() {
                 )}
               </div>
             </a>
-          </section>
-        )}
-
-        {/* ===== Featured ===== */}
-        {featured.length > 0 && (
-          <section className="mt-14">
-            <div className="flex items-baseline justify-between mb-1">
-              <h2 className="text-[24px] font-bold">✦ مختارات مميّزة</h2>
-              <span className="text-[12px] text-muted2">إعلانات مدفوعة</span>
-            </div>
-            <p className="text-sm text-muted mb-5">أماكن اختارت الظهور المميّز هذا الشهر</p>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {featured.map((r) => (
-                <RestaurantCard key={r.id} restaurant={r} featured saved={savedIds.has(r.id)} />
-              ))}
-            </div>
           </section>
         )}
 
