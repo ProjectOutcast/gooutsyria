@@ -771,6 +771,8 @@ export async function seedDemoData(db: PrismaClient): Promise<SeedResult> {
     const placements = [
       { idx: 0, slot: "HOME" as const },
       { idx: 12, slot: "HOME" as const },
+      { idx: 2, slot: "HOME" as const },
+      { idx: 5, slot: "HOME" as const },
       { idx: 8, slot: "SEARCH" as const },
       { idx: 3, slot: "CUISINE" as const, cuisineId: cu("italian") },
     ];
