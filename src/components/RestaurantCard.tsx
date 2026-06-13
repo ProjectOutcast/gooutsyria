@@ -37,13 +37,13 @@ export function RestaurantCard({
 
   return (
     <article
-      className={`group rounded-2xl overflow-hidden border transition duration-150 hover:-translate-y-1 hover:shadow-card ${
+      className={`group flex flex-col h-full rounded-2xl overflow-hidden border transition duration-150 hover:-translate-y-1 hover:shadow-card ${
         dark
           ? "bg-white/5 border-white/10"
           : "bg-white border-hairline hover:border-hairline2"
       }`}
     >
-      <Link href={href} className="block">
+      <Link href={href} className="flex flex-col h-full">
         <div className="relative aspect-[15/8] bg-chipbg">
           {photo ? (
             <Image
@@ -82,9 +82,19 @@ export function RestaurantCard({
               {open ? "مفتوح" : "مغلق"}
             </span>
           )}
+
+          {!compact && offer && (
+            <span className="absolute bottom-2.5 start-2.5 max-w-[72%] inline-flex items-center gap-1.5 bg-primary-600 text-white text-[12px] font-bold rounded-full ps-2.5 pe-3 py-1 shadow-accent">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20.59 13.41 13.42 20.6a2 2 0 0 1-2.83 0L3 13V3h10l7.59 7.59a2 2 0 0 1 0 2.82Z" />
+                <path d="M7 7h.01" />
+              </svg>
+              <span className="line-clamp-1">{offer.titleAr}</span>
+            </span>
+          )}
         </div>
 
-        <div className="p-3.5">
+        <div className="p-3.5 flex-1 flex flex-col">
           <div className="flex items-start justify-between gap-2">
             <h3
               className={`font-semibold text-[17px] leading-snug line-clamp-1 group-hover:text-primary-500 transition-colors ${
@@ -103,9 +113,9 @@ export function RestaurantCard({
             </span>
           </p>
 
-          {!compact && (restaurant.features.length > 0 || offer) && (
+          {!compact && restaurant.features.length > 0 && (
             <div className="flex flex-wrap gap-1.5 mt-2.5">
-              {restaurant.features.slice(0, offer ? 2 : 3).map((f) => (
+              {restaurant.features.slice(0, 3).map((f) => (
                 <span
                   key={f.featureId}
                   className={`text-[12px] rounded-full px-2.5 py-0.5 ${
@@ -115,20 +125,11 @@ export function RestaurantCard({
                   {f.feature.nameAr}
                 </span>
               ))}
-              {offer && (
-                <span className="inline-flex items-center gap-1 bg-primary-50 text-primary-700 text-[12px] font-semibold rounded-full px-2.5 py-0.5">
-                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="12" cy="12" r="10" />
-                    <path d="m15 9-6 6M9 9h.01M15 15h.01" />
-                  </svg>
-                  <span className="line-clamp-1">{offer.titleAr}</span>
-                </span>
-              )}
             </div>
           )}
 
           {compact ? (
-            <div className={`flex items-center justify-between gap-2 mt-2 text-[12px] ${dark ? "text-white/50" : "text-muted2"}`}>
+            <div className={`flex items-center justify-between gap-2 mt-auto pt-2 text-[12px] ${dark ? "text-white/50" : "text-muted2"}`}>
               <span className="inline-flex items-center gap-1 line-clamp-1">
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
@@ -143,7 +144,7 @@ export function RestaurantCard({
               )}
             </div>
           ) : (
-            <div className={`mt-3 pt-2.5 border-t text-[12px] ${dark ? "border-white/10" : "border-hairline/70"}`}>
+            <div className={`mt-auto pt-2.5 border-t text-[12px] ${dark ? "border-white/10" : "border-hairline/70"}`}>
               <span className={`inline-flex items-center gap-1 ${dark ? "text-white/50" : "text-muted2"}`}>
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
