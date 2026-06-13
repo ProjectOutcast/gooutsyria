@@ -324,13 +324,17 @@ export async function generateDemoData(): Promise<DemoDataState> {
     const { seedDemoData } = await import("@/lib/demo-seed");
     const result = await seedDemoData(db);
     revalidatePath("/", "layout");
-    const backfill =
+    const menuBackfill =
       result.backfilledMenus > 0
         ? ` · تمت إضافة صور القائمة لـ ${result.backfilledMenus} مطعماً موجوداً`
         : "";
+    const photoBackfill =
+      result.backfilledPhotos > 0
+        ? ` · تم تحديث ${result.backfilledPhotos} صورة إلى الصور الجديدة`
+        : "";
     return {
       ok: true,
-      summary: `تمت إضافة ${result.createdRestaurants} مطعماً و${result.createdCollections} قوائم مختارة (تم تخطي ${result.skippedRestaurants} موجود مسبقاً)${backfill}`,
+      summary: `تمت إضافة ${result.createdRestaurants} مطعماً و${result.createdCollections} قوائم مختارة (تم تخطي ${result.skippedRestaurants} موجود مسبقاً)${menuBackfill}${photoBackfill}`,
     };
   } catch (err) {
     console.error("demo data generation failed:", err);

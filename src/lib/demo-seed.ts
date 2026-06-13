@@ -481,6 +481,7 @@ export type SeedResult = {
   skippedRestaurants: number;
   createdCollections: number;
   backfilledMenus: number;
+  backfilledPhotos: number;
 };
 
 export async function seedDemoData(db: PrismaClient): Promise<SeedResult> {
@@ -551,6 +552,34 @@ export async function seedDemoData(db: PrismaClient): Promise<SeedResult> {
       })
     )
   );
+
+  // --- backfill: photo placeholders migrated from emoji SVGs to real JPEGs.
+  // Existing demo rows still point at /placeholders/pN.svg (now removed); rewrite
+  // them to the committed .jpg images. Menu pages (menuN.svg) are left as-is.
+  let backfilledPhotos = 0;
+  const stalePhotos = await db.photo.findMany({
+    where: { url: { startsWith: "/placeholders/p", endsWith: ".svg" } },
+    select: { id: true, url: true },
+  });
+  for (const ph of stalePhotos) {
+    await db.photo.update({
+      where: { id: ph.id },
+      data: { url: ph.url.replace(/\.svg$/, ".jpg") },
+    });
+    backfilledPhotos++;
+  }
+  const staleCovers = await db.collection.findMany({
+    where: { coverImage: { startsWith: "/placeholders/p", endsWith: ".svg" } },
+    select: { id: true, coverImage: true },
+  });
+  for (const col of staleCovers) {
+    if (!col.coverImage) continue;
+    await db.collection.update({
+      where: { id: col.id },
+      data: { coverImage: col.coverImage.replace(/\.svg$/, ".jpg") },
+    });
+    backfilledPhotos++;
+  }
 
   // --- restaurants (skip any slug that already exists) ---
   let created = 0;
@@ -794,5 +823,6 @@ export async function seedDemoData(db: PrismaClient): Promise<SeedResult> {
     skippedRestaurants: skipped,
     createdCollections,
     backfilledMenus,
+    backfilledPhotos,
   };
 }
