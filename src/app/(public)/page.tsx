@@ -140,9 +140,8 @@ export default async function HomePage() {
 
   return (
     <div>
-      {/* ===== Hero (boxed) ===== */}
-      <div className="max-w-[1240px] mx-auto px-7 pt-6">
-        <section className="relative bg-ink text-white overflow-hidden rounded-3xl">
+      {/* ===== Hero (sellable background) ===== */}
+      <section className="relative bg-ink text-white overflow-hidden">
         {heroSponsor?.imageUrl ? (
           <Image
             src={heroSponsor.imageUrl}
@@ -167,7 +166,7 @@ export default async function HomePage() {
           مساحة إعلانية
         </span>
 
-        <div className="relative px-6 sm:px-12 py-[64px] sm:py-[88px] text-center">
+        <div className="relative max-w-[1240px] mx-auto px-7 py-[72px] sm:py-[96px] text-center">
           <span className="inline-flex items-center gap-2 bg-white text-ink rounded-full px-4 py-1.5 text-sm font-semibold shadow-sm">
             <span className="w-2 h-2 rounded-full bg-success" />
             أكثر من {formatNum(totalPlaces)} مكان في دمشق — محدّث يومياً
@@ -200,8 +199,7 @@ export default async function HomePage() {
             ))}
           </div>
         </div>
-        </section>
-      </div>
+      </section>
 
       <div className="max-w-[1240px] mx-auto px-7">
         {/* ===== Categories ===== */}
