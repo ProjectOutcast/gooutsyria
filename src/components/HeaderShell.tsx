@@ -48,7 +48,7 @@ export function HeaderShell({
       className={`sticky top-0 z-40 h-[67px] transition-colors duration-300 ${
         scrolled
           ? "bg-page/80 backdrop-blur-xl border-b border-hairline shadow-[0_2px_10px_rgba(20,13,11,0.05)]"
-          : "bg-ink/50 backdrop-blur-md border-b border-white/10"
+          : "bg-ink border-b border-white/10"
       }`}
     >
       <div className="max-w-[1240px] mx-auto px-5 sm:px-7 h-full flex items-center justify-between gap-4">
