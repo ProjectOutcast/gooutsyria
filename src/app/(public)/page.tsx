@@ -153,7 +153,7 @@ export default async function HomePage() {
           />
         ) : (
           <Image
-            src="/placeholders/p9.jpg"
+            src="/placeholders/hero.jpg"
             alt=""
             fill
             sizes="100vw"
