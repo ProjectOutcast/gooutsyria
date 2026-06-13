@@ -38,7 +38,7 @@ export type SearchFilters = {
 
 export const PAGE_SIZE = 12;
 
-function buildWhere(citySlug: string, f: SearchFilters): Prisma.RestaurantWhereInput {
+export function buildWhere(citySlug: string, f: SearchFilters): Prisma.RestaurantWhereInput {
   const where: Prisma.RestaurantWhereInput = {
     status: "APPROVED",
     city: { slug: citySlug },
@@ -147,7 +147,14 @@ export async function getSavedIds(
 
 export async function getFeaturedRestaurants(
   slot: "HOME" | "SEARCH" | "CUISINE",
-  opts: { cuisineSlug?: string; take?: number } = {}
+  opts: {
+    cuisineSlug?: string;
+    take?: number;
+    /** Active search filters — featured cards must satisfy them too. */
+    restaurantWhere?: Prisma.RestaurantWhereInput;
+    /** "open now" filter, applied in memory (not expressible in SQL). */
+    open?: boolean;
+  } = {}
 ) {
   const now = new Date();
   const placements = await db.featuredPlacement.findMany({
@@ -155,7 +162,9 @@ export async function getFeaturedRestaurants(
       slot,
       startsAt: { lte: now },
       endsAt: { gte: now },
-      restaurant: { status: "APPROVED" },
+      // a promoted listing must still match the active filters, otherwise it
+      // would leak past the sidebar (e.g. a $$$ card showing under a $$$$ filter)
+      restaurant: { status: "APPROVED", ...(opts.restaurantWhere ?? {}) },
       ...(opts.cuisineSlug ? { cuisine: { slug: opts.cuisineSlug } } : {}),
     },
     include: { restaurant: { include: RESTAURANT_CARD_INCLUDE } },
@@ -164,13 +173,19 @@ export async function getFeaturedRestaurants(
   });
   // de-dupe restaurants that have multiple active placements
   const seen = new Set<string>();
-  return placements
+  let restaurants = placements
     .filter((p) => {
       if (seen.has(p.restaurantId)) return false;
       seen.add(p.restaurantId);
       return true;
     })
     .map((p) => p.restaurant);
+  if (opts.open) {
+    restaurants = restaurants.filter((r) =>
+      isOpenNow(r.openingHours as OpeningHours | null)
+    );
+  }
+  return restaurants;
 }
 
 export async function getActiveOffers(citySlug: string, take = 12) {

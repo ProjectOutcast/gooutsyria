@@ -5,6 +5,7 @@ import {
   getFacets,
   getSavedIds,
   getActiveSponsor,
+  buildWhere,
   PAGE_SIZE,
   type SearchFilters,
 } from "@/lib/queries";
@@ -38,6 +39,8 @@ export async function RestaurantListing({
       ? getFeaturedRestaurants(filters.cuisines?.length === 1 ? "CUISINE" : "SEARCH", {
           cuisineSlug: filters.cuisines?.length === 1 ? filters.cuisines[0] : undefined,
           take: 1,
+          restaurantWhere: buildWhere(citySlug, filters),
+          open: filters.open,
         })
       : Promise.resolve([]),
     getActiveSponsor("SEARCH_BANNER"),
