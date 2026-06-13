@@ -142,14 +142,16 @@ function SidebarInner({
 
   const openActive = sp.get("open") === "1";
   const cq = cuisineQuery.trim();
+  // most-listed cuisines first; show the top 5, rest behind "show more"
+  const sortedCuisines = [...cuisines].sort((a, b) => b.count - a.count);
   const matchedCuisines = cq
-    ? cuisines.filter((c) => c.nameAr.includes(cq))
-    : cuisines;
+    ? sortedCuisines.filter((c) => c.nameAr.includes(cq))
+    : sortedCuisines;
   const visibleCuisines = cq
     ? matchedCuisines
     : showAllCuisines
-      ? cuisines
-      : cuisines.slice(0, 7);
+      ? sortedCuisines
+      : sortedCuisines.slice(0, 5);
 
   const activeCount =
     current("features").length +
@@ -226,7 +228,7 @@ function SidebarInner({
           {cq && matchedCuisines.length === 0 && (
             <p className="text-[13px] text-muted2 py-1.5">لا يوجد مطبخ بهذا الاسم</p>
           )}
-          {!cq && cuisines.length > 7 && (
+          {!cq && cuisines.length > 5 && (
             <button
               type="button"
               onClick={() => setShowAllCuisines((v) => !v)}
@@ -356,7 +358,7 @@ function SidebarInner({
                 </button>
               </div>
             </div>
-            <div className="overflow-y-auto p-4 flex-1">{body}</div>
+            <div className="overflow-y-auto p-4 flex-1 min-h-0">{body}</div>
             <div className="p-4 border-t border-hairline">
               <button
                 type="button"
