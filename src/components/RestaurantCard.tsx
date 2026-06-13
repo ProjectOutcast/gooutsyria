@@ -44,7 +44,7 @@ export function RestaurantCard({
       }`}
     >
       <Link href={href} className="flex flex-col h-full">
-        <div className="relative aspect-[15/8] bg-chipbg">
+        <div className={`relative ${compact ? "aspect-[15/8]" : "aspect-[3/2]"} bg-chipbg`}>
           {photo ? (
             <Image
               src={photo.url}
@@ -103,7 +103,14 @@ export function RestaurantCard({
             >
               {restaurant.nameAr}
             </h3>
-            <RatingPill value={restaurant.avgRating} count={restaurant.ratingCount} />
+            <span className="inline-flex items-center gap-1 shrink-0">
+              <RatingPill value={restaurant.avgRating} count={restaurant.ratingCount} />
+              {!compact && restaurant.ratingCount > 0 && (
+                <span className={`text-[12px] ${dark ? "text-white/50" : "text-muted2"}`}>
+                  ({formatNum(restaurant.ratingCount)})
+                </span>
+              )}
+            </span>
           </div>
 
           <p className={`text-[13px] mt-0.5 line-clamp-1 ${dark ? "text-white/60" : "text-muted"}`}>
@@ -111,6 +118,7 @@ export function RestaurantCard({
             <span className="ltr-nums mx-1">
               · {PRICE_BAND_SYMBOLS[restaurant.priceBand]}
             </span>
+            {!compact && ` · ${restaurant.neighborhood?.nameAr ?? restaurant.city.nameAr}`}
           </p>
 
           {!compact && restaurant.features.length > 0 && (
@@ -144,34 +152,18 @@ export function RestaurantCard({
               )}
             </div>
           ) : (
-            <div className={`mt-auto pt-2.5 border-t text-[12px] ${dark ? "border-white/10" : "border-hairline/70"}`}>
-              <span className={`inline-flex items-center gap-1 ${dark ? "text-white/50" : "text-muted2"}`}>
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
-                  <circle cx="12" cy="10" r="3" />
-                </svg>
-                {restaurant.neighborhood?.nameAr ?? restaurant.city.nameAr}
-              </span>
-              <span className="flex items-center justify-between gap-2 mt-1">
-                {open !== null ? (
-                  <span
-                    className={`inline-flex items-center gap-1.5 font-bold whitespace-nowrap ${
-                      open ? "text-success" : "text-warn"
-                    }`}
-                  >
-                    <span className={`w-1.5 h-1.5 rounded-full ${open ? "bg-success" : "bg-warn"}`} />
-                    {open ? "مفتوح الآن" : opensAt ? `يفتح ${opensAt}` : "مغلق الآن"}
-                  </span>
-                ) : (
-                  <span />
-                )}
-                {restaurant.ratingCount > 0 && (
-                  <span className={`whitespace-nowrap ${dark ? "text-white/50" : "text-muted2"}`}>
-                    {formatNum(restaurant.ratingCount)} تقييم
-                  </span>
-                )}
-              </span>
-            </div>
+            open !== null && (
+              <div className={`mt-auto pt-2.5 border-t ${dark ? "border-white/10" : "border-hairline/70"}`}>
+                <span
+                  className={`inline-flex items-center gap-1.5 text-[12px] font-bold whitespace-nowrap ${
+                    open ? "text-success" : "text-warn"
+                  }`}
+                >
+                  <span className={`w-1.5 h-1.5 rounded-full ${open ? "bg-success" : "bg-warn"}`} />
+                  {open ? "مفتوح الآن" : opensAt ? `يفتح ${opensAt}` : "مغلق الآن"}
+                </span>
+              </div>
+            )
           )}
         </div>
       </Link>
