@@ -68,6 +68,9 @@ const FEATURES: [string, string, string][] = [
   ["مساحة عمل", "workspace", "💻"],
 ];
 
+// every demo restaurant gets photographed menu pages so the image menu shows
+const DEFAULT_MENU_PAGES = [1, 2, 3, 4];
+
 const MENU_PAGE_TITLES = [
   "المقبلات",
   "المشاوي",
@@ -477,6 +480,7 @@ export type SeedResult = {
   createdRestaurants: number;
   skippedRestaurants: number;
   createdCollections: number;
+  backfilledMenus: number;
 };
 
 export async function seedDemoData(db: PrismaClient): Promise<SeedResult> {
@@ -551,16 +555,38 @@ export async function seedDemoData(db: PrismaClient): Promise<SeedResult> {
   // --- restaurants (skip any slug that already exists) ---
   let created = 0;
   let skipped = 0;
+  let backfilledMenus = 0;
   const createdIdx: number[] = [];
   const bySlug = new Map<string, { id: string }>();
 
   for (let i = 0; i < RESTAURANTS.length; i++) {
     const def = RESTAURANTS[i];
     const slug = slugify(def.nameEn ?? def.nameAr);
+    const menuPages = def.menuPages ?? DEFAULT_MENU_PAGES;
     const existing = await db.restaurant.findUnique({ where: { slug } });
     if (existing) {
       bySlug.set(slug, existing);
       skipped++;
+      // backfill menu-page photos for demo restaurants created before the
+      // image menu existed, so they show the image carousel on re-run
+      const menuCount = await db.photo.count({
+        where: { restaurantId: existing.id, kind: "MENU" },
+      });
+      if (menuCount === 0) {
+        const photoCount = await db.photo.count({
+          where: { restaurantId: existing.id },
+        });
+        await db.photo.createMany({
+          data: menuPages.map((p, pi) => ({
+            restaurantId: existing.id,
+            url: `/placeholders/menu${p}.svg`,
+            alt: MENU_PAGE_TITLES[p - 1],
+            kind: "MENU" as const,
+            sortOrder: photoCount + pi,
+          })),
+        });
+        backfilledMenus++;
+      }
       continue;
     }
 
@@ -600,7 +626,7 @@ export async function seedDemoData(db: PrismaClient): Promise<SeedResult> {
                 | "FOOD",
               sortOrder: pi,
             })),
-            ...(def.menuPages ?? []).map((p, pi) => ({
+            ...menuPages.map((p, pi) => ({
               url: `/placeholders/menu${p}.svg`,
               alt: MENU_PAGE_TITLES[p - 1],
               kind: "MENU" as const,
@@ -763,5 +789,10 @@ export async function seedDemoData(db: PrismaClient): Promise<SeedResult> {
     }
   }
 
-  return { createdRestaurants: created, skippedRestaurants: skipped, createdCollections };
+  return {
+    createdRestaurants: created,
+    skippedRestaurants: skipped,
+    createdCollections,
+    backfilledMenus,
+  };
 }
