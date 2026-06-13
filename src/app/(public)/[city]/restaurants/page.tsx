@@ -60,7 +60,7 @@ export default async function RestaurantsPage({ params, searchParams }: Props) {
         <nav className="text-[13px] text-muted mb-3" aria-label="مسار التنقل">
           <Link href="/" className="hover:text-primary-500">الرئيسية</Link>
           <Chevron dir="left" size={13} className="mx-1.5 inline-block align-middle" />
-          <span>{cityRow.nameAr}</span>
+          <Link href={`/${city}/restaurants`} className="hover:text-primary-500">{cityRow.nameAr}</Link>
           <Chevron dir="left" size={13} className="mx-1.5 inline-block align-middle" />
           <span className="text-ink font-semibold">المطاعم</span>
         </nav>
