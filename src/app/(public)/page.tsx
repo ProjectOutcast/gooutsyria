@@ -157,7 +157,7 @@ export default async function HomePage() {
           <div className="flex items-baseline justify-between mb-5">
             <h2 className="text-[24px] font-bold">تصفّح حسب التصنيف</h2>
             <Link href="/categories" className="text-sm text-primary-500 font-semibold hover:underline">
-              كل التصنيفات
+              عرض الكل
             </Link>
           </div>
           <Carousel
@@ -170,17 +170,8 @@ export default async function HomePage() {
                 href={`/damascus/cuisine/${c.slug}`}
               />
             ))}
-            itemClassName="w-[240px] sm:w-[280px]"
+            itemClassName="w-[45%] sm:w-[240px]"
           />
-          <div className="mt-5">
-            <Link
-              href="/categories"
-              className="inline-flex items-center gap-2 bg-ink text-white font-bold rounded-xl px-5 py-2.5 hover:bg-primary-700 transition-colors"
-            >
-              تصفّح كل التصنيفات
-              <Chevron dir="left" size={16} />
-            </Link>
-          </div>
         </section>
 
         {/* ===== Sponsored banner ===== */}
