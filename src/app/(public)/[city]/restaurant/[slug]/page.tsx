@@ -694,7 +694,6 @@ export default async function RestaurantPage({ params }: Props) {
               <RestaurantCard
                 key={s.id}
                 restaurant={s}
-                variant="compact"
                 saved={similarSaved.has(s.id)}
               />
             ))}
