@@ -51,6 +51,14 @@ const CUISINES: [string, string, string][] = [
   ["معجنات", "pastries", "🥖"],
   ["عالمي", "international", "🍽️"],
   ["عصائر ومشروبات", "juices", "🥤"],
+  ["مأكولات حلبية", "aleppan", "🍲"],
+  ["شاورما", "shawarma", "🌯"],
+  ["فلافل", "falafel", "🧆"],
+  ["دجاج وبروست", "broast", "🍗"],
+  ["بوظة وآيس كريم", "ice-cream", "🍦"],
+  ["لبناني", "lebanese", "🫓"],
+  ["تركي", "turkish", "🥘"],
+  ["هندي", "indian", "🍛"],
 ];
 
 const FEATURES: [string, string, string][] = [

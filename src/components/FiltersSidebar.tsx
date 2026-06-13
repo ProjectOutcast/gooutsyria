@@ -148,13 +148,8 @@ function SidebarInner({
           </span>
         </button>
 
-        <section>
-          <h3 className="text-[13px] font-semibold text-muted mb-1.5">مميزات</h3>
-          {features.map((f) => checkboxRow("features", f))}
-        </section>
-
         {!hideCuisines && (
-          <section className="border-t border-hairline pt-4">
+          <section>
             <h3 className="text-[13px] font-semibold text-muted mb-1.5">نوع المطبخ</h3>
             {visibleCuisines.map((c) => checkboxRow("cuisine", c))}
             {cuisines.length > 7 && (
@@ -168,6 +163,11 @@ function SidebarInner({
             )}
           </section>
         )}
+
+        <section className={hideCuisines ? "" : "border-t border-hairline pt-4"}>
+          <h3 className="text-[13px] font-semibold text-muted mb-1.5">مميزات</h3>
+          {features.map((f) => checkboxRow("features", f))}
+        </section>
 
         <section className="border-t border-hairline pt-4">
           <h3 className="text-[13px] font-semibold text-muted mb-2.5">السعر</h3>
