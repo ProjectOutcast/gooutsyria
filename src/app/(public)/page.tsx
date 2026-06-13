@@ -269,7 +269,7 @@ export default async function HomePage() {
             <p className="text-sm text-muted mb-5">أماكن اختارت الظهور المميّز هذا الشهر</p>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {featured.map((r) => (
-                <RestaurantCard key={r.id} restaurant={r} featured variant="compact" saved={savedIds.has(r.id)} />
+                <RestaurantCard key={r.id} restaurant={r} featured saved={savedIds.has(r.id)} />
               ))}
             </div>
           </section>
