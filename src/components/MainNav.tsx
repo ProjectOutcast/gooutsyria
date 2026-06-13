@@ -12,13 +12,13 @@ export const NAV_LINKS = [
   { href: "/damascus/restaurants?features=workspace", label: "مساحات العمل", match: "features=workspace" },
 ];
 
-function NavInner() {
+function NavInner({ onDark }: { onDark: boolean }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const current = `${pathname}?${searchParams.toString()}`;
 
   return (
-    <nav className="hidden lg:flex items-center gap-6 text-[15px] font-medium text-ink2">
+    <nav className={`hidden lg:flex items-center gap-6 text-[15px] font-medium ${onDark ? "text-white/85" : "text-ink2"}`}>
       {NAV_LINKS.map((l) => {
         const active = l.match.includes("=")
           ? current.includes(l.match)
@@ -27,7 +27,15 @@ function NavInner() {
           <Link
             key={l.label}
             href={l.href}
-            className={active ? "text-primary-500 font-semibold" : "hover:text-primary-500"}
+            className={
+              active
+                ? onDark
+                  ? "text-white font-semibold"
+                  : "text-primary-500 font-semibold"
+                : onDark
+                  ? "hover:text-white"
+                  : "hover:text-primary-500"
+            }
           >
             {l.label}
           </Link>
@@ -37,10 +45,10 @@ function NavInner() {
   );
 }
 
-export function MainNav() {
+export function MainNav({ onDark = false }: { onDark?: boolean }) {
   return (
     <Suspense fallback={<nav className="hidden lg:block" />}>
-      <NavInner />
+      <NavInner onDark={onDark} />
     </Suspense>
   );
 }

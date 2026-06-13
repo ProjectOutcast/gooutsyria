@@ -14,8 +14,10 @@ const CITIES: { name: string; href?: string; soon?: boolean }[] = [
 
 export function HeaderActions({
   user,
+  onDark,
 }: {
   user: { name: string | null; role: string } | null;
+  onDark: boolean;
 }) {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -29,6 +31,9 @@ export function HeaderActions({
   }, [pathname]);
 
   const isStaff = user && (user.role === "OWNER" || user.role === "ADMIN");
+  const ghostChip = onDark
+    ? "bg-white/15 hover:bg-white/25 text-white"
+    : "bg-chipbg hover:bg-hairline2 text-ink";
   const pinIcon = (
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary-500)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
       <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
@@ -44,7 +49,7 @@ export function HeaderActions({
           type="button"
           onClick={() => setCityOpen((o) => !o)}
           aria-expanded={cityOpen}
-          className="flex items-center gap-1.5 rounded-full bg-chipbg hover:bg-hairline2 ps-3 pe-2.5 py-1.5 text-[13px] font-semibold text-ink transition-colors"
+          className={`flex items-center gap-1.5 rounded-full ps-3 pe-2.5 py-1.5 text-[13px] font-semibold transition-colors ${ghostChip}`}
         >
           {pinIcon}
           دمشق
@@ -57,7 +62,7 @@ export function HeaderActions({
             strokeWidth="2.5"
             strokeLinecap="round"
             strokeLinejoin="round"
-            className={`text-muted2 transition-transform ${cityOpen ? "rotate-180" : ""}`}
+            className={`transition-transform ${onDark ? "text-white/70" : "text-muted2"} ${cityOpen ? "rotate-180" : ""}`}
             aria-hidden
           >
             <path d="m6 9 6 6 6-6" />
@@ -98,21 +103,25 @@ export function HeaderActions({
       {/* Desktop primary CTA + account/login */}
       <Link
         href="/for-restaurants"
-        className="hidden lg:inline-flex items-center bg-ink text-white rounded-xl px-4 py-2 text-sm font-semibold hover:bg-primary-700 transition-colors"
+        className={`hidden lg:inline-flex items-center rounded-xl px-4 py-2 text-sm font-semibold transition-colors ${
+          onDark ? "bg-white text-ink hover:bg-white/90" : "bg-ink text-white hover:bg-primary-700"
+        }`}
       >
         أضف مطعمك
       </Link>
       {user ? (
         <Link
           href="/account"
-          className="hidden lg:inline-flex items-center bg-chipbg hover:bg-hairline2 text-ink rounded-xl px-3.5 py-2 text-sm font-semibold max-w-32 truncate transition-colors"
+          className={`hidden lg:inline-flex items-center rounded-xl px-3.5 py-2 text-sm font-semibold max-w-32 truncate transition-colors ${ghostChip}`}
         >
           {user.name ?? "حسابي"}
         </Link>
       ) : (
         <Link
           href="/login"
-          className="hidden lg:inline-flex items-center text-ink2 hover:text-primary-500 text-sm font-semibold px-2"
+          className={`hidden lg:inline-flex items-center text-sm font-semibold px-2 transition-colors ${
+            onDark ? "text-white/90 hover:text-white" : "text-ink2 hover:text-primary-500"
+          }`}
         >
           تسجيل الدخول
         </Link>
@@ -123,7 +132,7 @@ export function HeaderActions({
         type="button"
         onClick={() => setMenuOpen(true)}
         aria-label="القائمة"
-        className="lg:hidden grid place-items-center w-10 h-10 rounded-xl bg-chipbg hover:bg-hairline2 text-ink transition-colors"
+        className={`lg:hidden grid place-items-center w-10 h-10 rounded-xl transition-colors ${ghostChip}`}
       >
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M3 6h18M3 12h18M3 18h18" />
