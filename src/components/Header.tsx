@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { MainNav } from "./MainNav";
+import { HeaderActions } from "./HeaderActions";
 
 function Logo() {
   return (
@@ -16,7 +17,7 @@ function Logo() {
         <span className="block font-bold text-[20px] text-ink">
           Go Out <span className="text-primary-500">Syria</span>
         </span>
-        <span className="block text-[10px] text-muted mt-1">دليل مطاعم سوريا</span>
+        <span className="hidden sm:block text-[10px] text-muted mt-1">دليل مطاعم سوريا</span>
       </span>
     </Link>
   );
@@ -24,53 +25,17 @@ function Logo() {
 
 export async function Header() {
   const session = await auth();
-  const user = session?.user;
+  const u = session?.user;
+  const user = u ? { name: u.name ?? null, role: u.role } : null;
 
   return (
-    <header className="sticky top-0 z-40 h-[67px] bg-page/90 backdrop-blur border-b border-hairline">
-      <div className="max-w-[1240px] mx-auto px-7 h-full flex items-center justify-between gap-5">
+    <header className="sticky top-0 z-40 h-[67px] bg-page/80 backdrop-blur-xl border-b border-hairline shadow-[0_2px_10px_rgba(20,13,11,0.05)]">
+      <div className="max-w-[1240px] mx-auto px-5 sm:px-7 h-full flex items-center justify-between gap-4">
         <div className="flex items-center gap-8 min-w-0">
           <Logo />
           <MainNav />
         </div>
-
-        <div className="flex items-center gap-3 shrink-0">
-          <span className="hidden sm:flex items-center gap-1.5 bg-chipbg rounded-full px-3.5 py-1.5 text-sm font-medium text-ink">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary-500)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
-              <circle cx="12" cy="10" r="3" />
-            </svg>
-            دمشق
-          </span>
-
-          {user ? (
-            <>
-              {user.role === "ADMIN" && (
-                <Link href="/admin" className="hidden md:block text-sm text-ink2 hover:text-primary-500 font-medium">
-                  الإدارة
-                </Link>
-              )}
-              {(user.role === "OWNER" || user.role === "ADMIN") && (
-                <Link href="/dashboard" className="hidden md:block text-sm text-ink2 hover:text-primary-500 font-medium">
-                  لوحتي
-                </Link>
-              )}
-              <Link
-                href="/account"
-                className="bg-ink text-white rounded-xl px-4 py-2 text-sm font-semibold hover:opacity-90 max-w-32 truncate"
-              >
-                {user.name ?? "حسابي"}
-              </Link>
-            </>
-          ) : (
-            <Link
-              href="/login"
-              className="bg-ink text-white rounded-xl px-4 py-2 text-sm font-semibold hover:opacity-90"
-            >
-              تسجيل الدخول
-            </Link>
-          )}
-        </div>
+        <HeaderActions user={user} />
       </div>
     </header>
   );
