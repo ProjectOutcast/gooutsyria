@@ -63,22 +63,22 @@ export function Carousel({
         ))}
       </div>
 
-      {/* forward (more) — end side = left in RTL */}
-      <button
-        type="button"
-        onClick={() => scroll(true)}
-        disabled={!canFwd}
-        aria-label="عرض المزيد"
-        className={`${arrowBase} end-0 -translate-x-2`}
-      >
-        ‹
-      </button>
-      {/* back — start side = right in RTL */}
+      {/* back — end side (left in RTL): the ‹ glyph points left */}
       <button
         type="button"
         onClick={() => scroll(false)}
         disabled={!canBack}
         aria-label="السابق"
+        className={`${arrowBase} end-0 -translate-x-2`}
+      >
+        ‹
+      </button>
+      {/* forward (more) — start side (right in RTL): the › glyph points right */}
+      <button
+        type="button"
+        onClick={() => scroll(true)}
+        disabled={!canFwd}
+        aria-label="عرض المزيد"
         className={`${arrowBase} start-0 translate-x-2`}
       >
         ›
