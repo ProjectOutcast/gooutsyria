@@ -51,7 +51,7 @@ export function HeaderShell({
           : "bg-ink border-b border-white/10"
       }`}
     >
-      <div className="max-w-[1240px] mx-auto px-5 sm:px-7 h-full flex items-center justify-between gap-4">
+      <div className="px-5 sm:px-8 h-full flex items-center justify-between gap-4">
         <div className="flex items-center gap-8 min-w-0">
           <Logo onDark={onDark} />
           <MainNav onDark={onDark} />
