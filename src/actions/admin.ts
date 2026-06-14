@@ -4,7 +4,9 @@ import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { requireAdmin } from "@/lib/guards";
 import { uniqueSlug, slugify } from "@/lib/slug";
+import { parseEventForm } from "@/lib/events";
 import { recomputeRating } from "./reviews";
+import type { FormState } from "./events";
 import type {
   ListingStatus,
   PlanTier,
@@ -340,4 +342,94 @@ export async function generateDemoData(): Promise<DemoDataState> {
     console.error("demo data generation failed:", err);
     return { error: "فشل توليد البيانات التجريبية — راجع سجلات الخادم" };
   }
+}
+
+// --- Events ---
+
+const EVENT_STATUSES = ["PENDING", "APPROVED", "REJECTED", "ARCHIVED"];
+
+/** Resolve an organizer's user id from an email, or an error if not found. */
+async function resolveEventOwner(
+  formData: FormData
+): Promise<{ ownerId: string | null } | { error: string }> {
+  const email = String(formData.get("ownerEmail") ?? "").trim().toLowerCase();
+  if (!email) return { ownerId: null };
+  const owner = await db.user.findUnique({ where: { email } });
+  if (!owner) return { error: "لا يوجد مستخدم بهذا البريد الإلكتروني" };
+  return { ownerId: owner.id };
+}
+
+function eventExtras(formData: FormData) {
+  const statusRaw = String(formData.get("status") ?? "APPROVED");
+  return {
+    featured: formData.get("featured") === "on",
+    featuredKicker: String(formData.get("featuredKicker") ?? "").trim() || null,
+    status: (EVENT_STATUSES.includes(statusRaw) ? statusRaw : "APPROVED") as ListingStatus,
+  };
+}
+
+export async function createEvent(_prev: FormState, formData: FormData): Promise<FormState> {
+  await requireAdmin();
+  const parsed = parseEventForm(formData);
+  if ("error" in parsed) return { error: parsed.error };
+  const owner = await resolveEventOwner(formData);
+  if ("error" in owner) return { error: owner.error };
+
+  const slug = await uniqueSlug(parsed.data.title, async (s) =>
+    Boolean(await db.event.findUnique({ where: { slug: s } }))
+  );
+
+  await db.event.create({
+    data: { ...parsed.data, slug, ownerId: owner.ownerId, ...eventExtras(formData) },
+  });
+  revalidatePath("/admin/events");
+  revalidatePath("/events");
+  return { ok: true };
+}
+
+export async function updateEvent(_prev: FormState, formData: FormData): Promise<FormState> {
+  await requireAdmin();
+  const id = String(formData.get("eventId") ?? "");
+  const parsed = parseEventForm(formData);
+  if ("error" in parsed) return { error: parsed.error };
+  const owner = await resolveEventOwner(formData);
+  if ("error" in owner) return { error: owner.error };
+
+  const event = await db.event.update({
+    where: { id },
+    data: { ...parsed.data, ownerId: owner.ownerId, ...eventExtras(formData) },
+  });
+  revalidatePath("/admin/events");
+  revalidatePath("/events");
+  revalidatePath(`/events/${event.slug}`);
+  return { ok: true };
+}
+
+export async function setEventStatus(formData: FormData) {
+  await requireAdmin();
+  const id = String(formData.get("id") ?? "");
+  const statusRaw = String(formData.get("status") ?? "");
+  if (!id || !EVENT_STATUSES.includes(statusRaw)) return;
+  await db.event.update({ where: { id }, data: { status: statusRaw as ListingStatus } });
+  revalidatePath("/admin/events");
+  revalidatePath("/events");
+}
+
+export async function toggleEventFeatured(formData: FormData) {
+  await requireAdmin();
+  const id = String(formData.get("id") ?? "");
+  const event = await db.event.findUnique({ where: { id } });
+  if (!event) return;
+  await db.event.update({ where: { id }, data: { featured: !event.featured } });
+  revalidatePath("/admin/events");
+  revalidatePath("/events");
+}
+
+export async function deleteEvent(formData: FormData) {
+  await requireAdmin();
+  const id = String(formData.get("id") ?? "");
+  if (!id) return;
+  await db.event.delete({ where: { id } });
+  revalidatePath("/admin/events");
+  revalidatePath("/events");
 }

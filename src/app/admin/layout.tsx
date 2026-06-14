@@ -10,6 +10,7 @@ export const metadata = {
 const NAV = [
   ["/admin", "الرئيسية"],
   ["/admin/restaurants", "المطاعم"],
+  ["/admin/events", "الفعاليات"],
   ["/admin/claims", "طلبات الملكية"],
   ["/admin/reviews", "التقييمات"],
   ["/admin/collections", "القوائم المختارة"],

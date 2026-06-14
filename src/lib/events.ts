@@ -1,3 +1,4 @@
+import { z } from "zod";
 import { db } from "./db";
 import { formatNum } from "./format";
 
@@ -151,7 +152,7 @@ export async function getEventsInWindow(now = new Date(), days = 8) {
   const from = new Date(now.getTime() - 2 * 86_400_000);
   const to = new Date(now.getTime() + (days + 1) * 86_400_000);
   return db.event.findMany({
-    where: { startsAt: { gte: from, lte: to } },
+    where: { status: "APPROVED", startsAt: { gte: from, lte: to } },
     orderBy: { startsAt: "asc" },
   });
 }
@@ -160,6 +161,7 @@ export async function getEventsInWindow(now = new Date(), days = 8) {
 export async function getFeaturedEvents(now = new Date(), take = 5) {
   return db.event.findMany({
     where: {
+      status: "APPROVED",
       featured: true,
       OR: [{ endsAt: { gte: now } }, { endsAt: null, startsAt: { gte: new Date(now.getTime() - 86_400_000) } }],
     },
@@ -169,13 +171,19 @@ export async function getFeaturedEvents(now = new Date(), take = 5) {
 }
 
 export async function getEventBySlug(slug: string) {
-  return db.event.findUnique({ where: { slug } });
+  return db.event.findFirst({ where: { slug, status: "APPROVED" } });
+}
+
+/** All events owned by a user (any status) — for the owner dashboard. */
+export async function getEventsByOwner(userId: string) {
+  return db.event.findMany({ where: { ownerId: userId }, orderBy: { startsAt: "asc" } });
 }
 
 /** Up to `take` other events in the same category, soonest first. */
 export async function getSimilarEvents(category: string, excludeId: string, now = new Date(), take = 4) {
   return db.event.findMany({
     where: {
+      status: "APPROVED",
       category,
       id: { not: excludeId },
       OR: [{ endsAt: { gte: now } }, { endsAt: null, startsAt: { gte: new Date(now.getTime() - 86_400_000) } }],
@@ -183,4 +191,95 @@ export async function getSimilarEvents(category: string, excludeId: string, now 
     orderBy: { startsAt: "asc" },
     take,
   });
+}
+
+// --- Event create/edit form parsing (shared by admin + owner actions) ---
+
+const CATEGORY_SLUGS = EVENT_CATEGORIES.map((c) => c.slug) as [string, ...string[]];
+const TONES = ["a", "b", "c", "d", "e", "f"];
+
+/** Core event fields shared by every create/edit path. `organizer` is omitted
+ * (left unchanged on update) when no organizer name is given. */
+export type EventCoreData = {
+  title: string;
+  category: string;
+  venue: string;
+  area: string;
+  summary: string | null;
+  description: string | null;
+  address: string | null;
+  startsAt: Date;
+  endsAt: Date | null;
+  allDay: boolean;
+  timeLabel: string | null;
+  priceFrom: number | null;
+  priceNote: string | null;
+  tone: string;
+  imageUrl: string | null;
+  organizer?: { name: string; phone?: string };
+};
+
+const eventSchema = z.object({
+  title: z.string().trim().min(2, "عنوان الفعالية مطلوب").max(160),
+  category: z.enum(CATEGORY_SLUGS, "اختر فئة صحيحة"),
+  venue: z.string().trim().min(2, "المكان مطلوب").max(160),
+  area: z.string().trim().min(1, "المنطقة مطلوبة").max(120),
+});
+
+/** Parse + validate the event form. Returns the core data or a first error. */
+export function parseEventForm(formData: FormData): { data: EventCoreData } | { error: string } {
+  const base = eventSchema.safeParse({
+    title: formData.get("title"),
+    category: formData.get("category"),
+    venue: formData.get("venue"),
+    area: formData.get("area"),
+  });
+  if (!base.success) return { error: base.error.issues[0]?.message ?? "بيانات غير صالحة" };
+
+  const startsAt = new Date(String(formData.get("startsAt") ?? ""));
+  if (Number.isNaN(startsAt.getTime())) return { error: "تاريخ ووقت البداية مطلوب" };
+  const endsAtRaw = String(formData.get("endsAt") ?? "").trim();
+  const endsAt = endsAtRaw ? new Date(endsAtRaw) : null;
+  if (endsAt && Number.isNaN(endsAt.getTime())) return { error: "تاريخ الانتهاء غير صالح" };
+  if (endsAt && endsAt < startsAt) return { error: "تاريخ الانتهاء يجب أن يكون بعد البداية" };
+
+  const priceRaw = String(formData.get("priceFrom") ?? "").trim();
+  const priceFrom = priceRaw ? Number(priceRaw) : null;
+  if (priceFrom !== null && (!Number.isInteger(priceFrom) || priceFrom < 0)) {
+    return { error: "السعر يجب أن يكون رقماً صحيحاً" };
+  }
+
+  const toneRaw = String(formData.get("tone") ?? "a");
+  const clean = (v: FormDataEntryValue | null) => String(v ?? "").trim() || null;
+
+  const orgName = String(formData.get("organizerName") ?? "").trim();
+  const orgPhone = String(formData.get("organizerPhone") ?? "").trim();
+
+  const data: EventCoreData = {
+    title: base.data.title,
+    category: base.data.category,
+    venue: base.data.venue,
+    area: base.data.area,
+    summary: clean(formData.get("summary")),
+    description: clean(formData.get("description")),
+    address: clean(formData.get("address")),
+    startsAt,
+    endsAt,
+    allDay: formData.get("allDay") === "on",
+    timeLabel: clean(formData.get("timeLabel")),
+    priceFrom,
+    priceNote: clean(formData.get("priceNote")),
+    tone: TONES.includes(toneRaw) ? toneRaw : "a",
+    imageUrl: clean(formData.get("imageUrl")),
+  };
+  if (orgName) data.organizer = { name: orgName, ...(orgPhone ? { phone: orgPhone } : {}) };
+  return { data };
+}
+
+/** Format an instant as a `datetime-local` value (UTC components, so it round-trips
+ * with server-side `new Date(...)` parsing). */
+export function toDatetimeLocal(d: Date | null | undefined): string {
+  if (!d) return "";
+  const p = (n: number) => String(n).padStart(2, "0");
+  return `${d.getUTCFullYear()}-${p(d.getUTCMonth() + 1)}-${p(d.getUTCDate())}T${p(d.getUTCHours())}:${p(d.getUTCMinutes())}`;
 }

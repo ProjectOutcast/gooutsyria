@@ -26,3 +26,14 @@ export async function requireRestaurantOwnership(restaurantId: string) {
   }
   return { user, restaurant };
 }
+
+/** Returns the event only if the current user owns it (or is an admin). */
+export async function requireEventOwnership(eventId: string) {
+  const user = await requireUser();
+  const event = await db.event.findUnique({ where: { id: eventId } });
+  if (!event) redirect("/dashboard");
+  if (event.ownerId !== user.id && user.role !== "ADMIN") {
+    redirect("/dashboard");
+  }
+  return { user, event };
+}

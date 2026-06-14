@@ -77,6 +77,7 @@ model User {
   reviews     Review[]
   claims      OwnerClaim[]
   restaurants Restaurant[] @relation("OwnerRestaurants")
+  events      Event[]      @relation("OwnerEvents")
   saved       SavedPlace[]
 }
 
@@ -384,9 +385,16 @@ model Event {
   program        Json? // [{ date?, title, detail?, time? }]
   lat            Float?
   lng            Float?
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
+
+  status  ListingStatus @default(APPROVED) // owner-submitted start PENDING; admin-created/seeded are APPROVED
+  ownerId String? // organizer's user account (lets them edit from the dashboard)
+  owner   User?         @relation("OwnerEvents", fields: [ownerId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([startsAt])
   @@index([category])
+  @@index([status])
+  @@index([ownerId])
 }
