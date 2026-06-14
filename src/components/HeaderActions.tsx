@@ -287,7 +287,7 @@ export function HeaderActions({
                   <Link
                     key={l.label}
                     href={l.href}
-                    className="flex items-center gap-2 my-2 py-2.5 px-3 rounded-xl bg-primary-500 text-white text-[16px] font-bold"
+                    className="flex items-center gap-2 my-2 py-2.5 px-3 rounded-lg bg-[linear-gradient(120deg,#E14434,#E0902B)] text-white text-[16px] font-bold"
                   >
                     <span aria-hidden>🔥</span>
                     {l.label}
