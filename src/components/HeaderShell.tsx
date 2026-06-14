@@ -2,9 +2,9 @@ import Link from "next/link";
 import { MainNav } from "./MainNav";
 import { HeaderActions } from "./HeaderActions";
 
-function Logo() {
+function Logo({ city }: { city: string }) {
   return (
-    <Link href="/" className="flex items-center gap-2.5 shrink-0">
+    <Link href={`/${city}`} className="flex items-center gap-2.5 shrink-0">
       <span className="w-[38px] h-[38px] rounded-xl bg-primary-500 grid place-items-center shadow-accent">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2" />
@@ -24,6 +24,7 @@ function Logo() {
 
 export function HeaderShell({
   user,
+  city,
 }: {
   user: {
     name: string | null;
@@ -31,15 +32,16 @@ export function HeaderShell({
     image: string | null;
     role: string;
   } | null;
+  city: string;
 }) {
   return (
     <header className="sticky top-0 z-40 h-[67px] bg-ink border-b border-white/10">
       <div className="px-5 sm:px-8 h-full flex items-center justify-between gap-4">
         <div className="flex items-center gap-8 min-w-0">
-          <Logo />
-          <MainNav onDark />
+          <Logo city={city} />
+          <MainNav onDark city={city} />
         </div>
-        <HeaderActions user={user} onDark />
+        <HeaderActions user={user} onDark city={city} />
       </div>
     </header>
   );

@@ -7,6 +7,7 @@ import type { PrismaClient } from "../generated/prisma/client";
 
 type SeedEvent = {
   slug: string;
+  city?: string; // city slug; defaults to "damascus"
   title: string;
   category: string;
   venue: string;
@@ -126,6 +127,14 @@ const EVENTS: SeedEvent[] = [
   { slug: "antiques-market", title: "سوق الأنتيك والتحف", category: "market", venue: "خان أسعد باشا", area: "دمشق القديمة", day: 6, timeLabel: "١٠:٠٠ ص", priceNote: "دخول مجاني", tone: "d", summary: "تحف وقطع أنتيك نادرة في خان تاريخي." },
   { slug: "world-opera-night", title: "ليلة الأوبرا العالمية", category: "music", venue: "دار الأوبرا", area: "أبو رمانة", day: 7, timeLabel: "٨:٠٠ م", priceFrom: 40000, tone: "b", summary: "روائع الأوبرا العالمية بأصوات استثنائية." },
   { slug: "king-lear-play", title: "مسرحية كلاسيكية: الملك لير", category: "theatre", venue: "مسرح الحمراء", area: "وسط البلد", day: 7, timeLabel: "٧:٣٠ م", priceFrom: 22000, tone: "a", summary: "تقديم كلاسيكي لرائعة شكسبير الملك لير." },
+
+  // --- Aleppo (حلب) ---
+  { slug: "aleppo-citadel-music-night", city: "aleppo", title: "ليلة موسيقية في قلعة حلب", category: "music", venue: "قلعة حلب", area: "القلعة", day: 1, timeLabel: "٨:٠٠ م", priceFrom: 30000, tone: "a", featured: true, featuredKicker: "حفل خاص", summary: "أمسية موسيقية في أجواء قلعة حلب التاريخية." },
+  { slug: "aleppo-cuisine-festival", city: "aleppo", title: "مهرجان المطبخ الحلبي", category: "festival", venue: "حديقة السبيل", area: "السبيل", day: 0, endDay: 3, timeLabel: "٥:٠٠ م", priceNote: "دخول مجاني", tone: "e", featured: true, featuredKicker: "مهرجان · ٤ أيام", summary: "أشهى أطباق المطبخ الحلبي العريق في مكان واحد." },
+  { slug: "aleppo-muwashahat-night", city: "aleppo", title: "أمسية موشحات وقدود حلبية", category: "music", venue: "بيت الصابوني", area: "الجديدة", day: 2, timeLabel: "٩:٠٠ م", priceFrom: 25000, tone: "f", summary: "ليلة موشحات وقدود حلبية أصيلة." },
+  { slug: "aleppo-handicrafts-market", city: "aleppo", title: "سوق الحرف الحلبية", category: "market", venue: "خان الوزير", area: "المدينة القديمة", day: 3, timeLabel: "١١:٠٠ ص", priceNote: "دخول مجاني", tone: "d", summary: "حرف يدوية وصابون الغار ومنتجات حلبية تقليدية." },
+  { slug: "aleppo-theatre-hakaya", city: "aleppo", title: "مسرحية: حكايا حلبية", category: "theatre", venue: "المسرح القومي بحلب", area: "العزيزية", day: 4, timeLabel: "٧:٣٠ م", priceFrom: 20000, tone: "b", summary: "عرض مسرحي يحاكي الحياة الحلبية الأصيلة." },
+  { slug: "aleppo-derby-match", city: "aleppo", title: "ديربي حلب: الاتحاد × الحرية", category: "sports", venue: "ملعب حلب الدولي", area: "الحمدانية", day: 5, timeLabel: "٦:٠٠ م", priceFrom: 10000, tone: "c", summary: "ديربي حلبي مرتقب بين الاتحاد والحرية." },
 ];
 
 // Higgsfield-generated cover photos for the demo events, keyed by slug.
@@ -166,8 +175,16 @@ export async function seedEvents(db: PrismaClient): Promise<number> {
   const base = new Date(`${todayKey}T12:00:00.000Z`).getTime();
   const at = (offset: number) => new Date(base + offset * 86_400_000);
 
+  const cityRows = await db.city.findMany({
+    where: { slug: { in: ["damascus", "aleppo"] } },
+    select: { id: true, slug: true },
+  });
+  const cityId = new Map(cityRows.map((c) => [c.slug, c.id]));
+
   let n = 0;
   for (const e of EVENTS) {
+    const cid = cityId.get(e.city ?? "damascus");
+    if (!cid) continue; // city not seeded — skip
     const program = e.program?.map((p) => ({
       date: at(p.dayOffset).toISOString(),
       title: p.title,
@@ -187,6 +204,7 @@ export async function seedEvents(db: PrismaClient): Promise<number> {
       priceFrom: e.priceFrom ?? null,
       priceNote: e.priceNote ?? null,
       tone: e.tone,
+      cityId: cid,
       imageUrl: IMAGES[e.slug] ?? null,
       featured: e.featured ?? false,
       featuredKicker: e.featuredKicker ?? null,

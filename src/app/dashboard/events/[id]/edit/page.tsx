@@ -2,6 +2,7 @@ import Link from "next/link";
 import { requireEventOwnership } from "@/lib/guards";
 import { updateMyEvent } from "@/actions/events";
 import { EVENT_CATEGORIES, toDatetimeLocal } from "@/lib/events";
+import { ACTIVE_CITIES } from "@/lib/cities";
 import { EventForm } from "@/components/EventForm";
 
 export const metadata = { title: "تعديل الفعالية" };
@@ -33,7 +34,7 @@ export default async function EditMyEventPage({
       <div className="mb-5 bg-stone-50 border border-stone-200 rounded-xl p-3 text-sm text-stone-600">
         {STATUS_NOTE[event.status] ?? ""}
         {event.status === "APPROVED" && (
-          <Link href={`/events/${event.slug}`} className="ms-2 text-primary-700 font-semibold">
+          <Link href={`/${event.city.slug}/events/${event.slug}`} className="ms-2 text-primary-700 font-semibold">
             عرض الصفحة العامة ↗
           </Link>
         )}
@@ -41,6 +42,7 @@ export default async function EditMyEventPage({
       <EventForm
         action={updateMyEvent}
         categories={EVENT_CATEGORIES}
+        cities={ACTIVE_CITIES}
         submitLabel="حفظ التعديلات"
         successText="✓ تم حفظ التعديلات"
         initial={{
@@ -62,6 +64,7 @@ export default async function EditMyEventPage({
           imageUrl: event.imageUrl,
           organizerName: organizer?.name ?? "",
           organizerPhone: organizer?.phone ?? "",
+          citySlug: event.city.slug,
         }}
       />
     </div>

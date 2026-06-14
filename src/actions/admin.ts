@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 import { requireAdmin } from "@/lib/guards";
 import { uniqueSlug, slugify } from "@/lib/slug";
 import { parseEventForm } from "@/lib/events";
+import { getCity } from "@/lib/queries";
 import { recomputeRating } from "./reviews";
 import type { FormState } from "./events";
 import type {
@@ -374,13 +375,15 @@ export async function createEvent(_prev: FormState, formData: FormData): Promise
   if ("error" in parsed) return { error: parsed.error };
   const owner = await resolveEventOwner(formData);
   if ("error" in owner) return { error: owner.error };
+  const city = await getCity(String(formData.get("citySlug") ?? ""));
+  if (!city) return { error: "اختر مدينة صحيحة" };
 
   const slug = await uniqueSlug(parsed.data.title, async (s) =>
     Boolean(await db.event.findUnique({ where: { slug: s } }))
   );
 
   await db.event.create({
-    data: { ...parsed.data, slug, ownerId: owner.ownerId, ...eventExtras(formData) },
+    data: { ...parsed.data, slug, cityId: city.id, ownerId: owner.ownerId, ...eventExtras(formData) },
   });
   revalidatePath("/admin/events");
   revalidatePath("/events");
@@ -394,10 +397,12 @@ export async function updateEvent(_prev: FormState, formData: FormData): Promise
   if ("error" in parsed) return { error: parsed.error };
   const owner = await resolveEventOwner(formData);
   if ("error" in owner) return { error: owner.error };
+  const city = await getCity(String(formData.get("citySlug") ?? ""));
+  if (!city) return { error: "اختر مدينة صحيحة" };
 
   const event = await db.event.update({
     where: { id },
-    data: { ...parsed.data, ownerId: owner.ownerId, ...eventExtras(formData) },
+    data: { ...parsed.data, cityId: city.id, ownerId: owner.ownerId, ...eventExtras(formData) },
   });
   revalidatePath("/admin/events");
   revalidatePath("/events");

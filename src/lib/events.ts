@@ -148,20 +148,21 @@ export function monthLabel(now = new Date()): string {
 }
 
 /** Events within the day-strip window (today … today+days). */
-export async function getEventsInWindow(now = new Date(), days = 8) {
+export async function getEventsInWindow(citySlug: string, now = new Date(), days = 8) {
   const from = new Date(now.getTime() - 2 * 86_400_000);
   const to = new Date(now.getTime() + (days + 1) * 86_400_000);
   return db.event.findMany({
-    where: { status: "APPROVED", startsAt: { gte: from, lte: to } },
+    where: { status: "APPROVED", city: { slug: citySlug }, startsAt: { gte: from, lte: to } },
     orderBy: { startsAt: "asc" },
   });
 }
 
 /** Currently-promoted events for the top carousel. */
-export async function getFeaturedEvents(now = new Date(), take = 5) {
+export async function getFeaturedEvents(citySlug: string, now = new Date(), take = 5) {
   return db.event.findMany({
     where: {
       status: "APPROVED",
+      city: { slug: citySlug },
       featured: true,
       OR: [{ endsAt: { gte: now } }, { endsAt: null, startsAt: { gte: new Date(now.getTime() - 86_400_000) } }],
     },
@@ -170,8 +171,8 @@ export async function getFeaturedEvents(now = new Date(), take = 5) {
   });
 }
 
-export async function getEventBySlug(slug: string) {
-  return db.event.findFirst({ where: { slug, status: "APPROVED" } });
+export async function getEventBySlug(citySlug: string, slug: string) {
+  return db.event.findFirst({ where: { slug, status: "APPROVED", city: { slug: citySlug } } });
 }
 
 /** All events owned by a user (any status) — for the owner dashboard. */
@@ -180,10 +181,11 @@ export async function getEventsByOwner(userId: string) {
 }
 
 /** Up to `take` other events in the same category, soonest first. */
-export async function getSimilarEvents(category: string, excludeId: string, now = new Date(), take = 4) {
+export async function getSimilarEvents(citySlug: string, category: string, excludeId: string, now = new Date(), take = 4) {
   return db.event.findMany({
     where: {
       status: "APPROVED",
+      city: { slug: citySlug },
       category,
       id: { not: excludeId },
       OR: [{ endsAt: { gte: now } }, { endsAt: null, startsAt: { gte: new Date(now.getTime() - 86_400_000) } }],

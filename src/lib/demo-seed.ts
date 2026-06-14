@@ -829,6 +829,118 @@ export async function seedDemoData(db: PrismaClient): Promise<SeedResult> {
     }
   }
 
+  // --- Aleppo (حلب) demo data ---
+  const aleppo = await db.city.upsert({
+    where: { slug: "aleppo" },
+    update: {},
+    create: { slug: "aleppo", nameAr: "حلب" },
+  });
+  const aleppoNbNames = ["العزيزية", "السبيل", "الجميلية", "الفرقان", "السليمانية", "المدينة القديمة", "الشهباء"];
+  const aleppoNbs = await Promise.all(
+    aleppoNbNames.map((nameAr) =>
+      db.neighborhood.upsert({
+        where: { cityId_slug: { cityId: aleppo.id, slug: slugify(nameAr) } },
+        update: {},
+        create: { nameAr, slug: slugify(nameAr), cityId: aleppo.id },
+      })
+    )
+  );
+  const anb = (name: string) => aleppoNbs.find((n) => n.nameAr === name)!.id;
+
+  const ALEPPO_RESTAURANTS: {
+    nameAr: string;
+    nameEn: string;
+    desc: string;
+    phone: string;
+    nbName: string;
+    price: "CHEAP" | "MODERATE" | "EXPENSIVE" | "LUXURY";
+    cuisineSlugs: string[];
+    featureSlugs: string[];
+    photos: number[];
+    hours: Hours;
+    pro?: boolean;
+    verified?: boolean;
+  }[] = [
+    { nameAr: "بيت سيتّي الحلبي", nameEn: "Beit Sitti Aleppo", desc: "مطبخ حلبي بيتي أصيل في قلب العزيزية.", phone: "+963 21 222 1100", nbName: "العزيزية", price: "MODERATE", cuisineSlugs: ["aleppan", "shami"], featureSlugs: ["family", "outdoor", "old-house"], photos: [1, 2, 3], hours: HOURS_STANDARD, verified: true, pro: true },
+    { nameAr: "كباب الشهباء", nameEn: "Shahba Kebab", desc: "كباب ومشاوي حلبية على الفحم.", phone: "+963 21 333 2200", nbName: "الجميلية", price: "MODERATE", cuisineSlugs: ["mashawi", "aleppan"], featureSlugs: ["family", "delivery"], photos: [3, 4, 5], hours: HOURS_STANDARD, verified: true },
+    { nameAr: "مطعم خان الحرير", nameEn: "Khan Al Harir", desc: "أجواء تاريخية في خان حلبي قديم مع أطباق حلبية فاخرة.", phone: "+963 21 444 3300", nbName: "المدينة القديمة", price: "EXPENSIVE", cuisineSlugs: ["aleppan", "shami"], featureSlugs: ["old-house", "live-music", "view"], photos: [7, 8, 9], hours: HOURS_STANDARD, verified: true },
+    { nameAr: "قهوة القلعة", nameEn: "Citadel Cafe Aleppo", desc: "كافيه بإطلالة على قلعة حلب — قهوة مختصة ومساحة عمل.", phone: "+963 21 555 4400", nbName: "السبيل", price: "MODERATE", cuisineSlugs: ["cafe", "juices"], featureSlugs: ["wifi", "workspace", "outdoor", "view"], photos: [5, 6, 11], hours: HOURS_CAFE, pro: true },
+    { nameAr: "حلويات الشهباء", nameEn: "Shahba Sweets", desc: "حلويات حلبية شهيرة — معمول، بقلاوة، وكنافة.", phone: "+963 21 666 5500", nbName: "الفرقان", price: "CHEAP", cuisineSlugs: ["desserts", "pastries"], featureSlugs: ["family", "delivery"], photos: [6, 10, 16], hours: HOURS_STANDARD },
+    { nameAr: "بحر حلب", nameEn: "Aleppo Sea", desc: "مأكولات بحرية طازجة في أجواء راقية.", phone: "+963 21 777 6600", nbName: "السليمانية", price: "EXPENSIVE", cuisineSlugs: ["seafood"], featureSlugs: ["family", "parking", "view"], photos: [7, 13, 14], hours: HOURS_STANDARD },
+  ];
+
+  for (let i = 0; i < ALEPPO_RESTAURANTS.length; i++) {
+    const def = ALEPPO_RESTAURANTS[i];
+    const slug = slugify(def.nameEn);
+    const existing = await db.restaurant.findUnique({ where: { slug } });
+    if (existing) {
+      skipped++;
+      continue;
+    }
+    const r = await db.restaurant.create({
+      data: {
+        slug,
+        nameAr: def.nameAr,
+        nameEn: def.nameEn,
+        description: def.desc,
+        phone: def.phone,
+        cityId: aleppo.id,
+        neighborhoodId: anb(def.nbName),
+        priceBand: def.price,
+        openingHours: def.hours,
+        status: "APPROVED",
+        verified: def.verified ?? false,
+        tier: def.pro ? "PRO" : "FREE",
+        viewCount: 90 + i * 40,
+        callClicks: 6 + i * 2,
+        whatsappClicks: 4 + i,
+        directionClicks: 3 + i,
+        cuisines: { create: def.cuisineSlugs.map((s) => ({ cuisineId: cu(s) })) },
+        features: { create: def.featureSlugs.map((s) => ({ featureId: ft(s) })) },
+        photos: {
+          create: [
+            ...def.photos.map((p, pi) => ({
+              url: `/placeholders/p${p}.jpg`,
+              alt: def.nameAr,
+              kind: (pi === 0 ? "EXTERIOR" : pi === 1 ? "INTERIOR" : "FOOD") as "EXTERIOR" | "INTERIOR" | "FOOD",
+              sortOrder: pi,
+            })),
+            ...DEFAULT_MENU_PAGES.map((p, pi) => ({
+              url: `/placeholders/menu${p}.svg`,
+              alt: MENU_PAGE_TITLES[p - 1],
+              kind: "MENU" as const,
+              sortOrder: def.photos.length + pi,
+            })),
+          ],
+        },
+      },
+    });
+    created++;
+    const count = 3 + (i % 4);
+    for (let j = 0; j < count && j < reviewers.length; j++) {
+      const [rating, text] = REVIEW_TEXTS[(i + j) % REVIEW_TEXTS.length];
+      await db.review.create({
+        data: {
+          restaurantId: r.id,
+          userId: reviewers[j].id,
+          rating,
+          text,
+          status: "APPROVED",
+          createdAt: new Date(Date.now() - (j + 1) * 86400000 * 3),
+        },
+      });
+    }
+    const agg = await db.review.aggregate({
+      where: { restaurantId: r.id, status: "APPROVED" },
+      _avg: { rating: true },
+      _count: true,
+    });
+    await db.restaurant.update({
+      where: { id: r.id },
+      data: { avgRating: agg._avg.rating ?? 0, ratingCount: agg._count },
+    });
+  }
+
   const createdEvents = await seedEvents(db);
 
   return {

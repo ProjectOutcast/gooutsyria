@@ -1,35 +1,22 @@
 import Link from "next/link";
+import { getCurrentCity } from "@/lib/current-city";
+import { ACTIVE_CITIES, COMING_SOON_CITIES, cityNameAr } from "@/lib/cities";
 
-const COLS: [string, [string, string][]][] = [
-  [
-    "اكتشف",
-    [
-      ["مطاعم دمشق", "/damascus/restaurants"],
-      ["قوائم مختارة", "/damascus/collections"],
-      ["العروض الحالية", "/damascus/offers"],
-      ["خريطة الأماكن", "/damascus/map"],
-    ],
-  ],
-  [
-    "المدن",
-    [
-      ["دمشق", "/damascus/restaurants"],
-      ["حلب — قريباً", "#"],
-      ["حمص — قريباً", "#"],
-      ["اللاذقية — قريباً", "#"],
-    ],
-  ],
-  [
-    "للأعمال",
-    [
-      ["أضف مطعمك مجاناً", "/for-restaurants"],
-      ["الباقات والإعلان", "/for-restaurants#pricing"],
-      ["لوحة صاحب المطعم", "/dashboard"],
-    ],
-  ],
-];
+export async function Footer() {
+  const city = await getCurrentCity();
+  const discover: [string, string][] = [
+    [`مطاعم ${cityNameAr(city)}`, `/${city}/restaurants`],
+    ["قوائم مختارة", `/${city}/collections`],
+    ["العروض الحالية", `/${city}/offers`],
+    ["الفعاليات", `/${city}/events`],
+    ["خريطة الأماكن", `/${city}/map`],
+  ];
+  const business: [string, string][] = [
+    ["أضف مطعمك مجاناً", "/for-restaurants"],
+    ["الباقات والإعلان", "/for-restaurants#pricing"],
+    ["لوحة صاحب المطعم", "/dashboard"],
+  ];
 
-export function Footer() {
   return (
     <footer className="bg-ink text-[#B7A79E] mt-20">
       <div className="max-w-[1240px] mx-auto px-7 py-12 grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
@@ -38,8 +25,8 @@ export function Footer() {
             Go Out <span className="text-primary-300">Syria</span>
           </div>
           <p className="text-sm leading-relaxed">
-            دليلك لاكتشاف أفضل المطاعم والكافيهات في سوريا — قوائم طعام،
-            تقييمات حقيقية، وعروض حصرية. نبدأ من دمشق.
+            دليلك لاكتشاف أفضل المطاعم والكافيهات والفعاليات في سوريا — قوائم طعام،
+            تقييمات حقيقية، وعروض حصرية.
           </p>
           <div className="flex gap-2.5 mt-5">
             {[
@@ -62,28 +49,48 @@ export function Footer() {
             ))}
           </div>
         </div>
-        {COLS.map(([title, links]) => (
-          <div key={title}>
-            <h3 className="font-semibold text-white mb-4 text-sm">{title}</h3>
-            <ul className="space-y-2.5 text-sm">
-              {links.map(([label, href]) => (
-                <li key={label}>
-                  {href === "#" ? (
-                    <span className="opacity-60">{label}</span>
-                  ) : (
-                    <Link href={href} className="hover:text-white transition-colors">
-                      {label}
-                    </Link>
-                  )}
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
+
+        <div>
+          <h3 className="font-semibold text-white mb-4 text-sm">اكتشف</h3>
+          <ul className="space-y-2.5 text-sm">
+            {discover.map(([label, href]) => (
+              <li key={label}>
+                <Link href={href} className="hover:text-white transition-colors">{label}</Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div>
+          <h3 className="font-semibold text-white mb-4 text-sm">المدن</h3>
+          <ul className="space-y-2.5 text-sm">
+            {ACTIVE_CITIES.map((c) => (
+              <li key={c.slug}>
+                <Link href={`/${c.slug}`} className="hover:text-white transition-colors">{c.nameAr}</Link>
+              </li>
+            ))}
+            {COMING_SOON_CITIES.map((c) => (
+              <li key={c.nameAr}>
+                <span className="opacity-60">{c.nameAr} — قريباً</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div>
+          <h3 className="font-semibold text-white mb-4 text-sm">للأعمال</h3>
+          <ul className="space-y-2.5 text-sm">
+            {business.map(([label, href]) => (
+              <li key={label}>
+                <Link href={href} className="hover:text-white transition-colors">{label}</Link>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
       <div className="border-t border-white/10 py-5">
         <div className="max-w-[1240px] mx-auto px-7 flex flex-wrap items-center justify-between gap-3 text-xs opacity-70">
-          <span>© {new Date().getFullYear()} Go Out Syria — جميع الحقوق محفوظة · صُنع بحب في دمشق</span>
+          <span>© {new Date().getFullYear()} Go Out Syria — جميع الحقوق محفوظة · صُنع بحب في سوريا</span>
           <span className="flex gap-5">
             <Link href="/privacy" className="hover:text-white">سياسة الخصوصية</Link>
             <Link href="/terms" className="hover:text-white">الشروط والأحكام</Link>

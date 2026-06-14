@@ -26,7 +26,7 @@ export default async function RestaurantDashboardLayout({
         <h1 className="text-2xl font-bold">{restaurant.nameAr}</h1>
         {restaurant.status === "APPROVED" && (
           <Link
-            href={`/damascus/restaurant/${restaurant.slug}`}
+            href={`/${restaurant.city.slug}/restaurant/${restaurant.slug}`}
             className="text-sm text-primary-700 font-semibold hover:underline"
           >
             عرض الصفحة العامة ←

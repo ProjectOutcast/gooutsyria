@@ -3,15 +3,9 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { NAV_LINKS } from "./MainNav";
+import { navLinks } from "./MainNav";
 import { logoutAction } from "@/actions/auth";
-
-const CITIES: { name: string; href?: string; soon?: boolean }[] = [
-  { name: "دمشق", href: "/damascus/restaurants" },
-  { name: "حلب", soon: true },
-  { name: "حمص", soon: true },
-  { name: "اللاذقية", soon: true },
-];
+import { ACTIVE_CITIES, COMING_SOON_CITIES, cityNameAr } from "@/lib/cities";
 
 const ACCOUNT_LINKS: { href: string; label: string; icon: AccountIconName }[] = [
   { href: "/account#saved", label: "أماكني المفضّلة", icon: "bookmark" },
@@ -70,6 +64,7 @@ function AccountIcon({ name }: { name: AccountIconName }) {
 export function HeaderActions({
   user,
   onDark,
+  city,
 }: {
   user: {
     name: string | null;
@@ -78,6 +73,7 @@ export function HeaderActions({
     role: string;
   } | null;
   onDark: boolean;
+  city: string;
 }) {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -116,7 +112,7 @@ export function HeaderActions({
           className={`flex items-center gap-1.5 rounded-full ps-3 pe-2.5 py-1.5 text-[13px] font-semibold transition-colors ${ghostChip}`}
         >
           {pinIcon}
-          دمشق
+          {cityNameAr(city)}
           <svg
             width="12"
             height="12"
@@ -137,28 +133,36 @@ export function HeaderActions({
             <div className="fixed inset-0 z-10" onClick={() => setCityOpen(false)} />
             <div className="absolute end-0 mt-2 z-20 w-44 bg-white border border-hairline rounded-xl shadow-card p-1.5">
               <p className="px-2.5 py-1 text-[11px] font-semibold text-muted2">اختر المدينة</p>
-              {CITIES.map((c) =>
-                c.href ? (
-                  <Link
-                    key={c.name}
-                    href={c.href}
+              {ACTIVE_CITIES.map((c) =>
+                c.slug === city ? (
+                  <span
+                    key={c.slug}
                     className="flex items-center justify-between rounded-lg px-2.5 py-2 text-[14px] font-semibold text-ink bg-primary-50"
                   >
-                    {c.name}
+                    {c.nameAr}
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary-500)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M20 6 9 17l-5-5" />
                     </svg>
-                  </Link>
-                ) : (
-                  <span
-                    key={c.name}
-                    className="flex items-center justify-between rounded-lg px-2.5 py-2 text-[14px] text-muted2 cursor-not-allowed"
-                  >
-                    {c.name}
-                    <span className="text-[10px] bg-chipbg rounded-full px-1.5 py-0.5">قريباً</span>
                   </span>
+                ) : (
+                  <Link
+                    key={c.slug}
+                    href={`/${c.slug}`}
+                    className="flex items-center justify-between rounded-lg px-2.5 py-2 text-[14px] font-semibold text-ink hover:bg-primary-50 transition-colors"
+                  >
+                    {c.nameAr}
+                  </Link>
                 )
               )}
+              {COMING_SOON_CITIES.map((c) => (
+                <span
+                  key={c.nameAr}
+                  className="flex items-center justify-between rounded-lg px-2.5 py-2 text-[14px] text-muted2 cursor-not-allowed"
+                >
+                  {c.nameAr}
+                  <span className="text-[10px] bg-chipbg rounded-full px-1.5 py-0.5">قريباً</span>
+                </span>
+              ))}
             </div>
           </>
         )}
@@ -282,7 +286,7 @@ export function HeaderActions({
               </button>
             </div>
             <nav className="px-5 py-1">
-              {NAV_LINKS.map((l) =>
+              {navLinks(city).map((l) =>
                 l.highlight ? (
                   <Link
                     key={l.label}
