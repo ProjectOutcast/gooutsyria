@@ -267,14 +267,14 @@ export function HeaderActions({
       {menuOpen && (
         <div className="lg:hidden fixed inset-0 z-50">
           <div className="absolute inset-0 bg-ink/40" onClick={() => setMenuOpen(false)} />
-          <div className="absolute inset-x-0 top-0 bg-page rounded-b-2xl shadow-2xl max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between px-5 h-[67px] border-b border-hairline">
-              <span className="font-bold text-ink">القائمة</span>
+          <div className="absolute inset-x-0 top-0 bg-ink rounded-b-2xl shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between px-5 h-[67px] border-b border-white/10">
+              <span className="font-bold text-white">القائمة</span>
               <button
                 type="button"
                 onClick={() => setMenuOpen(false)}
                 aria-label="إغلاق"
-                className="grid place-items-center w-9 h-9 rounded-lg text-ink2 hover:text-ink"
+                className="grid place-items-center w-9 h-9 rounded-lg text-white/70 hover:text-white"
               >
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M18 6 6 18M6 6l12 12" />
@@ -286,7 +286,7 @@ export function HeaderActions({
                 <Link
                   key={l.label}
                   href={l.href}
-                  className="block py-3 text-[16px] font-semibold text-ink border-b border-hairline/60"
+                  className="block py-3 text-[16px] font-semibold text-white/85 border-b border-white/10"
                 >
                   {l.label}
                 </Link>
@@ -296,7 +296,7 @@ export function HeaderActions({
                   <Link
                     key={l.href}
                     href={l.href}
-                    className="block py-3 text-[16px] font-semibold text-ink border-b border-hairline/60"
+                    className="block py-3 text-[16px] font-semibold text-white/85 border-b border-white/10"
                   >
                     {l.label}
                   </Link>
@@ -304,11 +304,11 @@ export function HeaderActions({
               {isStaff && (
                 <>
                   {user!.role === "ADMIN" && (
-                    <Link href="/admin" className="block py-3 text-[16px] font-semibold text-ink border-b border-hairline/60">
+                    <Link href="/admin" className="block py-3 text-[16px] font-semibold text-white/85 border-b border-white/10">
                       الإدارة
                     </Link>
                   )}
-                  <Link href="/dashboard" className="block py-3 text-[16px] font-semibold text-ink border-b border-hairline/60">
+                  <Link href="/dashboard" className="block py-3 text-[16px] font-semibold text-white/85 border-b border-white/10">
                     لوحتي
                   </Link>
                 </>
@@ -317,7 +317,7 @@ export function HeaderActions({
             <div className="p-5 flex flex-col gap-2.5">
               <Link
                 href="/for-restaurants"
-                className="flex items-center justify-center bg-ink text-white rounded-xl px-4 py-3 text-[15px] font-bold"
+                className="flex items-center justify-center bg-white text-ink hover:bg-white/90 rounded-xl px-4 py-3 text-[15px] font-bold transition-colors"
               >
                 أضف مطعمك
               </Link>
@@ -325,7 +325,7 @@ export function HeaderActions({
                 <form action={logoutAction}>
                   <button
                     type="submit"
-                    className="w-full flex items-center justify-center border border-hairline2 text-warn rounded-xl px-4 py-3 text-[15px] font-semibold"
+                    className="w-full flex items-center justify-center border border-white/15 text-primary-300 rounded-xl px-4 py-3 text-[15px] font-semibold"
                   >
                     تسجيل الخروج
                   </button>
@@ -333,7 +333,7 @@ export function HeaderActions({
               ) : (
                 <Link
                   href="/login"
-                  className="flex items-center justify-center border border-hairline2 text-ink rounded-xl px-4 py-3 text-[15px] font-semibold"
+                  className="flex items-center justify-center border border-white/15 text-white rounded-xl px-4 py-3 text-[15px] font-semibold"
                 >
                   تسجيل الدخول
                 </Link>
