@@ -847,6 +847,7 @@ export async function seedDemoData(db: PrismaClient): Promise<SeedResult> {
   );
   const anb = (name: string) => aleppoNbs.find((n) => n.nameAr === name)!.id;
 
+  const ACDN = "https://d8j0ntlcm91z4.cloudfront.net/user_3EheDHYPzspdioz8fQRTl2NIv7K/";
   const ALEPPO_RESTAURANTS: {
     nameAr: string;
     nameEn: string;
@@ -856,17 +857,17 @@ export async function seedDemoData(db: PrismaClient): Promise<SeedResult> {
     price: "CHEAP" | "MODERATE" | "EXPENSIVE" | "LUXURY";
     cuisineSlugs: string[];
     featureSlugs: string[];
-    photos: number[];
+    images: string[]; // [exterior, interior, food] — Higgsfield-generated
     hours: Hours;
     pro?: boolean;
     verified?: boolean;
   }[] = [
-    { nameAr: "بيت سيتّي الحلبي", nameEn: "Beit Sitti Aleppo", desc: "مطبخ حلبي بيتي أصيل في قلب العزيزية.", phone: "+963 21 222 1100", nbName: "العزيزية", price: "MODERATE", cuisineSlugs: ["aleppan", "shami"], featureSlugs: ["family", "outdoor", "old-house"], photos: [1, 2, 3], hours: HOURS_STANDARD, verified: true, pro: true },
-    { nameAr: "كباب الشهباء", nameEn: "Shahba Kebab", desc: "كباب ومشاوي حلبية على الفحم.", phone: "+963 21 333 2200", nbName: "الجميلية", price: "MODERATE", cuisineSlugs: ["mashawi", "aleppan"], featureSlugs: ["family", "delivery"], photos: [3, 4, 5], hours: HOURS_STANDARD, verified: true },
-    { nameAr: "مطعم خان الحرير", nameEn: "Khan Al Harir", desc: "أجواء تاريخية في خان حلبي قديم مع أطباق حلبية فاخرة.", phone: "+963 21 444 3300", nbName: "المدينة القديمة", price: "EXPENSIVE", cuisineSlugs: ["aleppan", "shami"], featureSlugs: ["old-house", "live-music", "view"], photos: [7, 8, 9], hours: HOURS_STANDARD, verified: true },
-    { nameAr: "قهوة القلعة", nameEn: "Citadel Cafe Aleppo", desc: "كافيه بإطلالة على قلعة حلب — قهوة مختصة ومساحة عمل.", phone: "+963 21 555 4400", nbName: "السبيل", price: "MODERATE", cuisineSlugs: ["cafe", "juices"], featureSlugs: ["wifi", "workspace", "outdoor", "view"], photos: [5, 6, 11], hours: HOURS_CAFE, pro: true },
-    { nameAr: "حلويات الشهباء", nameEn: "Shahba Sweets", desc: "حلويات حلبية شهيرة — معمول، بقلاوة، وكنافة.", phone: "+963 21 666 5500", nbName: "الفرقان", price: "CHEAP", cuisineSlugs: ["desserts", "pastries"], featureSlugs: ["family", "delivery"], photos: [6, 10, 16], hours: HOURS_STANDARD },
-    { nameAr: "بحر حلب", nameEn: "Aleppo Sea", desc: "مأكولات بحرية طازجة في أجواء راقية.", phone: "+963 21 777 6600", nbName: "السليمانية", price: "EXPENSIVE", cuisineSlugs: ["seafood"], featureSlugs: ["family", "parking", "view"], photos: [7, 13, 14], hours: HOURS_STANDARD },
+    { nameAr: "بيت سيتّي الحلبي", nameEn: "Beit Sitti Aleppo", desc: "مطبخ حلبي بيتي أصيل في قلب العزيزية.", phone: "+963 21 222 1100", nbName: "العزيزية", price: "MODERATE", cuisineSlugs: ["aleppan", "shami"], featureSlugs: ["family", "outdoor", "old-house"], images: [ACDN + "hf_20260614_110748_8a372f3d-fc25-4af3-ac24-0458a4ee673a.png", ACDN + "hf_20260614_110749_b8d73d4b-5256-4871-b332-ac2600341799.png", ACDN + "hf_20260614_110750_80ad6f9b-e910-4649-9c47-93a1e72ce261.png"], hours: HOURS_STANDARD, verified: true, pro: true },
+    { nameAr: "كباب الشهباء", nameEn: "Shahba Kebab", desc: "كباب ومشاوي حلبية على الفحم.", phone: "+963 21 333 2200", nbName: "الجميلية", price: "MODERATE", cuisineSlugs: ["mashawi", "aleppan"], featureSlugs: ["family", "delivery"], images: [ACDN + "hf_20260614_110752_74060a9e-1788-41ea-844a-725bbdf15b53.png", ACDN + "hf_20260614_110819_fbb52e63-1153-4358-80b1-77e7c9b20947.png", ACDN + "hf_20260614_110821_9a51456c-8882-48eb-8711-8e5bfdb3fd7c.png"], hours: HOURS_STANDARD, verified: true },
+    { nameAr: "مطعم خان الحرير", nameEn: "Khan Al Harir", desc: "أجواء تاريخية في خان حلبي قديم مع أطباق حلبية فاخرة.", phone: "+963 21 444 3300", nbName: "المدينة القديمة", price: "EXPENSIVE", cuisineSlugs: ["aleppan", "shami"], featureSlugs: ["old-house", "live-music", "view"], images: [ACDN + "hf_20260614_110822_a292b473-81b8-4370-8a40-0041ce00305e.png", ACDN + "hf_20260614_110833_183fa1bf-c4be-4f49-a311-e57e9505461b.png", ACDN + "hf_20260614_110849_6347a0ff-9de2-41af-9bc5-a56ba2833881.png"], hours: HOURS_STANDARD, verified: true },
+    { nameAr: "قهوة القلعة", nameEn: "Citadel Cafe Aleppo", desc: "كافيه بإطلالة على قلعة حلب — قهوة مختصة ومساحة عمل.", phone: "+963 21 555 4400", nbName: "السبيل", price: "MODERATE", cuisineSlugs: ["cafe", "juices"], featureSlugs: ["wifi", "workspace", "outdoor", "view"], images: [ACDN + "hf_20260614_110851_070cab88-f748-493d-9e59-032dec0f8795.png", ACDN + "hf_20260614_110852_d69ac9d7-90b4-4834-8b35-e78d46ab84d5.png", ACDN + "hf_20260614_110905_6f4fe772-09bf-466c-9193-bc124d7cfbc2.png"], hours: HOURS_CAFE, pro: true },
+    { nameAr: "حلويات الشهباء", nameEn: "Shahba Sweets", desc: "حلويات حلبية شهيرة — معمول، بقلاوة، وكنافة.", phone: "+963 21 666 5500", nbName: "الفرقان", price: "CHEAP", cuisineSlugs: ["desserts", "pastries"], featureSlugs: ["family", "delivery"], images: [ACDN + "hf_20260614_110919_b613bed1-b186-4387-b99b-b2dd13d36018.png", ACDN + "hf_20260614_110920_0318d471-6e34-4836-be77-1aa182e06e8e.png", ACDN + "hf_20260614_110922_4fb30cd1-e189-427d-ba21-a7376bd08b67.png"], hours: HOURS_STANDARD },
+    { nameAr: "بحر حلب", nameEn: "Aleppo Sea", desc: "مأكولات بحرية طازجة في أجواء راقية.", phone: "+963 21 777 6600", nbName: "السليمانية", price: "EXPENSIVE", cuisineSlugs: ["seafood"], featureSlugs: ["family", "parking", "view"], images: [ACDN + "hf_20260614_110934_34ad9d7f-01c3-44c5-a363-3f800a7e41f7.png", ACDN + "hf_20260614_110946_6ab77883-6e9d-4ad0-a444-9fdf2aefa073.png", ACDN + "hf_20260614_110948_c6dc2123-e067-4a96-aaa8-2851306b08fc.png"], hours: HOURS_STANDARD },
   ];
 
   for (let i = 0; i < ALEPPO_RESTAURANTS.length; i++) {
@@ -899,8 +900,8 @@ export async function seedDemoData(db: PrismaClient): Promise<SeedResult> {
         features: { create: def.featureSlugs.map((s) => ({ featureId: ft(s) })) },
         photos: {
           create: [
-            ...def.photos.map((p, pi) => ({
-              url: `/placeholders/p${p}.jpg`,
+            ...def.images.map((url, pi) => ({
+              url,
               alt: def.nameAr,
               kind: (pi === 0 ? "EXTERIOR" : pi === 1 ? "INTERIOR" : "FOOD") as "EXTERIOR" | "INTERIOR" | "FOOD",
               sortOrder: pi,
@@ -909,7 +910,7 @@ export async function seedDemoData(db: PrismaClient): Promise<SeedResult> {
               url: `/placeholders/menu${p}.svg`,
               alt: MENU_PAGE_TITLES[p - 1],
               kind: "MENU" as const,
-              sortOrder: def.photos.length + pi,
+              sortOrder: def.images.length + pi,
             })),
           ],
         },
