@@ -166,7 +166,7 @@ export default async function HomePage() {
           مساحة إعلانية
         </span>
 
-        <div className="relative max-w-[1240px] mx-auto px-7 py-[72px] sm:py-[96px] text-center">
+        <div className="relative max-w-[1240px] mx-auto px-7 py-[72px] sm:py-12 text-center">
           <span className="inline-flex items-center gap-2 bg-white text-ink rounded-full px-4 py-1.5 text-sm font-semibold shadow-sm">
             <span className="w-2 h-2 rounded-full bg-success" />
             أكثر من {formatNum(totalPlaces)} مكان في دمشق — محدّث يومياً
@@ -204,7 +204,7 @@ export default async function HomePage() {
       <div className="max-w-[1240px] mx-auto px-7">
         {/* ===== Featured ===== */}
         {featured.length > 0 && (
-          <section className="mt-14">
+          <section className="mt-8">
             <div className="flex items-baseline justify-between mb-5">
               <h2 className="text-[24px] font-bold">✦ مختارات مميّزة</h2>
               <span className="text-[12px] text-muted2">إعلانات مدفوعة</span>
