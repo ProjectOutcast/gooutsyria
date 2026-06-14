@@ -34,18 +34,18 @@ export function categoryIcon(slug: string): string {
   return CAT_MAP.get(slug as EventCategorySlug)?.icon ?? "calendar-days";
 }
 
-/** Representative cover photo per category (a Higgsfield-generated event image). */
+/** Dedicated Higgsfield-generated cover photo per category. */
 const CDN = "https://d8j0ntlcm91z4.cloudfront.net/user_3EheDHYPzspdioz8fQRTl2NIv7K/";
 const CATEGORY_IMAGE: Record<EventCategorySlug, string> = {
-  music: CDN + "hf_20260614_075844_0c19fcfa-2988-438c-bf2a-30077de2f405.png",
-  theatre: CDN + "hf_20260614_075935_ad4d9304-b528-4384-aceb-72d7fa4b8ad8.png",
-  festival: CDN + "hf_20260614_075930_73668daa-bc5d-4501-9963-7f1b04039e12.png",
-  expo: CDN + "hf_20260614_075932_fd65934e-cfc6-4a77-a524-911e3397f8e3.png",
-  sports: CDN + "hf_20260614_080318_92acc488-c555-463a-aaf3-459a2c05f554.png",
-  family: CDN + "hf_20260614_080241_51af36dd-b699-4eef-9fb6-be43fcf3ec26.png",
-  workshop: CDN + "hf_20260614_080242_5e936b47-bbb1-4045-9af1-ca2016b991db.png",
-  culture: CDN + "hf_20260614_080239_edbb0093-ce7d-4259-a4b7-0551c3b2ba99.png",
-  market: CDN + "hf_20260614_080320_4d1ac31e-70fa-402d-9f6e-e8d1e016c4ab.png",
+  music: CDN + "hf_20260614_082401_12a24b47-97d0-41ff-bbc8-77ce56d86446.png",
+  theatre: CDN + "hf_20260614_082402_611b3db6-69d9-4e77-a266-484295710821.png",
+  festival: CDN + "hf_20260614_082404_9827d963-15fa-49dd-ac1b-ef62038c7302.png",
+  expo: CDN + "hf_20260614_082405_b47a14e3-f323-4ae9-94a5-70bc2ee52e18.png",
+  sports: CDN + "hf_20260614_082426_994ac909-8ecb-4ac1-9a82-1b8f857c314f.png",
+  family: CDN + "hf_20260614_082428_d5bf8a59-9a81-459c-8f1b-44830ec67ff1.png",
+  workshop: CDN + "hf_20260614_082429_e5c2d6d4-f640-4c6e-a265-93f8d604ff0e.png",
+  culture: CDN + "hf_20260614_082440_3e230d6b-9561-46ef-848b-2d6fb5a0e789.png",
+  market: CDN + "hf_20260614_082447_fc079466-a6aa-4b82-84b6-c69a3f585875.png",
 };
 export function categoryImage(slug: string): string {
   return CATEGORY_IMAGE[slug as EventCategorySlug] ?? CATEGORY_IMAGE.music;
