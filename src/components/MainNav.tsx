@@ -29,8 +29,9 @@ function NavInner({ onDark }: { onDark: boolean }) {
             <Link
               key={l.label}
               href={l.href}
-              className="inline-flex items-center h-[67px] px-5 bg-[linear-gradient(120deg,#E14434,#E0902B)] text-white font-bold hover:brightness-110 transition"
+              className="inline-flex items-center gap-1.5 h-[67px] px-5 bg-[linear-gradient(120deg,#E14434,#E0902B)] text-white font-bold hover:brightness-110 transition"
             >
+              <span aria-hidden>🔥</span>
               {l.label}
             </Link>
           );
