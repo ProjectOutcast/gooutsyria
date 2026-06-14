@@ -126,13 +126,13 @@ export default async function EventsPage() {
           <div className="relative">
             <h2 className="text-[24px] sm:text-[30px] font-bold text-ink">تنظّم فعالية في دمشق؟</h2>
             <p className="mt-3 text-[15px] sm:text-[16px] text-[#8C7B72] max-w-[540px] mx-auto">
-              روّج لفعاليتك مجاناً ووصّلها لآلاف الزوّار. نحن منصّة ترويجية فقط — حجز التذاكر والدفع يتمّان مباشرةً معك كمنظّم.
+              روّج لفعاليتك ووصّلها لآلاف الزوّار. نحن منصّة ترويجية فقط — حجز التذاكر والدفع يتمّان مباشرةً معك كمنظّم.
             </p>
             <Link
               href="/contact"
               className="inline-flex items-center gap-2 mt-6 bg-secondary-tint text-[#A35E14] border border-secondary rounded-xl px-7 py-3 font-bold hover:bg-[#f6ddb4] transition-colors"
             >
-              أضف فعاليتك مجاناً
+              أضف فعاليتك
             </Link>
           </div>
         </div>
