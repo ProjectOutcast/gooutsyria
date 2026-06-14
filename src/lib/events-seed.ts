@@ -128,6 +128,33 @@ const EVENTS: SeedEvent[] = [
   { slug: "king-lear-play", title: "مسرحية كلاسيكية: الملك لير", category: "theatre", venue: "مسرح الحمراء", area: "وسط البلد", day: 7, timeLabel: "٧:٣٠ م", priceFrom: 22000, tone: "a", summary: "تقديم كلاسيكي لرائعة شكسبير الملك لير." },
 ];
 
+// Higgsfield-generated cover photos for the demo events, keyed by slug.
+const CDN = "https://d8j0ntlcm91z4.cloudfront.net/user_3EheDHYPzspdioz8fQRTl2NIv7K/";
+const IMAGES: Record<string, string> = {
+  "damascus-film-festival-2026": CDN + "hf_20260614_075930_73668daa-bc5d-4501-9963-7f1b04039e12.png",
+  "syrian-national-orchestra": CDN + "hf_20260614_075844_0c19fcfa-2988-438c-bf2a-30077de2f405.png",
+  "damascus-book-fair": CDN + "hf_20260614_075932_fd65934e-cfc6-4a77-a524-911e3397f8e3.png",
+  "opera-tarab-night": CDN + "hf_20260614_075933_df8a3b17-9ffa-448d-aad4-7c7ddf0d7780.png",
+  "hamra-shahrazad": CDN + "hf_20260614_075935_ad4d9304-b528-4384-aceb-72d7fa4b8ad8.png",
+  "citadel-jazz": CDN + "hf_20260614_080237_1253fbca-0d19-4fc8-96ba-02bd6030c8b6.png",
+  "nawfara-hakawati": CDN + "hf_20260614_080239_edbb0093-ce7d-4259-a4b7-0551c3b2ba99.png",
+  "tishreen-family-day": CDN + "hf_20260614_080241_51af36dd-b699-4eef-9fb6-be43fcf3ec26.png",
+  "arabic-calligraphy-workshop": CDN + "hf_20260614_080242_5e936b47-bbb1-4045-9af1-ca2016b991db.png",
+  "abbasiyyin-friendly-match": CDN + "hf_20260614_080318_92acc488-c555-463a-aaf3-459a2c05f554.png",
+  "crafts-market": CDN + "hf_20260614_080320_4d1ac31e-70fa-402d-9f6e-e8d1e016c4ab.png",
+  "damascene-poetry-night": CDN + "hf_20260614_080321_4c841019-b4a5-49bf-84ce-c095c91ea560.png",
+  "kids-sindbad": CDN + "hf_20260614_080323_8a932803-4e04-41bd-973e-dc0e3a0c2364.png",
+  "tech-innovation-expo": CDN + "hf_20260614_080345_ed4ed399-fadf-4ef3-b19d-48dfc36a636d.png",
+  "sufi-inshad-night": CDN + "hf_20260614_080346_39c8e42a-b64a-40ee-99fa-63775be8f933.png",
+  "standup-comedy-night": CDN + "hf_20260614_080348_3abeaff3-5cdf-46b8-82da-7e8deb8952a9.png",
+  "damascene-food-festival": CDN + "hf_20260614_080349_b72a9994-140c-4408-b19d-0b86770fb3b8.png",
+  "fairuz-tribute-night": CDN + "hf_20260614_080614_6b8bb8a2-caf3-4b5b-ab56-f1344ac6694f.png",
+  "damascus-charity-marathon": CDN + "hf_20260614_080421_68df891e-8b07-4deb-8baa-89a4a5536edf.png",
+  "antiques-market": CDN + "hf_20260614_080422_9d8cbb0b-4858-4a5d-814f-e2583eb0a9cd.png",
+  "world-opera-night": CDN + "hf_20260614_080426_6f0845ef-6f8b-43bd-bba0-df0dd41ef577.png",
+  "king-lear-play": CDN + "hf_20260614_080444_2a3b1fe4-e139-43d9-b5d8-5fe6c5298681.png",
+};
+
 export async function seedEvents(db: PrismaClient): Promise<number> {
   const todayKey = new Intl.DateTimeFormat("en-CA", {
     timeZone: "Asia/Damascus",
@@ -160,6 +187,7 @@ export async function seedEvents(db: PrismaClient): Promise<number> {
       priceFrom: e.priceFrom ?? null,
       priceNote: e.priceNote ?? null,
       tone: e.tone,
+      imageUrl: IMAGES[e.slug] ?? null,
       featured: e.featured ?? false,
       featuredKicker: e.featuredKicker ?? null,
       organizer: e.organizer ?? DEFAULT_ORGANIZER,
