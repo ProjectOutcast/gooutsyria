@@ -30,7 +30,7 @@ function NavInner({ onDark }: { onDark: boolean }) {
             <Link
               key={l.label}
               href={l.href}
-              className="inline-flex items-center gap-1.5 bg-primary-500 hover:bg-primary-600 text-white font-bold rounded-full px-3.5 py-1.5 shadow-[0_4px_14px_rgba(225,68,52,.45)] transition-colors"
+              className="inline-flex items-center gap-1.5 bg-[linear-gradient(120deg,#E14434,#E0902B)] text-white font-bold rounded-lg px-3.5 py-1.5 shadow-[0_4px_14px_rgba(225,68,52,.45)] hover:brightness-110 transition"
             >
               <span aria-hidden>🔥</span>
               {l.label}
