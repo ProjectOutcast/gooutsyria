@@ -15,6 +15,10 @@
   --color-primary-800: #9c2f24;
   --color-primary-900: #7a2418; /* banner gradient end */
 
+  /* Secondary accent — amber (warm & harmonious) */
+  --color-secondary: #e0902b; /* secondary actions, active chips */
+  --color-secondary-tint: #fbead0; /* secondary button fill */
+
   /* Warm neutrals */
   --color-page: #fbf8f6;
   --color-ink: #1c1614;

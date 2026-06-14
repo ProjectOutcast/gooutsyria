@@ -128,7 +128,7 @@ function CatChip({
       type="button"
       onClick={onClick}
       className={`shrink-0 inline-flex items-center gap-1.5 rounded-full px-3.5 py-2 text-[13px] sm:text-[14px] font-semibold border transition-colors ${
-        active ? "bg-primary-500 text-white border-primary-500" : "bg-white text-[#4A3F39] border-[#EADBD2] hover:border-primary-300"
+        active ? "bg-secondary text-white border-secondary" : "bg-white text-[#4A3F39] border-[#EADBD2] hover:border-secondary"
       }`}
     >
       <EventIcon name={icon} size={15} strokeWidth={2.2} />
