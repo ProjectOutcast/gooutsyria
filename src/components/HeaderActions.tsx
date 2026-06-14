@@ -287,8 +287,9 @@ export function HeaderActions({
                   <Link
                     key={l.label}
                     href={l.href}
-                    className="-mx-5 px-5 py-3.5 flex items-center bg-[linear-gradient(120deg,#E14434,#E0902B)] text-white text-[16px] font-bold"
+                    className="-mx-5 px-5 py-3.5 flex items-center gap-2 bg-[linear-gradient(120deg,#E14434,#E0902B)] text-white text-[16px] font-bold"
                   >
+                    <span aria-hidden>🔥</span>
                     {l.label}
                   </Link>
                 ) : (
