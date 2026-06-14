@@ -59,7 +59,7 @@ export function EventsCalendar({
                 onClick={() => setDay(d.index)}
                 className={`shrink-0 w-[62px] sm:w-[76px] rounded-[13px] sm:rounded-[15px] py-2.5 sm:py-3 px-1.5 flex flex-col items-center gap-0.5 border transition-colors ${
                   active
-                    ? "bg-primary-500 text-white border-primary-500 shadow-[0_8px_18px_rgba(225,68,52,.35)]"
+                    ? "bg-primary-500 text-white border-primary-500"
                     : "bg-white text-ink border-[#EADBD2] hover:border-primary-300"
                 }`}
               >
