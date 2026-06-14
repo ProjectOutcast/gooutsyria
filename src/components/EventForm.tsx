@@ -28,6 +28,7 @@ export type EventInitial = {
   imageUrl?: string | null;
   organizerName?: string;
   organizerPhone?: string;
+  citySlug?: string;
   // admin-only
   featured?: boolean;
   featuredKicker?: string | null;
@@ -45,13 +46,15 @@ const STATUS_AR: Record<string, string> = {
 export function EventForm({
   action,
   categories,
+  cities,
   initial = {},
   admin = false,
   submitLabel,
   successText,
 }: {
   action: (prev: FormState, fd: FormData) => Promise<FormState>;
-  categories: { slug: string; nameAr: string }[];
+  categories: readonly { slug: string; nameAr: string }[];
+  cities: readonly { slug: string; nameAr: string }[];
   initial?: EventInitial;
   admin?: boolean;
   submitLabel: string;
@@ -72,6 +75,14 @@ export function EventForm({
           <label className={labelCls}>الفئة *</label>
           <select name="category" defaultValue={initial.category ?? categories[0]?.slug} className={inputCls}>
             {categories.map((c) => (
+              <option key={c.slug} value={c.slug}>{c.nameAr}</option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label className={labelCls}>المدينة *</label>
+          <select name="citySlug" defaultValue={initial.citySlug ?? cities[0]?.slug} className={inputCls}>
+            {cities.map((c) => (
               <option key={c.slug} value={c.slug}>{c.nameAr}</option>
             ))}
           </select>

@@ -49,6 +49,7 @@ export default async function RestaurantsPage({ params, searchParams }: Props) {
       <div className="bg-white border-b border-hairline">
         <div className="max-w-[1240px] mx-auto px-7 py-3">
           <SearchBar
+            citySlug={city}
             defaultValue={filters.q ?? ""}
             defaultNeighborhood={filters.neighborhood ?? ""}
             neighborhoods={neighborhoods}

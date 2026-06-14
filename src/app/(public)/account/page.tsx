@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { requireUser } from "@/lib/guards";
 import { db } from "@/lib/db";
+import { getCurrentCity } from "@/lib/current-city";
 import { RESTAURANT_CARD_INCLUDE } from "@/lib/queries";
 import { logoutAction } from "@/actions/auth";
 import { RatingStars } from "@/components/RatingStars";
@@ -22,6 +23,7 @@ const REVIEW_STATUS_AR = {
 
 export default async function AccountPage() {
   const user = await requireUser();
+  const city = await getCurrentCity();
   const [account, reviews, saved] = await Promise.all([
     db.user.findUnique({
       where: { id: user.id },
@@ -82,7 +84,7 @@ export default async function AccountPage() {
         {reviews.length === 0 && (
           <p className="text-sm text-ink2">
             لم تكتب أي تقييم بعد —{" "}
-            <Link href="/damascus/restaurants" className="text-primary-500 font-semibold hover:underline">
+            <Link href={`/${city}/restaurants`} className="text-primary-500 font-semibold hover:underline">
               اكتشف الأماكن وشارك تجربتك
             </Link>
           </p>

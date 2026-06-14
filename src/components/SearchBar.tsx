@@ -1,11 +1,13 @@
 type Neighborhood = { slug: string; nameAr: string };
 
 export function SearchBar({
+  citySlug,
   defaultValue = "",
   defaultNeighborhood = "",
   neighborhoods = [],
   size = "md",
 }: {
+  citySlug: string;
   defaultValue?: string;
   defaultNeighborhood?: string;
   neighborhoods?: Neighborhood[];
@@ -13,7 +15,7 @@ export function SearchBar({
 }) {
   const lg = size === "lg";
   return (
-    <form action="/damascus/restaurants" method="GET" className="w-full">
+    <form action={`/${citySlug}/restaurants`} method="GET" className="w-full">
       <div
         className={`flex items-stretch bg-white overflow-hidden ${
           lg
@@ -48,7 +50,7 @@ export function SearchBar({
               defaultValue={defaultNeighborhood}
               className={`bg-transparent focus:outline-none text-ink cursor-pointer ${lg ? "text-[15px]" : "text-sm"}`}
             >
-              <option value="">كل مناطق دمشق</option>
+              <option value="">كل المناطق</option>
               {neighborhoods.map((n) => (
                 <option key={n.slug} value={n.slug}>
                   {n.nameAr}

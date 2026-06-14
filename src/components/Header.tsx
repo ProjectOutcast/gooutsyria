@@ -1,9 +1,10 @@
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { getCurrentCity } from "@/lib/current-city";
 import { HeaderShell } from "./HeaderShell";
 
 export async function Header() {
-  const session = await auth();
+  const [session, city] = await Promise.all([auth(), getCurrentCity()]);
   const uid = session?.user?.id;
 
   let user = null;
@@ -23,5 +24,5 @@ export async function Header() {
     }
   }
 
-  return <HeaderShell user={user} />;
+  return <HeaderShell user={user} city={city} />;
 }

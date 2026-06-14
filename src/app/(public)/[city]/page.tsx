@@ -1,6 +1,8 @@
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import Link from "next/link";
-import { Chevron } from "@/components/Chevron";
 import Image from "next/image";
+import { Chevron } from "@/components/Chevron";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import {
@@ -8,6 +10,7 @@ import {
   getActiveOffers,
   getActiveSponsor,
   getSavedIds,
+  getCity,
   RESTAURANT_CARD_INCLUDE,
 } from "@/lib/queries";
 import { RestaurantCard } from "@/components/RestaurantCard";
@@ -27,27 +30,32 @@ import {
 
 export const dynamic = "force-dynamic";
 
-const QUICK_CHIPS: [string, string, string][] = [
-  ["open", "مفتوح الآن", "/damascus/restaurants?open=1"],
-  ["moon", "يعمل ٢٤ ساعة", "/damascus/restaurants?features=24h"],
-  ["tag", "عروض اليوم", "/damascus/offers"],
-  ["shisha", "أراكيل", "/damascus/restaurants?features=shisha"],
-  ["work", "مساحات عمل", "/damascus/restaurants?features=workspace"],
-];
+type Props = { params: Promise<{ city: string }> };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { city } = await params;
+  const cityRow = await getCity(city);
+  if (!cityRow) return {};
+  return {
+    title: `Go Out ${cityRow.nameAr} — مطاعم وكافيهات وفعاليات ${cityRow.nameAr}`,
+    description: `اكتشف أفضل مطاعم وكافيهات ${cityRow.nameAr}، العروض الحالية والفعاليات القادمة — تقييمات حقيقية وقوائم طعام في مكان واحد.`,
+    alternates: { canonical: `/${city}` },
+  };
+}
+
+function quickChips(city: string): [string, string, string][] {
+  return [
+    ["open", "مفتوح الآن", `/${city}/restaurants?open=1`],
+    ["moon", "يعمل ٢٤ ساعة", `/${city}/restaurants?features=24h`],
+    ["tag", "عروض اليوم", `/${city}/offers`],
+    ["shisha", "أراكيل", `/${city}/restaurants?features=shisha`],
+    ["work", "مساحات عمل", `/${city}/restaurants?features=workspace`],
+  ];
+}
 
 function ChipIcon({ name }: { name: string }) {
   return (
-    <svg
-      width="15"
-      height="15"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden
-    >
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
       {name === "open" && (
         <>
           <circle cx="12" cy="12" r="9" />
@@ -78,67 +86,53 @@ function ChipIcon({ name }: { name: string }) {
   );
 }
 
-export default async function HomePage() {
+export default async function CityHome({ params }: Props) {
+  const { city } = await params;
+  const cityRow = await getCity(city);
+  if (!cityRow) notFound();
+
   const session = await auth();
-  const [
-    cuisines,
-    neighborhoods,
-    totalPlaces,
-    featured,
-    topPool,
-    offers,
-    open24h,
-    heroSponsor,
-    bannerSponsor,
-  ] = await Promise.all([
-    db.cuisine.findMany({
-      orderBy: { nameAr: "asc" },
-      include: {
-        _count: {
-          select: { restaurants: { where: { restaurant: { status: "APPROVED" } } } },
+  const [cuisines, neighborhoods, totalPlaces, featured, topPool, offers, open24h, heroSponsor, bannerSponsor] =
+    await Promise.all([
+      db.cuisine.findMany({
+        orderBy: { nameAr: "asc" },
+        include: {
+          _count: { select: { restaurants: { where: { restaurant: { status: "APPROVED", cityId: cityRow.id } } } } },
         },
-      },
-    }),
-    db.neighborhood.findMany({
-      where: { city: { slug: "damascus" } },
-      orderBy: { nameAr: "asc" },
-      select: { slug: true, nameAr: true },
-    }),
-    db.restaurant.count({ where: { status: "APPROVED" } }),
-    getFeaturedRestaurants("HOME", { take: 4 }),
-    db.restaurant.findMany({
-      where: { status: "APPROVED" },
-      orderBy: [{ avgRating: "desc" }, { ratingCount: "desc" }],
-      include: RESTAURANT_CARD_INCLUDE,
-      take: 60,
-    }),
-    getActiveOffers("damascus", 3),
-    db.restaurant.findMany({
-      where: {
-        status: "APPROVED",
-        features: { some: { feature: { slug: "24h" } } },
-      },
-      include: RESTAURANT_CARD_INCLUDE,
-      orderBy: { avgRating: "desc" },
-      take: 4,
-    }),
-    getActiveSponsor("HERO"),
-    getActiveSponsor("HOME_BANNER"),
-  ]);
+      }),
+      db.neighborhood.findMany({
+        where: { cityId: cityRow.id },
+        orderBy: { nameAr: "asc" },
+        select: { slug: true, nameAr: true },
+      }),
+      db.restaurant.count({ where: { status: "APPROVED", cityId: cityRow.id } }),
+      getFeaturedRestaurants("HOME", { take: 4, restaurantWhere: { cityId: cityRow.id } }),
+      db.restaurant.findMany({
+        where: { status: "APPROVED", cityId: cityRow.id },
+        orderBy: [{ avgRating: "desc" }, { ratingCount: "desc" }],
+        include: RESTAURANT_CARD_INCLUDE,
+        take: 60,
+      }),
+      getActiveOffers(city, 3),
+      db.restaurant.findMany({
+        where: { status: "APPROVED", cityId: cityRow.id, features: { some: { feature: { slug: "24h" } } } },
+        include: RESTAURANT_CARD_INCLUDE,
+        orderBy: { avgRating: "desc" },
+        take: 4,
+      }),
+      getActiveSponsor("HERO"),
+      getActiveSponsor("HOME_BANNER"),
+    ]);
 
   const openNow = topPool
     .filter((r) => isOpenNow(r.openingHours as OpeningHours | null))
     .slice(0, 5);
 
-  // categories shown on the home carousel: populated cuisines, most first
   const categoryList = cuisines
     .filter((c) => c._count.restaurants > 0)
     .sort((a, b) => b._count.restaurants - a._count.restaurants);
 
-  const allIds = [
-    ...featured.map((r) => r.id),
-    ...open24h.map((r) => r.id),
-  ];
+  const allIds = [...featured.map((r) => r.id), ...open24h.map((r) => r.id)];
   const savedIds = await getSavedIds(session?.user?.id, allIds);
 
   const offerCards: OfferCardData[] = offers.map((o) => ({
@@ -162,27 +156,16 @@ export default async function HomePage() {
 
   return (
     <div>
-      {/* ===== Hero (sellable background) ===== */}
+      {/* ===== Hero ===== */}
       <section className="relative bg-ink text-white overflow-hidden">
-        {heroSponsor?.imageUrl ? (
-          <Image
-            src={heroSponsor.imageUrl}
-            alt={heroSponsor.name}
-            fill
-            sizes="100vw"
-            className="object-cover"
-            priority
-          />
-        ) : (
-          <Image
-            src="/placeholders/hero.jpg"
-            alt=""
-            fill
-            sizes="100vw"
-            className="object-cover"
-            priority
-          />
-        )}
+        <Image
+          src={heroSponsor?.imageUrl ?? "/placeholders/hero.jpg"}
+          alt={heroSponsor?.name ?? ""}
+          fill
+          sizes="100vw"
+          className="object-cover"
+          priority
+        />
         <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(20,13,11,.72),rgba(20,13,11,.5)_45%,rgba(20,13,11,.8))]" />
         <span className="absolute top-4 start-4 z-10 bg-ink/60 text-white/70 text-[11px] rounded-full px-3 py-1">
           مساحة إعلانية
@@ -191,23 +174,22 @@ export default async function HomePage() {
         <div className="relative max-w-[1240px] mx-auto px-7 py-[72px] sm:py-12 text-center">
           <span className="inline-flex items-center gap-2 bg-white text-ink rounded-full px-4 py-1.5 text-sm font-semibold shadow-sm">
             <span className="w-2 h-2 rounded-full bg-success" />
-            أكثر من {formatNum(totalPlaces)} مكان في دمشق — محدّث يومياً
+            أكثر من {formatNum(totalPlaces)} مكان في {cityRow.nameAr} — محدّث يومياً
           </span>
           <h1 className="mt-6 text-4xl sm:text-[52px] font-bold leading-[1.3]">
-            وين طلعتك اليوم؟{" "}
-            <span className="text-primary-300">لقّيناهالك.</span>
+            وين طلعتك اليوم؟ <span className="text-primary-300">لقّيناهالك.</span>
           </h1>
           <p className="mt-4 text-[17px] sm:text-[19px] text-[#EBDDD6] max-w-2xl mx-auto">
-            مطاعم، كافيهات ومساحات عمل في دمشق — تقييمات حقيقية، قوائم طعام،
-            عروض اليوم، وكل المفتوح الآن في مكان واحد.
+            مطاعم، كافيهات، عروض وفعاليات في {cityRow.nameAr} — تقييمات حقيقية، قوائم طعام،
+            وكل المفتوح الآن في مكان واحد.
           </p>
 
           <div className="max-w-2xl mx-auto mt-8">
-            <SearchBar size="lg" neighborhoods={neighborhoods} />
+            <SearchBar size="lg" citySlug={city} neighborhoods={neighborhoods} />
           </div>
 
           <div className="mt-6 flex flex-nowrap sm:flex-wrap justify-center gap-2 sm:gap-2.5 overflow-x-auto sm:overflow-visible scrollbar-none">
-            {QUICK_CHIPS.map(([icon, label, href], i) => (
+            {quickChips(city).map(([icon, label, href], i) => (
               <Link
                 key={label}
                 href={href}
@@ -216,9 +198,7 @@ export default async function HomePage() {
                 }`}
               >
                 {label}
-                <span className="text-primary-300">
-                  <ChipIcon name={icon} />
-                </span>
+                <span className="text-primary-300"><ChipIcon name={icon} /></span>
               </Link>
             ))}
           </div>
@@ -246,9 +226,7 @@ export default async function HomePage() {
           <section className="mt-14">
             <div className="flex items-baseline justify-between mb-5">
               <h2 className="text-[24px] font-bold">🔥 أحدث العروض</h2>
-              <Link href="/damascus/offers" className="text-sm text-ink font-semibold underline">
-                عرض الكل
-              </Link>
+              <Link href={`/${city}/offers`} className="text-sm text-ink font-semibold underline">عرض الكل</Link>
             </div>
             <OffersShowcase offers={offerCards} />
           </section>
@@ -258,19 +236,11 @@ export default async function HomePage() {
         <section className="mt-14">
           <div className="flex items-baseline justify-between mb-5">
             <h2 className="text-[24px] font-bold">تصفّح حسب التصنيف</h2>
-            <Link href="/categories" className="text-sm text-ink font-semibold underline">
-              عرض الكل
-            </Link>
+            <Link href={`/${city}/categories`} className="text-sm text-ink font-semibold underline">عرض الكل</Link>
           </div>
           <Carousel
             items={categoryList.map((c) => (
-              <CategoryCard
-                key={c.id}
-                slug={c.slug}
-                nameAr={c.nameAr}
-                count={c._count.restaurants}
-                href={`/damascus/cuisine/${c.slug}`}
-              />
+              <CategoryCard key={c.id} slug={c.slug} nameAr={c.nameAr} count={c._count.restaurants} href={`/${city}/cuisine/${c.slug}`} />
             ))}
             itemClassName="w-[45%] sm:w-[240px]"
           />
@@ -285,26 +255,14 @@ export default async function HomePage() {
               rel="noopener sponsored"
               className="relative block rounded-3xl overflow-hidden bg-gradient-to-l from-ink to-primary-900 text-white p-8 sm:p-10"
             >
-              <span className="absolute top-4 start-4 bg-white/15 text-white/80 text-[11px] rounded-full px-3 py-1">
-                إعلان مموّل
-              </span>
+              <span className="absolute top-4 start-4 bg-white/15 text-white/80 text-[11px] rounded-full px-3 py-1">إعلان مموّل</span>
               <div className="flex flex-wrap items-center justify-between gap-6 pt-4">
                 <div className="max-w-xl">
-                  <h2 className="text-2xl sm:text-3xl font-bold leading-snug">
-                    {bannerSponsor.name}
-                  </h2>
-                  <span className="inline-block mt-5 bg-primary-500 hover:bg-primary-700 rounded-xl px-6 py-2.5 font-bold text-sm shadow-accent transition">
-                    اكتشف المزيد
-                  </span>
+                  <h2 className="text-2xl sm:text-3xl font-bold leading-snug">{bannerSponsor.name}</h2>
+                  <span className="inline-block mt-5 bg-primary-500 hover:bg-primary-700 rounded-xl px-6 py-2.5 font-bold text-sm transition">اكتشف المزيد</span>
                 </div>
                 {bannerSponsor.imageUrl && (
-                  <Image
-                    src={bannerSponsor.imageUrl}
-                    alt={bannerSponsor.name}
-                    width={260}
-                    height={170}
-                    className="rounded-2xl object-cover"
-                  />
+                  <Image src={bannerSponsor.imageUrl} alt={bannerSponsor.name} width={260} height={170} className="rounded-2xl object-cover" />
                 )}
               </div>
             </a>
@@ -318,38 +276,25 @@ export default async function HomePage() {
               <span className="w-2.5 h-2.5 rounded-full bg-success inline-block" />
               مفتوح الآن قربك
             </h2>
-            <Link href="/damascus/restaurants?open=1" className="text-sm text-ink font-semibold underline">
-              عرض الكل
-            </Link>
+            <Link href={`/${city}/restaurants?open=1`} className="text-sm text-ink font-semibold underline">عرض الكل</Link>
           </div>
           <div className="space-y-3">
             {openNow.map((r) => (
               <Link
                 key={r.id}
-                href={`/damascus/restaurant/${r.slug}`}
+                href={`/${city}/restaurant/${r.slug}`}
                 className="flex items-center gap-4 bg-white border border-hairline rounded-2xl p-3 transition hover:-translate-y-0.5 hover:shadow-card"
               >
                 <span className="relative w-[72px] h-[72px] rounded-xl overflow-hidden bg-chipbg shrink-0">
-                  {r.photos[0] && (
-                    <Image
-                      src={r.photos[0].url}
-                      alt={r.nameAr}
-                      fill
-                      sizes="72px"
-                      className="object-cover"
-                    />
-                  )}
+                  {r.photos[0] && <Image src={r.photos[0].url} alt={r.nameAr} fill sizes="72px" className="object-cover" />}
                 </span>
                 <span className="flex-1 min-w-0">
                   <span className="flex items-center gap-2">
                     <span className="font-semibold text-ink line-clamp-1">{r.nameAr}</span>
-                    <span className="bg-success-tint text-success text-[11px] font-bold rounded-full px-2 py-0.5 shrink-0">
-                      مفتوح
-                    </span>
+                    <span className="bg-success-tint text-success text-[11px] font-bold rounded-full px-2 py-0.5 shrink-0">مفتوح</span>
                   </span>
                   <span className="block text-[13px] text-muted mt-0.5 line-clamp-1">
-                    {r.cuisines.map((c) => c.cuisine.nameAr).join(" · ")} ·{" "}
-                    {r.neighborhood?.nameAr}
+                    {r.cuisines.map((c) => c.cuisine.nameAr).join(" · ")} · {r.neighborhood?.nameAr}
                   </span>
                   <span className="block text-[13px] mt-1">
                     <span className="text-star">★</span>{" "}
@@ -380,39 +325,26 @@ export default async function HomePage() {
                 </svg>
                 يعمل ٢٤ ساعة
               </h2>
-              <Link href="/damascus/restaurants?features=24h" className="text-sm text-white font-semibold underline">
-                عرض الكل
-              </Link>
+              <Link href={`/${city}/restaurants?features=24h`} className="text-sm text-white font-semibold underline">عرض الكل</Link>
             </div>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {open24h.map((r) => (
                 <Link
                   key={r.id}
-                  href={`/damascus/restaurant/${r.slug}`}
+                  href={`/${city}/restaurant/${r.slug}`}
                   className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-2xl p-3.5 transition hover:bg-white/10"
                 >
                   <span className="relative w-12 h-12 rounded-xl overflow-hidden bg-white/10 shrink-0">
-                    {r.photos[0] && (
-                      <Image
-                        src={r.photos[0].url}
-                        alt={r.nameAr}
-                        fill
-                        sizes="48px"
-                        className="object-cover"
-                      />
-                    )}
+                    {r.photos[0] && <Image src={r.photos[0].url} alt={r.nameAr} fill sizes="48px" className="object-cover" />}
                   </span>
                   <span className="min-w-0">
-                    <span className="block font-semibold text-[15px] text-white line-clamp-1">
-                      {r.nameAr}
-                    </span>
+                    <span className="block font-semibold text-[15px] text-white line-clamp-1">{r.nameAr}</span>
                     <span className="block text-[12px] text-white/55 line-clamp-1">
                       {r.cuisines[0]?.cuisine.nameAr}
                       {r.ratingCount > 0 && (
                         <>
                           {" · "}
-                          <span className="text-star">★</span>{" "}
-                          {formatRating(r.avgRating)}
+                          <span className="text-star">★</span> {formatRating(r.avgRating)}
                         </>
                       )}
                     </span>
@@ -427,17 +359,11 @@ export default async function HomePage() {
       <div className="max-w-[1240px] mx-auto px-7">
         {/* ===== Add-restaurant CTA ===== */}
         <section className="mt-16 mb-2 rounded-3xl bg-gradient-to-l from-primary-500 to-primary-700 text-white p-8 sm:p-12 text-center">
-          <h2 className="text-2xl sm:text-3xl font-bold">
-            عندك مطعم أو كافيه في دمشق؟
-          </h2>
+          <h2 className="text-2xl sm:text-3xl font-bold">عندك مطعم أو كافيه في {cityRow.nameAr}؟</h2>
           <p className="text-white/85 mt-3 max-w-xl mx-auto">
-            أضف مكانك مجاناً خلال دقائق — اعرض قائمتك الرقمية، وتواصل مع آلاف
-            الزبائن كل يوم.
+            أضف مكانك مجاناً خلال دقائق — اعرض قائمتك الرقمية، وتواصل مع آلاف الزبائن كل يوم.
           </p>
-          <Link
-            href="/for-restaurants"
-            className="inline-block mt-6 bg-white text-primary-700 hover:bg-primary-50 rounded-xl px-8 py-3 font-bold transition"
-          >
+          <Link href="/for-restaurants" className="inline-block mt-6 bg-white text-primary-700 hover:bg-primary-50 rounded-xl px-8 py-3 font-bold transition">
             أضف مطعمك مجاناً
           </Link>
         </section>

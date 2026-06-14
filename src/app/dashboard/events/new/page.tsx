@@ -2,12 +2,15 @@ import Link from "next/link";
 import { requireUser } from "@/lib/guards";
 import { submitEvent } from "@/actions/events";
 import { EVENT_CATEGORIES } from "@/lib/events";
+import { ACTIVE_CITIES } from "@/lib/cities";
+import { getCurrentCity } from "@/lib/current-city";
 import { EventForm } from "@/components/EventForm";
 
 export const metadata = { title: "أضف فعالية" };
 
 export default async function NewEventPage() {
   await requireUser();
+  const city = await getCurrentCity();
   return (
     <div className="max-w-3xl mx-auto px-4 py-10">
       <div className="flex items-center justify-between mb-4">
@@ -22,6 +25,8 @@ export default async function NewEventPage() {
       <EventForm
         action={submitEvent}
         categories={EVENT_CATEGORIES}
+        cities={ACTIVE_CITIES}
+        initial={{ citySlug: city }}
         submitLabel="إرسال الفعالية للمراجعة"
         successText="✓ تم الإرسال"
       />

@@ -90,6 +90,7 @@ model City {
   neighborhoods Neighborhood[]
   restaurants   Restaurant[]
   collections   Collection[]
+  events        Event[]
 }
 
 model Neighborhood {
@@ -389,6 +390,8 @@ model Event {
   status  ListingStatus @default(APPROVED) // owner-submitted start PENDING; admin-created/seeded are APPROVED
   ownerId String? // organizer's user account (lets them edit from the dashboard)
   owner   User?         @relation("OwnerEvents", fields: [ownerId], references: [id])
+  cityId  String // events are scoped to a city
+  city    City          @relation(fields: [cityId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -397,4 +400,5 @@ model Event {
   @@index([category])
   @@index([status])
   @@index([ownerId])
+  @@index([cityId])
 }

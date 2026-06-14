@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
-  const [restaurants, collections, cuisines, neighborhoods, cities] =
+  const [restaurants, collections, cuisines, neighborhoods, events, cities] =
     await Promise.all([
       db.restaurant.findMany({
         where: { status: "APPROVED" },
@@ -20,6 +20,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       db.neighborhood.findMany({
         select: { slug: true, city: { select: { slug: true } } },
       }),
+      db.event.findMany({
+        where: { status: "APPROVED" },
+        select: { slug: true, updatedAt: true, city: { select: { slug: true } } },
+      }),
       db.city.findMany({ where: { active: true }, select: { slug: true } }),
     ]);
 
@@ -27,26 +31,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: siteUrl, changeFrequency: "daily", priority: 1 },
     { url: `${siteUrl}/for-restaurants`, changeFrequency: "monthly", priority: 0.5 },
     ...cities.flatMap((c) => [
-      {
-        url: `${siteUrl}/${c.slug}/restaurants`,
-        changeFrequency: "daily" as const,
-        priority: 0.9,
-      },
-      {
-        url: `${siteUrl}/${c.slug}/collections`,
-        changeFrequency: "weekly" as const,
-        priority: 0.7,
-      },
-      {
-        url: `${siteUrl}/${c.slug}/offers`,
-        changeFrequency: "daily" as const,
-        priority: 0.8,
-      },
-      {
-        url: `${siteUrl}/${c.slug}/map`,
-        changeFrequency: "weekly" as const,
-        priority: 0.6,
-      },
+      { url: `${siteUrl}/${c.slug}`, changeFrequency: "daily" as const, priority: 0.9 },
+      { url: `${siteUrl}/${c.slug}/restaurants`, changeFrequency: "daily" as const, priority: 0.9 },
+      { url: `${siteUrl}/${c.slug}/categories`, changeFrequency: "weekly" as const, priority: 0.7 },
+      { url: `${siteUrl}/${c.slug}/events`, changeFrequency: "daily" as const, priority: 0.8 },
+      { url: `${siteUrl}/${c.slug}/collections`, changeFrequency: "weekly" as const, priority: 0.7 },
+      { url: `${siteUrl}/${c.slug}/offers`, changeFrequency: "daily" as const, priority: 0.8 },
+      { url: `${siteUrl}/${c.slug}/map`, changeFrequency: "weekly" as const, priority: 0.6 },
     ]),
     ...cuisines.flatMap((cu) =>
       cities.map((c) => ({
@@ -65,6 +56,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: r.updatedAt,
       changeFrequency: "weekly" as const,
       priority: 0.8,
+    })),
+    ...events.map((e) => ({
+      url: `${siteUrl}/${e.city.slug}/events/${e.slug}`,
+      lastModified: e.updatedAt,
+      changeFrequency: "weekly" as const,
+      priority: 0.7,
     })),
     ...collections.map((col) => ({
       url: `${siteUrl}/${col.city.slug}/collections/${col.slug}`,

@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import { updateEvent } from "@/actions/admin";
 import { EVENT_CATEGORIES, toDatetimeLocal } from "@/lib/events";
+import { ACTIVE_CITIES } from "@/lib/cities";
 import { EventForm } from "@/components/EventForm";
 
 export const metadata = { title: "تعديل فعالية" };
@@ -15,7 +16,7 @@ export default async function AdminEditEventPage({
   const { id } = await params;
   const event = await db.event.findUnique({
     where: { id },
-    include: { owner: { select: { email: true } } },
+    include: { owner: { select: { email: true } }, city: { select: { slug: true } } },
   });
   if (!event) notFound();
 
@@ -33,6 +34,7 @@ export default async function AdminEditEventPage({
         action={updateEvent}
         admin
         categories={EVENT_CATEGORIES}
+        cities={ACTIVE_CITIES}
         submitLabel="حفظ التعديلات"
         successText="✓ تم حفظ التعديلات"
         initial={{
@@ -54,6 +56,7 @@ export default async function AdminEditEventPage({
           imageUrl: event.imageUrl,
           organizerName: organizer?.name ?? "",
           organizerPhone: organizer?.phone ?? "",
+          citySlug: event.city.slug,
           featured: event.featured,
           featuredKicker: event.featuredKicker,
           status: event.status,

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { requireUser } from "@/lib/guards";
 import { db } from "@/lib/db";
+import { getCurrentCity } from "@/lib/current-city";
 import { AddRestaurantForms } from "@/components/AddRestaurantForms";
 
 export const metadata: Metadata = {
@@ -10,10 +11,11 @@ export const metadata: Metadata = {
 
 export default async function AddRestaurantPage() {
   await requireUser();
+  const city = await getCurrentCity();
 
   const [neighborhoods, claimable] = await Promise.all([
     db.neighborhood.findMany({
-      where: { city: { slug: "damascus" } },
+      where: { city: { slug: city } },
       orderBy: { nameAr: "asc" },
       select: { id: true, nameAr: true },
     }),

@@ -7,6 +7,7 @@ import {
   deleteEvent,
 } from "@/actions/admin";
 import { EVENT_CATEGORIES, categoryAr, formatEventDate } from "@/lib/events";
+import { ACTIVE_CITIES } from "@/lib/cities";
 import { EventForm } from "@/components/EventForm";
 
 export const metadata = { title: "الفعاليات" };
@@ -21,7 +22,7 @@ const STATUS_AR: Record<string, [string, string]> = {
 export default async function AdminEventsPage() {
   const events = await db.event.findMany({
     orderBy: [{ status: "asc" }, { startsAt: "asc" }],
-    include: { owner: { select: { email: true } } },
+    include: { owner: { select: { email: true } }, city: { select: { nameAr: true } } },
     take: 200,
   });
 
@@ -42,6 +43,7 @@ export default async function AdminEventsPage() {
             action={createEvent}
             admin
             categories={EVENT_CATEGORIES}
+            cities={ACTIVE_CITIES}
             submitLabel="إضافة الفعالية"
             successText="✓ تمت إضافة الفعالية"
           />
@@ -60,7 +62,7 @@ export default async function AdminEventsPage() {
                 <span className="font-bold">{e.title}</span>
                 {e.featured && <span className="ms-1 text-amber-500">★</span>}
                 <span className="text-stone-500 ms-2">
-                  {categoryAr(e.category)} · {formatEventDate(e.startsAt, e.endsAt)} · {e.venue}
+                  {e.city.nameAr} · {categoryAr(e.category)} · {formatEventDate(e.startsAt, e.endsAt)} · {e.venue}
                   {e.owner && ` · ${e.owner.email}`}
                 </span>
               </div>

@@ -4,23 +4,26 @@ import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 
-type NavLink = { href: string; label: string; match: string; highlight?: boolean };
+export type NavLink = { href: string; label: string; match: string; highlight?: boolean };
 
-export const NAV_LINKS: NavLink[] = [
-  { href: "/damascus/restaurants", label: "المطاعم", match: "restaurants" },
-  { href: "/damascus/restaurants?features=workspace", label: "مساحات العمل", match: "features=workspace" },
-  { href: "/categories", label: "تصفّح حسب المطبخ", match: "/categories" },
-  { href: "/events", label: "الفعاليات", match: "/events", highlight: true },
-];
+/** Main nav links for a given city. */
+export function navLinks(city: string): NavLink[] {
+  return [
+    { href: `/${city}/restaurants`, label: "المطاعم", match: "restaurants" },
+    { href: `/${city}/restaurants?features=workspace`, label: "مساحات العمل", match: "features=workspace" },
+    { href: `/${city}/categories`, label: "تصفّح حسب المطبخ", match: "/categories" },
+    { href: `/${city}/events`, label: "الفعاليات", match: "/events", highlight: true },
+  ];
+}
 
-function NavInner({ onDark }: { onDark: boolean }) {
+function NavInner({ onDark, city }: { onDark: boolean; city: string }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const current = `${pathname}?${searchParams.toString()}`;
 
   return (
     <nav className={`hidden lg:flex items-center gap-6 text-[15px] font-medium ${onDark ? "text-white/85" : "text-ink2"}`}>
-      {NAV_LINKS.map((l) => {
+      {navLinks(city).map((l) => {
         const active = l.match.includes("=")
           ? current.includes(l.match)
           : pathname.includes(l.match) && !current.includes("features=");
@@ -57,10 +60,10 @@ function NavInner({ onDark }: { onDark: boolean }) {
   );
 }
 
-export function MainNav({ onDark = false }: { onDark?: boolean }) {
+export function MainNav({ onDark = false, city }: { onDark?: boolean; city: string }) {
   return (
     <Suspense fallback={<nav className="hidden lg:block" />}>
-      <NavInner onDark={onDark} />
+      <NavInner onDark={onDark} city={city} />
     </Suspense>
   );
 }

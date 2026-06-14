@@ -1,0 +1,65 @@
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import Link from "next/link";
+import { db } from "@/lib/db";
+import { getCity } from "@/lib/queries";
+import { CategoryCard } from "@/components/CategoryCard";
+import { Chevron } from "@/components/Chevron";
+
+export const dynamic = "force-dynamic";
+
+type Props = { params: Promise<{ city: string }> };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { city } = await params;
+  const cityRow = await getCity(city);
+  if (!cityRow) return {};
+  return {
+    title: `تصنيفات مطاعم ${cityRow.nameAr} — Go Out Syria`,
+    description: `تصفّح مطاعم وكافيهات ${cityRow.nameAr} حسب المطبخ — مشاوي، شامي أصيل، إيطالي، مأكولات بحرية، حلويات، وأكثر.`,
+    alternates: { canonical: `/${city}/categories` },
+  };
+}
+
+export default async function CategoriesPage({ params }: Props) {
+  const { city } = await params;
+  const cityRow = await getCity(city);
+  if (!cityRow) notFound();
+
+  const cuisines = await db.cuisine.findMany({
+    orderBy: { nameAr: "asc" },
+    include: {
+      _count: {
+        select: { restaurants: { where: { restaurant: { status: "APPROVED", cityId: cityRow.id } } } },
+      },
+    },
+  });
+  const sorted = [...cuisines].sort((a, b) => b._count.restaurants - a._count.restaurants);
+
+  return (
+    <div className="max-w-[1240px] mx-auto px-7 py-7">
+      <nav className="text-[13px] text-muted mb-3" aria-label="مسار التنقل">
+        <Link href={`/${city}`} className="hover:text-primary-500">الرئيسية</Link>
+        <Chevron dir="left" size={13} className="mx-1.5 inline-block align-middle" />
+        <span className="text-ink font-semibold">التصنيفات</span>
+      </nav>
+
+      <h1 className="text-[30px] font-bold">تصنيفات مطاعم {cityRow.nameAr}</h1>
+      <p className="text-ink2 text-[15px] mt-1 mb-7">
+        اختر نوع المطبخ لاستكشاف أفضل المطاعم والكافيهات في {cityRow.nameAr}.
+      </p>
+
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+        {sorted.map((c) => (
+          <CategoryCard
+            key={c.id}
+            slug={c.slug}
+            nameAr={c.nameAr}
+            count={c._count.restaurants}
+            href={`/${city}/cuisine/${c.slug}`}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
