@@ -80,11 +80,13 @@ export default async function EventsPage() {
   for (const e of events) catCounts.set(e.category, (catCounts.get(e.category) ?? 0) + 1);
 
   return (
-    <div className="max-w-[1240px] mx-auto px-4 sm:px-7 pb-16">
+    <div className="pb-16">
       <h1 className="sr-only">وين نروح؟ — فعاليات وحفلات دمشق</h1>
 
+      {/* Full-bleed immersive hero carousel */}
       <FeaturedCarousel slides={slides} />
 
+      <div className="max-w-[1240px] mx-auto px-4 sm:px-7 pt-6 sm:pt-8">
       <EventsCalendar
         days={window.map((d) => ({ index: d.index, dowAr: d.dowAr, dayNum: d.dayNum }))}
         monthAr={monthLabel(now)}
@@ -133,6 +135,7 @@ export default async function EventsPage() {
           </div>
         </div>
       </section>
+      </div>
     </div>
   );
 }
