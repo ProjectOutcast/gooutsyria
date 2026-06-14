@@ -357,3 +357,36 @@ model SavedPlace {
 
   @@unique([userId, restaurantId])
 }
+
+/// Promotional events directory ("وين نروح؟"). Promotion only — no checkout.
+model Event {
+  id             String    @id @default(cuid())
+  slug           String    @unique
+  title          String
+  summary        String? // short blurb for cards / carousel
+  description    String? // long body for "عن الفعالية" (paragraphs split on \n\n)
+  category       String // slug: music/theatre/festival/expo/sports/family/workshop/culture/market
+  venue          String
+  area           String
+  address        String?
+  startsAt       DateTime
+  endsAt         DateTime? // set for multi-day events
+  allDay         Boolean   @default(false)
+  timeLabel      String? // display override e.g. "طوال اليوم"; otherwise derived from startsAt
+  priceFrom      Int? // SYP; null = free / registration
+  priceNote      String? // when priceFrom is null: "مجاني" / "دخول حر" / "تسجيل مسبق"
+  tone           String    @default("a") // a–f placeholder gradient
+  imageUrl       String?
+  featured       Boolean   @default(false) // shows in the top carousel
+  featuredKicker String? // carousel pill text e.g. "مهرجان · ٦ أيام"
+  organizer      Json? // { name, note?, phone?, website?, verified? }
+  outlets        Json? // [{ icon, name, note?, phone }]
+  program        Json? // [{ date?, title, detail?, time? }]
+  lat            Float?
+  lng            Float?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@index([startsAt])
+  @@index([category])
+}

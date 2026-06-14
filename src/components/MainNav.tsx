@@ -8,6 +8,7 @@ export const NAV_LINKS = [
   { href: "/damascus/restaurants", label: "المطاعم", match: "restaurants" },
   { href: "/damascus/cuisine/cafe", label: "الكافيهات", match: "cuisine/cafe" },
   { href: "/damascus/restaurants?features=shisha", label: "الأراكيل", match: "features=shisha" },
+  { href: "/events", label: "الفعاليات", match: "/events" },
   { href: "/damascus/offers", label: "العروض", match: "offers" },
   { href: "/damascus/restaurants?features=workspace", label: "مساحات العمل", match: "features=workspace" },
 ];

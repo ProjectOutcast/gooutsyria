@@ -10,6 +10,7 @@
 import bcrypt from "bcryptjs";
 import type { PrismaClient } from "../generated/prisma/client";
 import { slugify } from "./slug";
+import { seedEvents } from "./events-seed";
 
 type Hours = Record<string, { open: string; close: string } | null>;
 
@@ -490,6 +491,7 @@ export type SeedResult = {
   createdCollections: number;
   backfilledMenus: number;
   backfilledPhotos: number;
+  createdEvents: number;
 };
 
 export async function seedDemoData(db: PrismaClient): Promise<SeedResult> {
@@ -827,11 +829,14 @@ export async function seedDemoData(db: PrismaClient): Promise<SeedResult> {
     }
   }
 
+  const createdEvents = await seedEvents(db);
+
   return {
     createdRestaurants: created,
     skippedRestaurants: skipped,
     createdCollections,
     backfilledMenus,
     backfilledPhotos,
+    createdEvents,
   };
 }
