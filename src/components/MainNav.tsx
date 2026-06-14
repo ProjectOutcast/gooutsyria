@@ -11,7 +11,6 @@ export const NAV_LINKS: NavLink[] = [
   { href: "/damascus/restaurants?features=workspace", label: "مساحات العمل", match: "features=workspace" },
   { href: "/categories", label: "تصفّح حسب المطبخ", match: "/categories" },
   { href: "/events", label: "الفعاليات", match: "/events", highlight: true },
-  { href: "/contact", label: "اتصل بنا", match: "/contact" },
 ];
 
 function NavInner({ onDark }: { onDark: boolean }) {
@@ -30,7 +29,7 @@ function NavInner({ onDark }: { onDark: boolean }) {
             <Link
               key={l.label}
               href={l.href}
-              className="inline-flex items-center bg-[linear-gradient(120deg,#E14434,#E0902B)] text-white font-bold px-4 py-1.5 shadow-[0_4px_14px_rgba(225,68,52,.45)] hover:brightness-110 transition"
+              className="inline-flex items-center h-[67px] px-5 bg-[linear-gradient(120deg,#E14434,#E0902B)] text-white font-bold hover:brightness-110 transition"
             >
               {l.label}
             </Link>
