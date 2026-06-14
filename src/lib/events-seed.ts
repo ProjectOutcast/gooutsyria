@@ -162,6 +162,12 @@ const IMAGES: Record<string, string> = {
   "antiques-market": CDN + "hf_20260614_080422_9d8cbb0b-4858-4a5d-814f-e2583eb0a9cd.png",
   "world-opera-night": CDN + "hf_20260614_080426_6f0845ef-6f8b-43bd-bba0-df0dd41ef577.png",
   "king-lear-play": CDN + "hf_20260614_080444_2a3b1fe4-e139-43d9-b5d8-5fe6c5298681.png",
+  "aleppo-citadel-music-night": CDN + "hf_20260614_111537_50f63d1d-3a50-48e2-be63-dd99ec4223f7.png",
+  "aleppo-cuisine-festival": CDN + "hf_20260614_111538_6cb09731-8641-4584-912e-c12ab5c0f0e0.png",
+  "aleppo-muwashahat-night": CDN + "hf_20260614_111540_6e7233fc-7220-4b7a-bfb7-146b855284af.png",
+  "aleppo-handicrafts-market": CDN + "hf_20260614_111541_c69b29cb-1525-49e9-bef8-597af0f2eb25.png",
+  "aleppo-theatre-hakaya": CDN + "hf_20260614_111605_0d710439-7dc2-49db-a836-04071daa2293.png",
+  "aleppo-derby-match": CDN + "hf_20260614_111606_503ef203-3d06-4b5d-bbb5-d30700a21b62.png",
 };
 
 export async function seedEvents(db: PrismaClient): Promise<number> {
