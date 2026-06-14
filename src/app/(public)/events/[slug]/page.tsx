@@ -331,7 +331,7 @@ export default async function EventDetail({ params }: Props) {
         </div>
         <a
           href="#outlets"
-          className="flex-1 inline-flex items-center justify-center gap-2 bg-primary-500 text-white rounded-xl px-5 py-3 font-bold shadow-[0_8px_20px_rgba(225,68,52,.4)]"
+          className="flex-1 inline-flex items-center justify-center gap-2 bg-primary-500 text-white rounded-xl px-5 py-3 font-bold"
         >
           <EventIcon name="ticket" size={18} />
           أين أشتري التذكرة؟
