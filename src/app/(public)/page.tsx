@@ -205,14 +205,46 @@ export default async function HomePage() {
         {/* ===== Featured ===== */}
         {featured.length > 0 && (
           <section className="mt-14">
-            <div className="flex items-baseline justify-between mb-1">
+            <div className="flex items-baseline justify-between mb-5">
               <h2 className="text-[24px] font-bold">✦ مختارات مميّزة</h2>
               <span className="text-[12px] text-muted2">إعلانات مدفوعة</span>
             </div>
-            <p className="text-sm text-muted mb-5">أماكن اختارت الظهور المميّز هذا الشهر</p>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {featured.map((r) => (
                 <RestaurantCard key={r.id} restaurant={r} featured saved={savedIds.has(r.id)} />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* ===== Offers ===== */}
+        {offers.length > 0 && (
+          <section className="mt-14">
+            <div className="flex items-baseline justify-between mb-5">
+              <h2 className="text-[24px] font-bold">🔥 أحدث العروض</h2>
+              <Link href="/damascus/offers" className="text-sm text-primary-500 font-semibold hover:underline">
+                عرض الكل
+              </Link>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {offers.map((o) => (
+                <Link
+                  key={o.id}
+                  href={`/damascus/restaurant/${o.restaurant.slug}`}
+                  className="block rounded-2xl border border-primary-200 bg-gradient-to-bl from-primary-50 to-white p-4 transition hover:-translate-y-0.5 hover:shadow-card"
+                >
+                  <span className="inline-block bg-primary-500 text-white text-[12px] font-bold rounded-full px-2.5 py-0.5">
+                    {o.titleAr}
+                  </span>
+                  <span className="block font-semibold mt-2">{o.restaurant.nameAr}</span>
+                  {o.descAr && (
+                    <span className="block text-[13px] text-ink2 mt-1 line-clamp-2">{o.descAr}</span>
+                  )}
+                  <span className="flex items-center gap-1 text-[12px] text-muted mt-2">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
+                    حتى {formatDateAr(o.endsAt)} · {o.restaurant.neighborhood?.nameAr}
+                  </span>
+                </Link>
               ))}
             </div>
           </section>
@@ -275,97 +307,60 @@ export default async function HomePage() {
           </section>
         )}
 
-        {/* ===== Open now + Offers ===== */}
-        <section className="mt-14 grid lg:grid-cols-[1.55fr_1fr] gap-8 items-start">
-          <div>
-            <div className="flex items-baseline justify-between mb-5">
-              <h2 className="text-[24px] font-bold flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-success inline-block" />
-                مفتوح الآن قربك
-              </h2>
-              <Link href="/damascus/restaurants?open=1" className="text-sm text-primary-500 font-semibold hover:underline">
-                عرض الكل
-              </Link>
-            </div>
-            <div className="space-y-3">
-              {openNow.map((r) => (
-                <Link
-                  key={r.id}
-                  href={`/damascus/restaurant/${r.slug}`}
-                  className="flex items-center gap-4 bg-white border border-hairline rounded-2xl p-3 transition hover:-translate-y-0.5 hover:shadow-card"
-                >
-                  <span className="relative w-[72px] h-[72px] rounded-xl overflow-hidden bg-chipbg shrink-0">
-                    {r.photos[0] && (
-                      <Image
-                        src={r.photos[0].url}
-                        alt={r.nameAr}
-                        fill
-                        sizes="72px"
-                        className="object-cover"
-                      />
-                    )}
-                  </span>
-                  <span className="flex-1 min-w-0">
-                    <span className="flex items-center gap-2">
-                      <span className="font-semibold text-ink line-clamp-1">{r.nameAr}</span>
-                      <span className="bg-success-tint text-success text-[11px] font-bold rounded-full px-2 py-0.5 shrink-0">
-                        مفتوح
-                      </span>
-                    </span>
-                    <span className="block text-[13px] text-muted mt-0.5 line-clamp-1">
-                      {r.cuisines.map((c) => c.cuisine.nameAr).join(" · ")} ·{" "}
-                      {r.neighborhood?.nameAr}
-                    </span>
-                    <span className="block text-[13px] mt-1">
-                      <span className="text-star">★</span>{" "}
-                      <span className="font-bold text-ink">{formatRating(r.avgRating)}</span>
-                      <span className="text-muted2"> · {formatNum(r.ratingCount)} تقييم</span>
-                    </span>
-                  </span>
-                  <Chevron dir="left" size={18} className="text-muted2 shrink-0" />
-                </Link>
-              ))}
-              {openNow.length === 0 && (
-                <p className="text-sm text-muted bg-white border border-hairline rounded-2xl p-5">
-                  لا توجد أماكن مفتوحة حالياً — تفقد القائمة الكاملة.
-                </p>
-              )}
-            </div>
+        {/* ===== Open now ===== */}
+        <section className="mt-14">
+          <div className="flex items-baseline justify-between mb-5">
+            <h2 className="text-[24px] font-bold flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-success inline-block" />
+              مفتوح الآن قربك
+            </h2>
+            <Link href="/damascus/restaurants?open=1" className="text-sm text-primary-500 font-semibold hover:underline">
+              عرض الكل
+            </Link>
           </div>
-
-          <div>
-            <div className="flex items-baseline justify-between mb-5">
-              <h2 className="text-[24px] font-bold">🔥 أحدث العروض</h2>
-              <Link href="/damascus/offers" className="text-sm text-primary-500 font-semibold hover:underline">
-                عرض الكل
-              </Link>
-            </div>
-            <div className="space-y-3">
-              {offers.map((o) => (
-                <Link
-                  key={o.id}
-                  href={`/damascus/restaurant/${o.restaurant.slug}`}
-                  className="block rounded-2xl border border-primary-200 bg-gradient-to-bl from-primary-50 to-white p-4 transition hover:-translate-y-0.5 hover:shadow-card"
-                >
-                  <span className="inline-block bg-primary-500 text-white text-[12px] font-bold rounded-full px-2.5 py-0.5">
-                    {o.titleAr}
-                  </span>
-                  <span className="block font-semibold mt-2">{o.restaurant.nameAr}</span>
-                  {o.descAr && (
-                    <span className="block text-[13px] text-ink2 mt-1 line-clamp-2">{o.descAr}</span>
+          <div className="space-y-3">
+            {openNow.map((r) => (
+              <Link
+                key={r.id}
+                href={`/damascus/restaurant/${r.slug}`}
+                className="flex items-center gap-4 bg-white border border-hairline rounded-2xl p-3 transition hover:-translate-y-0.5 hover:shadow-card"
+              >
+                <span className="relative w-[72px] h-[72px] rounded-xl overflow-hidden bg-chipbg shrink-0">
+                  {r.photos[0] && (
+                    <Image
+                      src={r.photos[0].url}
+                      alt={r.nameAr}
+                      fill
+                      sizes="72px"
+                      className="object-cover"
+                    />
                   )}
-                  <span className="flex items-center gap-1 text-[12px] text-muted mt-2">
-                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
-                    حتى {formatDateAr(o.endsAt)} · {o.restaurant.neighborhood?.nameAr}
+                </span>
+                <span className="flex-1 min-w-0">
+                  <span className="flex items-center gap-2">
+                    <span className="font-semibold text-ink line-clamp-1">{r.nameAr}</span>
+                    <span className="bg-success-tint text-success text-[11px] font-bold rounded-full px-2 py-0.5 shrink-0">
+                      مفتوح
+                    </span>
                   </span>
-                </Link>
-              ))}
-              {offers.length === 0 && (
-                <p className="text-sm text-muted bg-white border border-hairline rounded-2xl p-5">
-                  لا عروض سارية حالياً.
-                </p>
-              )}
-            </div>
+                  <span className="block text-[13px] text-muted mt-0.5 line-clamp-1">
+                    {r.cuisines.map((c) => c.cuisine.nameAr).join(" · ")} ·{" "}
+                    {r.neighborhood?.nameAr}
+                  </span>
+                  <span className="block text-[13px] mt-1">
+                    <span className="text-star">★</span>{" "}
+                    <span className="font-bold text-ink">{formatRating(r.avgRating)}</span>
+                    <span className="text-muted2"> · {formatNum(r.ratingCount)} تقييم</span>
+                  </span>
+                </span>
+                <Chevron dir="left" size={18} className="text-muted2 shrink-0" />
+              </Link>
+            ))}
+            {openNow.length === 0 && (
+              <p className="text-sm text-muted bg-white border border-hairline rounded-2xl p-5">
+                لا توجد أماكن مفتوحة حالياً — تفقد القائمة الكاملة.
+              </p>
+            )}
           </div>
         </section>
       </div>
@@ -426,44 +421,6 @@ export default async function HomePage() {
       )}
 
       <div className="max-w-[1240px] mx-auto px-7">
-        {/* ===== Map teaser ===== */}
-        <section className="mt-16 grid lg:grid-cols-[1fr_1.4fr] gap-8 items-center">
-          <div>
-            <span className="inline-block bg-chipbg text-ink2 text-[12px] font-semibold rounded-full px-3 py-1 mb-3">
-              استكشف الخريطة
-            </span>
-            <h2 className="text-[26px] font-bold leading-snug">
-              شوف وين الأماكن على خريطة دمشق
-            </h2>
-            <p className="text-ink2 mt-3 leading-relaxed">
-              فلتر حسب المنطقة، المطبخ، السعر، والمفتوح الآن — وكل مكان على
-              بعد نقرة.
-            </p>
-            <Link
-              href="/damascus/map"
-              className="inline-flex items-center gap-2 mt-5 bg-primary-500 hover:bg-primary-700 text-white rounded-xl px-6 py-2.5 font-bold shadow-accent transition"
-            >
-              افتح الخريطة
-            </Link>
-          </div>
-          <Link
-            href="/damascus/map"
-            className="relative block h-64 rounded-3xl border border-hairline overflow-hidden bg-[repeating-linear-gradient(0deg,#F7F0EB_0_39px,#EFE4DC_39px_40px),repeating-linear-gradient(90deg,#F7F0EB_0_39px,#EFE4DC_39px_40px)]"
-          >
-            {[["28%", "30%"], ["55%", "60%"], ["40%", "75%"]].map(([top, start], i) => (
-              <span
-                key={i}
-                className="absolute w-8 h-8 grid place-items-center rounded-full bg-primary-500 text-white shadow-accent"
-                style={{ top, insetInlineStart: start }}
-              >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
-                </svg>
-              </span>
-            ))}
-          </Link>
-        </section>
-
         {/* ===== Add-restaurant CTA ===== */}
         <section className="mt-16 mb-2 rounded-3xl bg-gradient-to-l from-primary-500 to-primary-700 text-white p-8 sm:p-12 text-center">
           <h2 className="text-2xl sm:text-3xl font-bold">
