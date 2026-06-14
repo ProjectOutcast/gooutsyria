@@ -1,16 +1,10 @@
 import Link from "next/link";
 import { getCurrentCity } from "@/lib/current-city";
-import { ACTIVE_CITIES, COMING_SOON_CITIES, cityNameAr } from "@/lib/cities";
+import { ACTIVE_CITIES, COMING_SOON_CITIES } from "@/lib/cities";
+import { FooterDiscover } from "./FooterDiscover";
 
 export async function Footer() {
   const city = await getCurrentCity();
-  const discover: [string, string][] = [
-    [`مطاعم ${cityNameAr(city)}`, `/${city}/restaurants`],
-    ["قوائم مختارة", `/${city}/collections`],
-    ["العروض الحالية", `/${city}/offers`],
-    ["الفعاليات", `/${city}/events`],
-    ["خريطة الأماكن", `/${city}/map`],
-  ];
   const business: [string, string][] = [
     ["أضف مطعمك مجاناً", "/for-restaurants"],
     ["الباقات والإعلان", "/for-restaurants#pricing"],
@@ -52,13 +46,7 @@ export async function Footer() {
 
         <div>
           <h3 className="font-semibold text-white mb-4 text-sm">اكتشف</h3>
-          <ul className="space-y-2.5 text-sm">
-            {discover.map(([label, href]) => (
-              <li key={label}>
-                <Link href={href} className="hover:text-white transition-colors">{label}</Link>
-              </li>
-            ))}
-          </ul>
+          <FooterDiscover serverCity={city} />
         </div>
 
         <div>
