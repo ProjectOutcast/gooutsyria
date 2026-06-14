@@ -37,7 +37,7 @@ export function FeaturedCarousel({ slides }: { slides: FeaturedSlideData[] }) {
           <div
             key={s.id}
             dir="rtl"
-            className="relative shrink-0 basis-full h-[440px] sm:h-[560px]"
+            className="relative shrink-0 basis-full h-[380px] sm:h-[480px]"
             style={s.imageUrl ? undefined : { background: s.bg }}
           >
             {s.imageUrl && (
