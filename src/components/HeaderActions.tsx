@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { navLinks } from "./MainNav";
 import { logoutAction } from "@/actions/auth";
-import { ACTIVE_CITIES, COMING_SOON_CITIES, cityNameAr } from "@/lib/cities";
+import { ACTIVE_CITIES, COMING_SOON_CITIES, cityNameAr, isActiveCity } from "@/lib/cities";
 
 const ACCOUNT_LINKS: { href: string; label: string; icon: AccountIconName }[] = [
   { href: "/account#saved", label: "أماكني المفضّلة", icon: "bookmark" },
@@ -64,7 +64,7 @@ function AccountIcon({ name }: { name: AccountIconName }) {
 export function HeaderActions({
   user,
   onDark,
-  city,
+  city: cityProp,
 }: {
   user: {
     name: string | null;
@@ -76,6 +76,10 @@ export function HeaderActions({
   city: string;
 }) {
   const pathname = usePathname();
+  // URL wins on the client (shared layout header isn't re-rendered on
+  // client-side city switches); fall back to the server-resolved city.
+  const seg = pathname.split("/")[1];
+  const city = isActiveCity(seg) ? seg : cityProp;
   const [menuOpen, setMenuOpen] = useState(false);
   const [cityOpen, setCityOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
