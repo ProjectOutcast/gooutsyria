@@ -7,6 +7,7 @@ import {
   damascusDateKey,
   categoryAr,
   categoryIcon,
+  categoryImage,
   eventPriceLabel,
   eventTimeLabel,
   toneBackground,
@@ -16,7 +17,8 @@ import {
 } from "@/lib/events";
 import { FeaturedCarousel } from "@/components/events/FeaturedCarousel";
 import { EventsCalendar } from "@/components/events/EventsCalendar";
-import { EventIcon } from "@/components/events/EventIcon";
+import { EventCategoryCard } from "@/components/events/EventCategoryCard";
+import { Carousel } from "@/components/Carousel";
 import type { EventCardData, FeaturedSlideData } from "@/components/events/types";
 
 export const dynamic = "force-dynamic";
@@ -96,24 +98,24 @@ export default async function EventsPage() {
 
       {/* Browse by category */}
       <section className="pt-11">
-        <h2 className="text-[22px] sm:text-[24px] font-bold mb-5">تصفّح حسب الفئة</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-3.5">
-          {EVENT_CATEGORIES.map((c) => (
-            <a
-              key={c.slug}
-              href="#calendar"
-              className="group bg-white border border-[#F0E6E0] rounded-2xl p-[18px] transition-all duration-150 hover:-translate-y-1 hover:shadow-[0_18px_34px_-16px_rgba(28,22,20,.25)]"
-            >
-              <span className="grid place-items-center w-12 h-12 rounded-[13px] bg-[#FFF0E9] text-primary-500 mb-3">
-                <EventIcon name={c.icon} size={22} strokeWidth={2.2} />
-              </span>
-              <span className="block text-[15px] font-semibold">{c.nameAr}</span>
-              <span className="block text-[12px] text-[#A6948B] mt-0.5">
-                {catCounts.get(c.slug) ?? 0} فعالية
-              </span>
-            </a>
-          ))}
+        <div className="flex items-baseline justify-between mb-5">
+          <h2 className="text-[22px] sm:text-[24px] font-bold">تصفّح حسب الفئة</h2>
+          <a href="#calendar" className="text-sm text-ink font-semibold underline">
+            عرض الكل
+          </a>
         </div>
+        <Carousel
+          items={EVENT_CATEGORIES.map((c) => (
+            <EventCategoryCard
+              key={c.slug}
+              nameAr={c.nameAr}
+              count={catCounts.get(c.slug) ?? 0}
+              imageUrl={categoryImage(c.slug)}
+              href="#calendar"
+            />
+          ))}
+          itemClassName="w-[44%] sm:w-[216px]"
+        />
       </section>
 
       {/* Add your event */}

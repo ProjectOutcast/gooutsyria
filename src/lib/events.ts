@@ -34,6 +34,23 @@ export function categoryIcon(slug: string): string {
   return CAT_MAP.get(slug as EventCategorySlug)?.icon ?? "calendar-days";
 }
 
+/** Representative cover photo per category (a Higgsfield-generated event image). */
+const CDN = "https://d8j0ntlcm91z4.cloudfront.net/user_3EheDHYPzspdioz8fQRTl2NIv7K/";
+const CATEGORY_IMAGE: Record<EventCategorySlug, string> = {
+  music: CDN + "hf_20260614_075844_0c19fcfa-2988-438c-bf2a-30077de2f405.png",
+  theatre: CDN + "hf_20260614_075935_ad4d9304-b528-4384-aceb-72d7fa4b8ad8.png",
+  festival: CDN + "hf_20260614_075930_73668daa-bc5d-4501-9963-7f1b04039e12.png",
+  expo: CDN + "hf_20260614_075932_fd65934e-cfc6-4a77-a524-911e3397f8e3.png",
+  sports: CDN + "hf_20260614_080318_92acc488-c555-463a-aaf3-459a2c05f554.png",
+  family: CDN + "hf_20260614_080241_51af36dd-b699-4eef-9fb6-be43fcf3ec26.png",
+  workshop: CDN + "hf_20260614_080242_5e936b47-bbb1-4045-9af1-ca2016b991db.png",
+  culture: CDN + "hf_20260614_080239_edbb0093-ce7d-4259-a4b7-0551c3b2ba99.png",
+  market: CDN + "hf_20260614_080320_4d1ac31e-70fa-402d-9f6e-e8d1e016c4ab.png",
+};
+export function categoryImage(slug: string): string {
+  return CATEGORY_IMAGE[slug as EventCategorySlug] ?? CATEGORY_IMAGE.music;
+}
+
 /** Diagonal-striped gradient placeholder per `tone` (a–f). Used as CSS `background`. */
 const TONE_GRADIENTS: Record<string, string> = {
   a: "linear-gradient(135deg,#F8D3BC,#ECAE8E)",
