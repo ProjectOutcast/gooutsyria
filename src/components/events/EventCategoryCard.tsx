@@ -31,7 +31,7 @@ export function EventCategoryCard({
       <div className="absolute bottom-0 inset-x-0 p-4">
         <h3 className="text-white font-bold text-[18px] leading-tight drop-shadow-sm">
           {nameAr}{" "}
-          <span className="font-semibold text-white/85">({formatNum(count)})</span>
+          <span className="text-[13px] font-normal text-white/70">({formatNum(count)})</span>
         </h3>
       </div>
     </Link>
