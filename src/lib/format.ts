@@ -129,6 +129,11 @@ export function formatRating(value: number): string {
   return nf.format(Math.round(value * 10) / 10).replace(/٫/g, ".");
 }
 
+/** Whole days from now until `date` (clamped at 0 for today/past). */
+export function daysUntil(date: Date): number {
+  return Math.max(0, Math.ceil((date.getTime() - Date.now()) / 86_400_000));
+}
+
 export function formatDateAr(date: Date): string {
   return new Intl.DateTimeFormat("ar-SY", {
     day: "numeric",

@@ -14,10 +14,12 @@ import { RestaurantCard } from "@/components/RestaurantCard";
 import { Carousel } from "@/components/Carousel";
 import { CategoryCard } from "@/components/CategoryCard";
 import { SearchBar } from "@/components/SearchBar";
+import { OffersShowcase, type OfferCardData } from "@/components/OffersShowcase";
 import {
   formatNum,
   formatRating,
   formatDateAr,
+  daysUntil,
   isOpenNow,
   type OpeningHours,
 } from "@/lib/format";
@@ -138,6 +140,24 @@ export default async function HomePage() {
   ];
   const savedIds = await getSavedIds(session?.user?.id, allIds);
 
+  const offerCards: OfferCardData[] = offers.map((o) => ({
+    id: o.id,
+    titleAr: o.titleAr,
+    descAr: o.descAr,
+    startsAtLabel: formatDateAr(o.startsAt),
+    endsAtLabel: formatDateAr(o.endsAt),
+    daysLeft: daysUntil(o.endsAt),
+    restaurant: {
+      nameAr: o.restaurant.nameAr,
+      href: `/${o.restaurant.city.slug}/restaurant/${o.restaurant.slug}`,
+      neighborhoodAr: o.restaurant.neighborhood?.nameAr ?? null,
+      cuisineAr: o.restaurant.cuisines[0]?.cuisine.nameAr ?? null,
+      photoUrl: o.restaurant.photos[0]?.url ?? null,
+      avgRating: o.restaurant.avgRating,
+      ratingCount: o.restaurant.ratingCount,
+    },
+  }));
+
   return (
     <div>
       {/* ===== Hero (sellable background) ===== */}
@@ -218,7 +238,7 @@ export default async function HomePage() {
         )}
 
         {/* ===== Offers ===== */}
-        {offers.length > 0 && (
+        {offerCards.length > 0 && (
           <section className="mt-14">
             <div className="flex items-baseline justify-between mb-5">
               <h2 className="text-[24px] font-bold">🔥 أحدث العروض</h2>
@@ -226,27 +246,7 @@ export default async function HomePage() {
                 عرض الكل
               </Link>
             </div>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {offers.map((o) => (
-                <Link
-                  key={o.id}
-                  href={`/damascus/restaurant/${o.restaurant.slug}`}
-                  className="block rounded-2xl border border-primary-200 bg-gradient-to-bl from-primary-50 to-white p-4 transition hover:-translate-y-0.5 hover:shadow-card"
-                >
-                  <span className="inline-block bg-primary-500 text-white text-[12px] font-bold rounded-full px-2.5 py-0.5">
-                    {o.titleAr}
-                  </span>
-                  <span className="block font-semibold mt-2">{o.restaurant.nameAr}</span>
-                  {o.descAr && (
-                    <span className="block text-[13px] text-ink2 mt-1 line-clamp-2">{o.descAr}</span>
-                  )}
-                  <span className="flex items-center gap-1 text-[12px] text-muted mt-2">
-                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
-                    حتى {formatDateAr(o.endsAt)} · {o.restaurant.neighborhood?.nameAr}
-                  </span>
-                </Link>
-              ))}
-            </div>
+            <OffersShowcase offers={offerCards} />
           </section>
         )}
 

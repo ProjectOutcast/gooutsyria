@@ -6,6 +6,7 @@ import { RESTAURANT_CARD_INCLUDE } from "@/lib/queries";
 import { logoutAction } from "@/actions/auth";
 import { RatingStars } from "@/components/RatingStars";
 import { RestaurantCard } from "@/components/RestaurantCard";
+import { AccountSettingsForm } from "@/components/AccountSettingsForm";
 import { formatDateAr } from "@/lib/format";
 
 export const metadata: Metadata = {
@@ -21,7 +22,11 @@ const REVIEW_STATUS_AR = {
 
 export default async function AccountPage() {
   const user = await requireUser();
-  const [reviews, saved] = await Promise.all([
+  const [account, reviews, saved] = await Promise.all([
+    db.user.findUnique({
+      where: { id: user.id },
+      select: { name: true, email: true },
+    }),
     db.review.findMany({
       where: { userId: user.id },
       include: {
@@ -42,8 +47,8 @@ export default async function AccountPage() {
     <div className="max-w-[1240px] mx-auto px-7 py-10">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">{user.name}</h1>
-          <p className="text-sm text-muted">{user.email}</p>
+          <h1 className="text-2xl font-bold">{account?.name ?? user.name}</h1>
+          <p className="text-sm text-muted">{account?.email ?? user.email}</p>
         </div>
         <form action={logoutAction}>
           <button
@@ -55,8 +60,8 @@ export default async function AccountPage() {
         </form>
       </div>
 
-      <h2 className="text-xl font-bold mt-10 mb-4">
-        🔖 أماكني المحفوظة ({saved.length})
+      <h2 id="saved" className="text-xl font-bold mt-10 mb-4 scroll-mt-24">
+        🔖 أماكني المفضّلة ({saved.length})
       </h2>
       {saved.length === 0 ? (
         <p className="text-sm text-ink2 bg-white border border-hairline rounded-2xl p-5">
@@ -70,7 +75,9 @@ export default async function AccountPage() {
         </div>
       )}
 
-      <h2 className="text-xl font-bold mt-12 mb-4">تقييماتي ({reviews.length})</h2>
+      <h2 id="reviews" className="text-xl font-bold mt-12 mb-4 scroll-mt-24">
+        تقييماتي ({reviews.length})
+      </h2>
       <div className="space-y-3 max-w-2xl">
         {reviews.length === 0 && (
           <p className="text-sm text-ink2">
@@ -109,6 +116,14 @@ export default async function AccountPage() {
           </div>
         ))}
       </div>
+
+      <h2 id="settings" className="text-xl font-bold mt-12 mb-4 scroll-mt-24">
+        ⚙️ معلومات الحساب
+      </h2>
+      <AccountSettingsForm
+        name={account?.name ?? user.name ?? ""}
+        email={account?.email ?? user.email ?? ""}
+      />
     </div>
   );
 }

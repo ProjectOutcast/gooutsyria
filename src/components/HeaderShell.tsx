@@ -25,7 +25,12 @@ function Logo() {
 export function HeaderShell({
   user,
 }: {
-  user: { name: string | null; role: string } | null;
+  user: {
+    name: string | null;
+    email: string | null;
+    image: string | null;
+    role: string;
+  } | null;
 }) {
   return (
     <header className="sticky top-0 z-40 h-[67px] bg-ink border-b border-white/10">
