@@ -206,12 +206,14 @@ export default async function HomePage() {
             <SearchBar size="lg" neighborhoods={neighborhoods} />
           </div>
 
-          <div className="flex flex-wrap justify-center gap-2.5 mt-6">
-            {QUICK_CHIPS.map(([icon, label, href]) => (
+          <div className="mt-6 flex flex-nowrap sm:flex-wrap justify-center gap-2 sm:gap-2.5 overflow-x-auto sm:overflow-visible scrollbar-none">
+            {QUICK_CHIPS.map(([icon, label, href], i) => (
               <Link
                 key={label}
                 href={href}
-                className="inline-flex items-center gap-2 bg-ink/55 hover:bg-ink/75 backdrop-blur border border-white/10 rounded-full px-4 py-2 text-sm font-semibold transition-colors"
+                className={`items-center gap-2 bg-ink/55 hover:bg-ink/75 backdrop-blur border border-white/10 rounded-full px-3.5 sm:px-4 py-1.5 sm:py-2 text-[13px] sm:text-sm font-semibold whitespace-nowrap shrink-0 transition-colors ${
+                  i >= 3 ? "hidden sm:inline-flex" : "inline-flex"
+                }`}
               >
                 {label}
                 <span className="text-primary-300">
@@ -244,7 +246,7 @@ export default async function HomePage() {
           <section className="mt-14">
             <div className="flex items-baseline justify-between mb-5">
               <h2 className="text-[24px] font-bold">🔥 أحدث العروض</h2>
-              <Link href="/damascus/offers" className="text-sm text-ink font-semibold hover:underline">
+              <Link href="/damascus/offers" className="text-sm text-ink font-semibold underline">
                 عرض الكل
               </Link>
             </div>
@@ -256,7 +258,7 @@ export default async function HomePage() {
         <section className="mt-14">
           <div className="flex items-baseline justify-between mb-5">
             <h2 className="text-[24px] font-bold">تصفّح حسب التصنيف</h2>
-            <Link href="/categories" className="text-sm text-ink font-semibold hover:underline">
+            <Link href="/categories" className="text-sm text-ink font-semibold underline">
               عرض الكل
             </Link>
           </div>
@@ -316,7 +318,7 @@ export default async function HomePage() {
               <span className="w-2.5 h-2.5 rounded-full bg-success inline-block" />
               مفتوح الآن قربك
             </h2>
-            <Link href="/damascus/restaurants?open=1" className="text-sm text-ink font-semibold hover:underline">
+            <Link href="/damascus/restaurants?open=1" className="text-sm text-ink font-semibold underline">
               عرض الكل
             </Link>
           </div>
@@ -378,7 +380,7 @@ export default async function HomePage() {
                 </svg>
                 يعمل ٢٤ ساعة
               </h2>
-              <Link href="/damascus/restaurants?features=24h" className="text-sm text-white font-semibold hover:underline">
+              <Link href="/damascus/restaurants?features=24h" className="text-sm text-white font-semibold underline">
                 عرض الكل
               </Link>
             </div>
