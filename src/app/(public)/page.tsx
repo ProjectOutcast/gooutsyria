@@ -244,7 +244,7 @@ export default async function HomePage() {
           <section className="mt-14">
             <div className="flex items-baseline justify-between mb-5">
               <h2 className="text-[24px] font-bold">🔥 أحدث العروض</h2>
-              <Link href="/damascus/offers" className="text-sm text-primary-500 font-semibold hover:underline">
+              <Link href="/damascus/offers" className="text-sm text-ink font-semibold hover:underline">
                 عرض الكل
               </Link>
             </div>
@@ -256,7 +256,7 @@ export default async function HomePage() {
         <section className="mt-14">
           <div className="flex items-baseline justify-between mb-5">
             <h2 className="text-[24px] font-bold">تصفّح حسب التصنيف</h2>
-            <Link href="/categories" className="text-sm text-primary-500 font-semibold hover:underline">
+            <Link href="/categories" className="text-sm text-ink font-semibold hover:underline">
               عرض الكل
             </Link>
           </div>
@@ -316,7 +316,7 @@ export default async function HomePage() {
               <span className="w-2.5 h-2.5 rounded-full bg-success inline-block" />
               مفتوح الآن قربك
             </h2>
-            <Link href="/damascus/restaurants?open=1" className="text-sm text-primary-500 font-semibold hover:underline">
+            <Link href="/damascus/restaurants?open=1" className="text-sm text-ink font-semibold hover:underline">
               عرض الكل
             </Link>
           </div>
@@ -378,7 +378,7 @@ export default async function HomePage() {
                 </svg>
                 يعمل ٢٤ ساعة
               </h2>
-              <Link href="/damascus/restaurants?features=24h" className="text-sm text-primary-300 font-semibold hover:underline">
+              <Link href="/damascus/restaurants?features=24h" className="text-sm text-white font-semibold hover:underline">
                 عرض الكل
               </Link>
             </div>
