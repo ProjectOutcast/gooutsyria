@@ -287,7 +287,7 @@ export default async function EventDetail({ params }: Props) {
           >
             <span className="text-[11px] font-bold text-white/60">إعلان</span>
             <div className="text-[16px] font-bold mt-1">روّج فعاليتك على «وين نروح؟»</div>
-            <p className="text-[13px] text-white/75 mt-1">وصّل فعاليتك لآلاف الزوّار مجاناً.</p>
+            <p className="text-[13px] text-white/75 mt-1">وصّل فعاليتك لآلاف الزوّار.</p>
             <span className="inline-flex items-center gap-1 text-[13px] font-bold text-primary-300 mt-3">
               اعرف أكثر <EventIcon name="arrow-left" size={14} strokeWidth={2.4} />
             </span>
