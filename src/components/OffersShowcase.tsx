@@ -11,6 +11,7 @@ export type OfferCardData = {
   descAr: string | null;
   startsAtLabel: string;
   endsAtLabel: string;
+  endsAtShort: string;
   daysLeft: number;
   restaurant: {
     nameAr: string;
@@ -23,17 +24,9 @@ export type OfferCardData = {
   };
 };
 
-function daysAr(n: number): string {
-  if (n === 1) return "يوم واحد";
-  if (n === 2) return "يومين";
-  if (n <= 10) return `${formatNum(n)} أيام`;
-  return `${formatNum(n)} يوماً`;
-}
-
-/** Real-deadline urgency cue — turns warm/red when the offer is about to end. */
-function urgency(daysLeft: number): { label: string; urgent: boolean } {
-  if (daysLeft <= 0) return { label: "ينتهي اليوم", urgent: true };
-  return { label: `يبقى ${daysAr(daysLeft)}`, urgent: daysLeft <= 3 };
+/** Real-deadline cue ("حتى ١٦/٧") — turns warm/red when the offer is about to end. */
+function urgency(offer: OfferCardData): { label: string; urgent: boolean } {
+  return { label: `حتى ${offer.endsAtShort}`, urgent: offer.daysLeft <= 3 };
 }
 
 function Star({ size = 14 }: { size?: number }) {
@@ -50,7 +43,7 @@ function Subline({ offer }: { offer: OfferCardData }) {
 }
 
 function OfferCard({ offer, onOpen }: { offer: OfferCardData; onOpen: () => void }) {
-  const u = urgency(offer.daysLeft);
+  const u = urgency(offer);
   return (
     <button
       type="button"
@@ -126,7 +119,7 @@ function OfferModal({ offer, onClose }: { offer: OfferCardData; onClose: () => v
     };
   }, [onClose]);
 
-  const u = urgency(offer.daysLeft);
+  const u = urgency(offer);
   return (
     <div
       className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center sm:p-6"
@@ -173,24 +166,13 @@ function OfferModal({ offer, onClose }: { offer: OfferCardData; onClose: () => v
         </div>
 
         <div className="p-5">
-          <div className="flex items-center justify-between">
-            {offer.restaurant.ratingCount > 0 ? (
-              <span className="inline-flex items-center gap-1.5 text-[14px]">
-                <Star size={16} />
-                <span className="font-bold text-ink">{formatRating(offer.restaurant.avgRating)}</span>
-                <span className="text-muted2">({formatNum(offer.restaurant.ratingCount)} تقييم)</span>
-              </span>
-            ) : (
-              <span className="text-sm text-muted">مكان جديد</span>
-            )}
-            <span
-              className={`text-[12px] font-bold rounded-full px-3 py-1 ${
-                u.urgent ? "bg-warn/10 text-warn" : "bg-chipbg text-ink2"
-              }`}
-            >
-              {u.label}
-            </span>
-          </div>
+          <span
+            className={`inline-block text-[12px] font-bold rounded-full px-3 py-1 ${
+              u.urgent ? "bg-warn/10 text-warn" : "bg-chipbg text-ink2"
+            }`}
+          >
+            {u.label}
+          </span>
 
           {offer.descAr && (
             <p className="text-[15px] text-ink2 leading-relaxed mt-4">{offer.descAr}</p>

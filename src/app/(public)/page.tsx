@@ -19,6 +19,7 @@ import {
   formatNum,
   formatRating,
   formatDateAr,
+  formatDateShortAr,
   daysUntil,
   isOpenNow,
   type OpeningHours,
@@ -146,6 +147,7 @@ export default async function HomePage() {
     descAr: o.descAr,
     startsAtLabel: formatDateAr(o.startsAt),
     endsAtLabel: formatDateAr(o.endsAt),
+    endsAtShort: formatDateShortAr(o.endsAt),
     daysLeft: daysUntil(o.endsAt),
     restaurant: {
       nameAr: o.restaurant.nameAr,
