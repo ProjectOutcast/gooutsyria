@@ -81,19 +81,7 @@ export default async function EventsPage() {
 
   return (
     <div className="max-w-[1240px] mx-auto px-4 sm:px-7 pb-16">
-      {/* Events identity */}
-      <section className="pt-8 sm:pt-10">
-        <span className="inline-flex items-center gap-1.5 text-[12px] font-bold text-primary-500 bg-[#FFF0E9] rounded-full px-3 py-1">
-          <EventIcon name="calendar-days" size={14} strokeWidth={2.4} />
-          وين نروح؟
-        </span>
-        <h1 className="mt-3 text-[26px] sm:text-[34px] font-bold leading-tight">
-          فعاليات وحفلات دمشق <span className="text-primary-500">في مكان واحد</span>
-        </h1>
-        <p className="mt-2 text-[15px] text-[#8C7B72] max-w-2xl">
-          تصفّح كل ما يحدث في دمشق حسب اليوم، واعرف أماكن شراء التذاكر مباشرةً من المنظّم.
-        </p>
-      </section>
+      <h1 className="sr-only">وين نروح؟ — فعاليات وحفلات دمشق</h1>
 
       <FeaturedCarousel slides={slides} />
 
