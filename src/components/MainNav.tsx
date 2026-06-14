@@ -4,11 +4,13 @@ import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 
-export const NAV_LINKS = [
+type NavLink = { href: string; label: string; match: string; highlight?: boolean };
+
+export const NAV_LINKS: NavLink[] = [
   { href: "/damascus/restaurants", label: "المطاعم", match: "restaurants" },
   { href: "/damascus/restaurants?features=workspace", label: "مساحات العمل", match: "features=workspace" },
   { href: "/categories", label: "تصفّح حسب المطبخ", match: "/categories" },
-  { href: "/events", label: "الفعاليات", match: "/events" },
+  { href: "/events", label: "الفعاليات", match: "/events", highlight: true },
   { href: "/contact", label: "اتصل بنا", match: "/contact" },
 ];
 
@@ -23,6 +25,18 @@ function NavInner({ onDark }: { onDark: boolean }) {
         const active = l.match.includes("=")
           ? current.includes(l.match)
           : pathname.includes(l.match) && !current.includes("features=");
+        if (l.highlight) {
+          return (
+            <Link
+              key={l.label}
+              href={l.href}
+              className="inline-flex items-center gap-1.5 bg-primary-500 hover:bg-primary-600 text-white font-bold rounded-full px-3.5 py-1.5 shadow-[0_4px_14px_rgba(225,68,52,.45)] transition-colors"
+            >
+              <span aria-hidden>🔥</span>
+              {l.label}
+            </Link>
+          );
+        }
         return (
           <Link
             key={l.label}

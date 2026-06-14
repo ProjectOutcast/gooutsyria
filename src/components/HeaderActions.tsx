@@ -282,15 +282,26 @@ export function HeaderActions({
               </button>
             </div>
             <nav className="px-5 py-1">
-              {NAV_LINKS.map((l) => (
-                <Link
-                  key={l.label}
-                  href={l.href}
-                  className="block py-3 text-[16px] font-semibold text-white/85 border-b border-white/10"
-                >
-                  {l.label}
-                </Link>
-              ))}
+              {NAV_LINKS.map((l) =>
+                l.highlight ? (
+                  <Link
+                    key={l.label}
+                    href={l.href}
+                    className="flex items-center gap-2 my-2 py-2.5 px-3 rounded-xl bg-primary-500 text-white text-[16px] font-bold"
+                  >
+                    <span aria-hidden>🔥</span>
+                    {l.label}
+                  </Link>
+                ) : (
+                  <Link
+                    key={l.label}
+                    href={l.href}
+                    className="block py-3 text-[16px] font-semibold text-white/85 border-b border-white/10"
+                  >
+                    {l.label}
+                  </Link>
+                )
+              )}
               {user &&
                 ACCOUNT_LINKS.map((l) => (
                   <Link
