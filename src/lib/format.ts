@@ -129,6 +129,11 @@ export function formatRating(value: number): string {
   return nf.format(Math.round(value * 10) / 10).replace(/٫/g, ".");
 }
 
+/** Short day/month in Arabic-Indic numerals, e.g. "١٦/٧". */
+export function formatDateShortAr(date: Date): string {
+  return `${formatNum(date.getDate())}/${formatNum(date.getMonth() + 1)}`;
+}
+
 /** Whole days from now until `date` (clamped at 0 for today/past). */
 export function daysUntil(date: Date): number {
   return Math.max(0, Math.ceil((date.getTime() - Date.now()) / 86_400_000));
