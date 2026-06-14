@@ -33,7 +33,7 @@ export async function RestaurantListing({
 }) {
   const session = await auth();
   const [facets, result, sponsored, inlineSponsor] = await Promise.all([
-    getFacets(),
+    getFacets(citySlug),
     searchRestaurants(citySlug, filters),
     (filters.page ?? 1) === 1
       ? getFeaturedRestaurants(filters.cuisines?.length === 1 ? "CUISINE" : "SEARCH", {
@@ -60,22 +60,18 @@ export async function RestaurantListing({
   return (
     <div className="grid lg:grid-cols-[288px_1fr] gap-[26px] items-start">
       <FiltersSidebar
-        features={facets.features
-          .filter((f) => f._count.restaurants > 0)
-          .map((f) => ({
-            slug: f.slug,
-            nameAr: f.nameAr,
-            icon: f.icon,
-            count: f._count.restaurants,
-          }))}
-        cuisines={facets.cuisines
-          .filter((c) => c._count.restaurants > 0)
-          .map((c) => ({
-            slug: c.slug,
-            nameAr: c.nameAr,
-            icon: c.icon,
-            count: c._count.restaurants,
-          }))}
+        features={facets.features.map((f) => ({
+          slug: f.slug,
+          nameAr: f.nameAr,
+          icon: f.icon,
+          count: f._count.restaurants,
+        }))}
+        cuisines={facets.cuisines.map((c) => ({
+          slug: c.slug,
+          nameAr: c.nameAr,
+          icon: c.icon,
+          count: c._count.restaurants,
+        }))}
         hideCuisines={hideCuisines}
         resultCount={result.total}
       />

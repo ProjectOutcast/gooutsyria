@@ -171,7 +171,7 @@ function SidebarInner({
     </button>
   );
 
-  const body = (
+  const renderBody = (desktop: boolean) => (
     <div className="space-y-5">
       <button
         type="button"
@@ -242,13 +242,13 @@ function SidebarInner({
 
       <CollapsibleSection
         title="مميزات"
-        defaultOpen={current("features").length > 0}
+        defaultOpen={desktop || current("features").length > 0}
         bordered={!hideCuisines}
       >
         {features.map((f) => checkboxRow("features", f))}
       </CollapsibleSection>
 
-      <CollapsibleSection title="السعر" defaultOpen={current("price").length > 0}>
+      <CollapsibleSection title="السعر" defaultOpen={desktop || current("price").length > 0}>
         <div className="grid grid-cols-4 gap-1.5" dir="ltr">
           {PRICES.map(([value, label]) => {
             const active = current("price").includes(value);
@@ -270,7 +270,7 @@ function SidebarInner({
         </div>
       </CollapsibleSection>
 
-      <CollapsibleSection title="التقييم" defaultOpen={!!sp.get("rating")}>
+      <CollapsibleSection title="التقييم" defaultOpen={desktop || !!sp.get("rating")}>
         {RATINGS.map(([value, label]) => {
           const active = sp.get("rating") === value;
           return (
@@ -314,7 +314,7 @@ function SidebarInner({
           </h2>
           {clearAllBtn}
         </div>
-        {body}
+        {renderBody(true)}
       </aside>
 
       {/* Mobile: trigger button */}
@@ -358,7 +358,7 @@ function SidebarInner({
                 </button>
               </div>
             </div>
-            <div className="overflow-y-auto p-4 flex-1 min-h-0">{body}</div>
+            <div className="overflow-y-auto p-4 flex-1 min-h-0">{renderBody(false)}</div>
             <div className="p-4 border-t border-hairline">
               <button
                 type="button"
