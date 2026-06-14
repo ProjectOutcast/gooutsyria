@@ -1,0 +1,87 @@
+import {
+  Music,
+  Drama,
+  PartyPopper,
+  Book,
+  BookOpen,
+  Trophy,
+  Users,
+  PenTool,
+  ShoppingBag,
+  Clapperboard,
+  Cpu,
+  Clock,
+  MapPin,
+  Ticket,
+  Info,
+  Phone,
+  Globe,
+  Navigation,
+  Share2,
+  Bookmark,
+  Search,
+  CalendarDays,
+  CalendarRange,
+  CalendarX,
+  Calendar,
+  Sparkles,
+  ArrowLeft,
+  ArrowRight,
+  ChevronLeft,
+  ChevronRight,
+  LayoutGrid,
+  Building,
+  Wallet,
+  type LucideIcon,
+} from "lucide-react";
+
+const MAP: Record<string, LucideIcon> = {
+  music: Music,
+  drama: Drama,
+  "party-popper": PartyPopper,
+  book: Book,
+  "book-open": BookOpen,
+  trophy: Trophy,
+  users: Users,
+  "pen-tool": PenTool,
+  "shopping-bag": ShoppingBag,
+  clapperboard: Clapperboard,
+  cpu: Cpu,
+  clock: Clock,
+  "map-pin": MapPin,
+  ticket: Ticket,
+  info: Info,
+  phone: Phone,
+  globe: Globe,
+  navigation: Navigation,
+  "share-2": Share2,
+  bookmark: Bookmark,
+  search: Search,
+  "calendar-days": CalendarDays,
+  "calendar-range": CalendarRange,
+  "calendar-x": CalendarX,
+  calendar: Calendar,
+  sparkles: Sparkles,
+  "arrow-left": ArrowLeft,
+  "arrow-right": ArrowRight,
+  "chevron-left": ChevronLeft,
+  "chevron-right": ChevronRight,
+  "layout-grid": LayoutGrid,
+  building: Building,
+  wallet: Wallet,
+};
+
+export function EventIcon({
+  name,
+  size = 16,
+  className,
+  strokeWidth = 2,
+}: {
+  name: string;
+  size?: number;
+  className?: string;
+  strokeWidth?: number;
+}) {
+  const Cmp = MAP[name] ?? CalendarDays;
+  return <Cmp size={size} strokeWidth={strokeWidth} className={className} aria-hidden />;
+}

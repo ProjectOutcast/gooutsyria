@@ -22,6 +22,7 @@ async function main() {
   console.log("seeding (destructive)…");
 
   // wipe (order matters for FKs without cascade)
+  await db.event.deleteMany();
   await db.metricDaily.deleteMany();
   await db.featuredPlacement.deleteMany();
   await db.sponsorSlot.deleteMany();
