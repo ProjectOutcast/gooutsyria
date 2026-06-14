@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
+import { isActiveCity } from "@/lib/cities";
 
 export type NavLink = { href: string; label: string; match: string; highlight?: boolean };
 
@@ -16,10 +17,15 @@ export function navLinks(city: string): NavLink[] {
   ];
 }
 
-function NavInner({ onDark, city }: { onDark: boolean; city: string }) {
+function NavInner({ onDark, city: cityProp }: { onDark: boolean; city: string }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const current = `${pathname}?${searchParams.toString()}`;
+  // URL is the source of truth on the client (the shared layout's header is not
+  // re-rendered on client-side navigation between cities); fall back to the
+  // server-resolved city on non-city pages.
+  const seg = pathname.split("/")[1];
+  const city = isActiveCity(seg) ? seg : cityProp;
 
   return (
     <nav className={`hidden lg:flex items-center gap-6 text-[15px] font-medium ${onDark ? "text-white/85" : "text-ink2"}`}>
