@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { formatNum, formatRating } from "@/lib/format";
 
 export type OfferCardData = {
   id: string;
@@ -27,14 +26,6 @@ export type OfferCardData = {
 /** Real-deadline cue ("حتى ١٦/٧") — turns warm/red when the offer is about to end. */
 function urgency(offer: OfferCardData): { label: string; urgent: boolean } {
   return { label: `حتى ${offer.endsAtShort}`, urgent: offer.daysLeft <= 3 };
-}
-
-function Star({ size = 14 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" className="text-star shrink-0" aria-hidden>
-      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-    </svg>
-  );
 }
 
 function Subline({ offer }: { offer: OfferCardData }) {
@@ -81,25 +72,6 @@ function OfferCard({ offer, onOpen }: { offer: OfferCardData; onOpen: () => void
             <Subline offer={offer} />
           </p>
         </div>
-      </div>
-      <div className="flex items-center justify-between p-3.5">
-        <span className="inline-flex items-center gap-1 text-[13px]">
-          {offer.restaurant.ratingCount > 0 ? (
-            <>
-              <Star />
-              <span className="font-bold text-ink">{formatRating(offer.restaurant.avgRating)}</span>
-              <span className="text-muted2">({formatNum(offer.restaurant.ratingCount)})</span>
-            </>
-          ) : (
-            <span className="text-muted">مكان جديد</span>
-          )}
-        </span>
-        <span className="inline-flex items-center gap-1 text-primary-500 font-bold text-[13px] group-hover:gap-2 transition-all">
-          عرض التفاصيل
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-            <path d="m14 6-6 6 6 6" />
-          </svg>
-        </span>
       </div>
     </button>
   );
