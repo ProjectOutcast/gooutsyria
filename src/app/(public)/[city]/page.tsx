@@ -92,7 +92,7 @@ export default async function CityHome({ params }: Props) {
   if (!cityRow) notFound();
 
   const session = await auth();
-  const [cuisines, neighborhoods, totalPlaces, featured, topPool, offers, open24h, heroSponsor, bannerSponsor] =
+  const [cuisines, neighborhoods, totalPlaces, featured, topPool, offers, open24h, newRestaurants, heroSponsor, bannerSponsor] =
     await Promise.all([
       db.cuisine.findMany({
         orderBy: { nameAr: "asc" },
@@ -120,6 +120,12 @@ export default async function CityHome({ params }: Props) {
         orderBy: { avgRating: "desc" },
         take: 4,
       }),
+      db.restaurant.findMany({
+        where: { status: "APPROVED", cityId: cityRow.id },
+        include: RESTAURANT_CARD_INCLUDE,
+        orderBy: { createdAt: "desc" },
+        take: 4,
+      }),
       getActiveSponsor("HERO"),
       getActiveSponsor("HOME_BANNER"),
     ]);
@@ -132,7 +138,7 @@ export default async function CityHome({ params }: Props) {
     .filter((c) => c._count.restaurants > 0)
     .sort((a, b) => b._count.restaurants - a._count.restaurants);
 
-  const allIds = [...featured.map((r) => r.id), ...open24h.map((r) => r.id)];
+  const allIds = [...featured.map((r) => r.id), ...open24h.map((r) => r.id), ...newRestaurants.map((r) => r.id)];
   const savedIds = await getSavedIds(session?.user?.id, allIds);
 
   const offerCards: OfferCardData[] = offers.map((o) => ({
@@ -229,6 +235,21 @@ export default async function CityHome({ params }: Props) {
               <Link href={`/${city}/offers`} className="text-sm text-ink font-semibold underline">عرض الكل</Link>
             </div>
             <OffersShowcase offers={offerCards} />
+          </section>
+        )}
+
+        {/* ===== New restaurants ===== */}
+        {newRestaurants.length > 0 && (
+          <section className="mt-14">
+            <div className="flex items-baseline justify-between mb-5">
+              <h2 className="text-[24px] font-bold">✨ مطاعم جديدة</h2>
+              <Link href={`/${city}/restaurants?sort=newest`} className="text-sm text-ink font-semibold underline">عرض الكل</Link>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {newRestaurants.map((r) => (
+                <RestaurantCard key={r.id} restaurant={r} saved={savedIds.has(r.id)} />
+              ))}
+            </div>
           </section>
         )}
 

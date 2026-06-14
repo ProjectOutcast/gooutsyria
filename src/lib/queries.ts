@@ -107,27 +107,22 @@ export async function searchRestaurants(citySlug: string, f: SearchFilters) {
   return { restaurants, total, page };
 }
 
-export async function getFacets() {
+export async function getFacets(citySlug: string) {
+  // List = cuisines/features used by any approved restaurant (identical in every
+  // city); count = how many in THIS city, so the filters are the same everywhere
+  // but the numbers are accurate per city.
+  const usedAnywhere = { restaurant: { status: "APPROVED" as const } };
+  const inThisCity = { where: { restaurant: { status: "APPROVED" as const, city: { slug: citySlug } } } };
   const [features, cuisines] = await Promise.all([
     db.feature.findMany({
+      where: { restaurants: { some: usedAnywhere } },
       orderBy: { nameAr: "asc" },
-      include: {
-        _count: {
-          select: {
-            restaurants: { where: { restaurant: { status: "APPROVED" } } },
-          },
-        },
-      },
+      include: { _count: { select: { restaurants: inThisCity } } },
     }),
     db.cuisine.findMany({
+      where: { restaurants: { some: usedAnywhere } },
       orderBy: { nameAr: "asc" },
-      include: {
-        _count: {
-          select: {
-            restaurants: { where: { restaurant: { status: "APPROVED" } } },
-          },
-        },
-      },
+      include: { _count: { select: { restaurants: inThisCity } } },
     }),
   ]);
   return { features, cuisines };
