@@ -374,7 +374,7 @@ model Event {
   allDay         Boolean   @default(false)
   timeLabel      String? // display override e.g. "طوال اليوم"; otherwise derived from startsAt
   priceFrom      Int? // SYP; null = free / registration
-  priceNote      String? // when priceFrom is null: "مجاني" / "دخول حر" / "تسجيل مسبق"
+  priceNote      String? // when priceFrom is null: "مجاني" / "دخول مجاني" / "تسجيل مسبق"
   tone           String    @default("a") // a–f placeholder gradient
   imageUrl       String?
   featured       Boolean   @default(false) // shows in the top carousel

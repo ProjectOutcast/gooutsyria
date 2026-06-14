@@ -120,17 +120,17 @@ export default async function EventsPage() {
 
       {/* Add your event */}
       <section className="pt-10">
-        <div className="relative overflow-hidden rounded-[22px] bg-[linear-gradient(120deg,#E14434,#C9503A)] text-white text-center p-8 sm:p-[46px]">
-          <span className="pointer-events-none absolute -top-10 -start-10 w-40 h-40 rounded-full bg-white/10" />
-          <span className="pointer-events-none absolute -bottom-12 -end-8 w-48 h-48 rounded-full bg-white/10" />
+        <div className="relative overflow-hidden rounded-[22px] bg-white border border-[#F2DCB0] text-center p-8 sm:p-[46px]">
+          <span className="pointer-events-none absolute -top-10 -start-10 w-40 h-40 rounded-full bg-secondary/10" />
+          <span className="pointer-events-none absolute -bottom-12 -end-8 w-48 h-48 rounded-full bg-secondary/10" />
           <div className="relative">
-            <h2 className="text-[24px] sm:text-[30px] font-bold">تنظّم فعالية في دمشق؟</h2>
-            <p className="mt-3 text-[15px] sm:text-[16px] text-[#FFE3DA] max-w-[540px] mx-auto">
+            <h2 className="text-[24px] sm:text-[30px] font-bold text-ink">تنظّم فعالية في دمشق؟</h2>
+            <p className="mt-3 text-[15px] sm:text-[16px] text-[#8C7B72] max-w-[540px] mx-auto">
               روّج لفعاليتك مجاناً ووصّلها لآلاف الزوّار. نحن منصّة ترويجية فقط — حجز التذاكر والدفع يتمّان مباشرةً معك كمنظّم.
             </p>
             <Link
               href="/contact"
-              className="inline-flex items-center gap-2 mt-6 bg-white text-[#C9503A] rounded-xl px-7 py-3 font-bold hover:bg-white/90 transition-colors"
+              className="inline-flex items-center gap-2 mt-6 bg-secondary-tint text-[#A35E14] border border-secondary rounded-xl px-7 py-3 font-bold hover:bg-[#f6ddb4] transition-colors"
             >
               أضف فعاليتك مجاناً
             </Link>
